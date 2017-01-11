@@ -1,0 +1,18 @@
+tr.less_hours {
+  font-style: italic;
+  color: #666;
+}
+tr {
+	font-weight: normal;
+}
+h2 {
+	display: inline-block;
+  margin-bottom: 6px;
+}
+h2 + span {
+  float: right;
+  font-size: 0.8em;
+}
+th {
+  text-align: left;
+}

@@ -1,11 +1,8 @@
 en:
-  timesheet: logged times
   label_reports: time logging
   menu_entry_title: Time-Logging
-  label_current_monthly_report: current monthly report
-  label_current_monthly_reports: current employee monthly reports
-  monthly_report_from: "monthly report "
-  report_open: show
+  overview_note: entries of the current year. weekends without entries are not shown.
+  overview_title: Time-Logging overview
   date:
     formats:
       short: "%Y-%m-%d"
