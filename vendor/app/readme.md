@@ -12,19 +12,21 @@ additionally, the directory structure has to be broken up, and images need to be
 this simplifies the compile configuration considerably
 
 # javascript file structure
-js/*.coffee are the modules of the application.
-js/lib/* are externally maintained modules.
+* js/*.coffee are the modules of the application.
+* js/lib/* are externally maintained modules.
 
 the main entry point is "js/main.coffee".
 all application modules/parts are consistently available in window.app.{module-name}
 
 ## about module names and where they occur
-module-name := string
-file-name := module-name ".coffee"
-module-variable := window.app.module-name
+* module-name := string
+* file-name := module-name ".coffee"
+* module-variable := window.app.module-name
 
 ## short descriptions of the modules
 js/
+  |name|description|
+  ----|----
   |config|configuration: look here first if you want to change something|
   |app|base application: time entry creation and display|
   |main|main entry point, loads all other modules via asynchronuous script loading|
