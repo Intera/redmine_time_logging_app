@@ -100,6 +100,7 @@ unless Array::every
     true
 
 timeLimitedFunc = (func, wait) ->
+  # only actually call the wrapped function when at least "wait" seconds have passed since the last actual call.
   prev = 0
   next = undefined
   ->
@@ -108,7 +109,7 @@ timeLimitedFunc = (func, wait) ->
       prev = next
       func.apply this, arguments
 
-# get translation function
+# get-translation function
 tl = (key) ->
   translations[window.displayLanguage]?[key] or key
 
@@ -142,19 +143,19 @@ App.utility = (->
     regex = undefined
     match = undefined
     if isIssueID(searchstring)
-      #quicker search for issue ids
+      # quicker search for issue ids
       regex = new RegExp(searchstring + "\\b")
       (item, index) -> regex.test item.value
     else
       matchCount = 0
-      #search for words, not for special chars, in any order, case insensitive, keep one first and last whitespace
+      # search for words, not for special chars, in any order, case insensitive, keep one first and last whitespace
       regex = searchstring.replace(/[^a-zA-Z0-9üöä #]/g, "").split(" ")
       lastIsWhitespace = "" is regex[regex.length - 1]
       firstIsWhitespace = "" is regex[0]
       regex = _.filter regex, (e) -> e != ""
       if lastIsWhitespace then regex[regex.length - 1] += " "
       if firstIsWhitespace then regex[0] = " " + regex[0]
-      #split into several regexp that must all match
+      # split into several regexp that must all match
       regex = _.map regex, (e) -> new RegExp(e, "i")
       (item, index) ->
         if matchCount >= App.config.autocompleteLimit
@@ -191,17 +192,17 @@ App.utility = (->
 
   createProjectsIssuesAndSearchData = (projects, issues) ->
     searchData = []
-    #convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
-    #And fill searchData array
+    # convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
+    # and fill searchData array
     projects = _.foldl(projects, (prev, ele) ->
-      #insert projects into searchData
+      # insert projects into searchData
       searchData.push createProjectSearchDataEntry(ele)
-      #insert into projects object
+      # insert into projects object
       prev[ele.id] = ele
       prev
     , {})
     issues = _.foldl(issues, (prev, ele) ->
-      #insert into searchData
+      # insert into searchData
       searchData.push createIssueSearchDataEntry(ele, projects)
       prev[ele.id] = ele
       prev
@@ -256,10 +257,10 @@ App.utility = (->
     numberString
 
   onKeypressRejectNaN = (event) ->
-    #NaN is a number - this is why we don't use "isNumber"
+    # NaN is a number - this is why we don't use "isNumber"
     charCode = (if event.which then event.which else event.keyCode)
-    #-> is numeric?
-    #standard number keyrange || numpad number keyrange || tab || backspace || delete || lr arrows
+    # -> is numeric?
+    # standard number keyrange || numpad number keyrange || tab || backspace || delete || lr arrows
     ((charCode > 47) and (charCode < 58)) or ((charCode > 95) and (charCode < 106)) or (charCode is 9) or (charCode is 8) or (charCode is 46) or (charCode is 37) or (charCode is 39)
 
   decimalHoursToHours = (arg) ->

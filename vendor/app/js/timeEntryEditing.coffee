@@ -34,7 +34,7 @@ App.timeEntryEditing = (->
         $$(document).trigger "timeEntriesReload", "inplace"
 
   getDisplayFormData = ->
-    #gets the form data in a format that can be easily reinserted.
+    # gets the form data in a format that can be easily reinserted
     r = timeEntryReceiveToSendFormat(App.base.formDataToAPIData(App.base.getFormData()))
     r.project.name = $$("#search").val()  if r.project
     r
@@ -48,7 +48,6 @@ App.timeEntryEditing = (->
     $("#timeEntries [data-entry-id=#{timeEntryId}]").addClass("active")
     $("#wrapper").addClass "editMode"
     if App.timeEntryId
-      #update edit mode
       App.timeEntryId = timeEntryId
       timeEntryToDOM App.cache.timeEntries[timeEntryId]
       return
@@ -127,15 +126,15 @@ App.timeEntryEditing = (->
 
   insertTimeEntryRows = (timeEntries) ->
     targetEle = $$("#timeEntries tbody")
-    _.each timeEntries, (ele, index) ->
+    _.each timeEntries, (a, index) ->
       even = (index % 2) is 0
-      if ele.issue and not App.cache.issues[ele.issue.id]
-        #time entry of issue that has not been loaded while getting issues (for example closed issue, new issue).
-        # we can handle it, and use only the available time entry information
-        App.cache.issues[ele.issue.id] = ele.issue
-        val = timeEntryToSearchDataEntry(ele)
+      if a.issue and not App.cache.issues[a.issue.id]
+        # is a time entry of an issue that has not been loaded while getting issues (for example an old closed issue or a new issue).
+        # we handle it by using the loaded time entry information
+        App.cache.issues[a.issue.id] = a.issue
+        val = timeEntryToSearchDataEntry(a)
         App.cache.searchData.push val
-      targetEle.append timeEntryToTableRow(ele, even)
+      targetEle.append timeEntryToTableRow(a, even)
 
   insertTimeEntryAsNew = (timeEntryId) ->
     throw ("missing timeEntryId") unless timeEntryId
@@ -144,9 +143,9 @@ App.timeEntryEditing = (->
   displayTimeEntries = (timeEntries, config) ->
     $$("#timeEntries tbody").children().remove()
     if timeEntries.length
-      #timeEntries in the format as retrieved from the REST API
-      daySpentTime = _.foldl(timeEntries, (prev, ele) ->
-        prev + ele.hours
+      # timeEntries in the format as retrieved from the backend interface
+      daySpentTime = _.foldl(timeEntries, (prev, a) ->
+        prev + a.hours
       , 0)
       $$(".daySpentTime").html App.utility.decimalHoursToColonFormat(daySpentTime)
       insertTimeEntryRows timeEntries
@@ -157,7 +156,7 @@ App.timeEntryEditing = (->
         startEditMode timeEntryId
       .attr("title", tl "edit")
       if config and config.animation is "inplace"
-        #jquery highlight effect not working
+        # jquery highlight effect was not working
         $$("#timeEntries").show()
       else
         $$("#timeEntries").effect "slide",
@@ -174,13 +173,12 @@ App.timeEntryEditing = (->
 
   cacheTimeEntries = (apiTimeEntries) ->
     App.cache.timeEntries = {}
-    _.each apiTimeEntries, (ele) ->
-      App.cache.timeEntries[ele.id] = ele
+    _.each apiTimeEntries, (a) ->
+      App.cache.timeEntries[a.id] = a
 
   getTimeEntries = (data, config, noEntriesFound) ->
     throw "getTimeEntries - user_id is not set"  if _.isUndefined(App.cache.user_id)
     if not config or not config.animation
-      #sliding, hide and show
       $$("#timeEntries").hide()
       App.base.loading()
     App.redmine.getTimeEntries(data).done((response) ->
@@ -206,7 +204,7 @@ App.timeEntryEditing = (->
 
   timeEntryReceiveToSendFormat = (a) ->
     console.warn "timeEntryReceiveToSendFormat - wrong type for argument", a  if App.debug and not hasReceiveFormat(a)
-    # redmines post and get formats for time entries differ. see the if-blocks for differing keys
+    # redmines post- and get-formats for time entries differ. see below for differing keys
     receiveFormat = _.pick(a, "hours", "comments", "spent_on")
     receiveFormat.activity = id: a.activity_id  if a.activity_id
     receiveFormat.issue = id: a.issue_id  if a.issue_id
@@ -215,7 +213,7 @@ App.timeEntryEditing = (->
 
   timeEntryToDOM = (timeEntry) ->
     # insert time entry data into form fields.
-    # api-receive format
+    # in the format as received from the backend interface
     val = undefined
     val = App.utility.decimalHoursToHours(timeEntry.hours)
     $$("#hours").val (if val and (0 isnt val) then val else "")

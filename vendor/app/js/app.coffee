@@ -1,5 +1,5 @@
 App.base = (->
-  # depends on: the DOM being ready, redmine.coffee
+  # depends on: redmine.coffee
 
   getCurrentUser = ->
     App.redmine.getCurrentUser().done (user) ->
@@ -7,7 +7,6 @@ App.base = (->
       App.cache.user_language = user.user.language
 
   getIssuesProjectsAndSearchData = (status) ->
-    # required variables in App.cache: searchData, projects, issues
     App.redmine.getProjectsAndIssues(status, App.config.issueClosedPastDays).done (projectsAndIssues) ->
       t = App.utility.createProjectsIssuesAndSearchData projectsAndIssues.projects, projectsAndIssues.issues
       App.cache.projects = t[0]
@@ -100,7 +99,7 @@ App.base = (->
       project_id: project_id  if project_id
 
   autocompleteSourceDefault = (req, handleResponse) ->
-    # generates the autocomplete suggestions
+    # generates autocomplete suggestions
     handleResponse _.filter(App.cache.searchData, App.utility.autocompleteMatchFunc(req.term))
 
   autocompleteSourceRecent = (req, handleResponse) ->
@@ -109,7 +108,7 @@ App.base = (->
   autocompleteFocus = (event, options) ->
     if !options or !options.onlyFocus
       if @.value == @.title
-        # show latest entries
+        # show recently used entries
         $$("#search").autocomplete "option", "source", autocompleteSourceRecent
         $$("#search").autocomplete "option", "minLength", 0
         $$("#search").autocomplete "search", ""
@@ -138,7 +137,7 @@ App.base = (->
       select: autocompleteSelect
       minLength: App.config.autocompleteMinLength
       source: (req, handleResponse) ->
-        # generates the autocomplete suggestions
+        # generates autocomplete suggestions
         handleResponse _.filter(searchData, App.utility.autocompleteMatchFunc(req.term))
     .on "keydown", ->
       $$("#search").autocomplete "option", "minLength", App.config.autocompleteMinLength
@@ -149,9 +148,9 @@ App.base = (->
       listItem
 
   formDataToAPIData = (formData) ->
-    # direct mapping
+    # taken as is
     r = _.pick(formData, "activity_id", "comments", "hours", "project_id", "issue_id")
-    # format changing
+    # format change necessary
     r.spent_on = $.datepicker.formatDate("yy-mm-dd", formData.date)
     # convert hours and minutes to decimal hours
     r.hours = (r.hours or 0) + ((formData.minutes or 0) / 60)
