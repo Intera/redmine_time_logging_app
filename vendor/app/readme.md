@@ -25,6 +25,7 @@ all application modules/parts are consistently available in window.app.{module-n
 
 ## short descriptions of the modules
 js/
+
   |name|description|
   ----|----
   |config|configuration: look here first if you want to change something|
