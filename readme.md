@@ -85,22 +85,22 @@ the following list shows only a few of the available options. most other options
 
 ## how to add a new translation language
 * copy one of the files in "config/locales/" to a new one named with the appropriate language code
-* in "vendor/app/js/utility.coffee", copy one of the "translations["en"] ..." and use the new language code instead of "en"
+* in "vendor/app/js/utility.coffee", copy one of the "translations["en"] ..." blocks and use the new language code instead of "en"
 * the datepicker month and day names can be overridden in "vendor/app/config.coffee", but it is currently not implemented to set it for multiple languages
 * recompile the javascript application, see below for how to do this
 
-the plugin uses the language that is configured for the user under "my account". you can check "/time_logging_app/current_user" in the browser to see the exact language code that is currently set.
+the plugin uses the language that is configured for the user in redmine under "my account". you can check "/time_logging_app/current_user" in the browser to see the exact language code that is currently set.
 
 ## how to recompile the javascript application
 * in directory "vendor/app"
-* execute the nodejs script "./exe/compile". if this does not work, try "node exe/compile"
+* execute "./exe/compile". if this does not work, try "node exe/compile"
 * after success, exit with control+c
-* changes will only be visible after a redmine restart, because redmine copies plugin assets only when it starts
+* changes will only be visible after a redmine restart, because redmine installs new plugin assets only when it starts
 
 ## other
 it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
 * make the date format easier to configure
-* make it easy to configure multi language datepicker configurations
+* make it easy to configure multi-language datepicker configurations
 * internet explorer support
