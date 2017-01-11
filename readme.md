@@ -26,10 +26,12 @@ dowload a [release](https://github.com/Intera/redmine_time_logging_app/releases)
 alternatively, you can clone the source code repository with "git clone https://github.com/Intera/redmine_time_logging_app.git".
 
 ## setup
-* make sure that "enable rest web service" is activated in redmine under "Administration" -> "Settings" -> "Authentication".
-* move the "redmine_time_logging_app" directory from the download to your redmine instance directory to "plugins/", so that it lies at "plugins/redmine_time_logging_app".
-* on the command-line, change into the redmine instance directory and execute "bundle install".
-* if that ran successful and the file system permissions are right, the plugin should now be installed. go into redmine under "Administration" -> "Plugins" to check that it is listed, and eventually use the configure link there to adjust settings of the plugin.
+* make sure that "enable rest web service" is activated in redmine under "Administration" -> "Settings" -> "Authentication"
+* move the "redmine_time_logging_app" directory from the download to your redmine instance directory to "plugins/", so that it lies at "plugins/redmine_time_logging_app"
+* on the command-line, change into the redmine instance directory and execute "bundle install"
+* if that ran successful and the file system permissions are right, the plugin should now be installed
+* restart redmine
+* go into redmine under "Administration" -> "Plugins" to check that it is listed, and eventually use the configure link there to adjust settings of the plugin
 
 # usage
 after successful installation, if the current redmine user has the redmine permissions to log time and to edit own time entries, a menu entry "Time Logging" or similar in the topmost navigation bar in redmine should be visible.
