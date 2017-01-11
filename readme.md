@@ -53,6 +53,8 @@ the following list shows only a few of the available options. most other options
 
 ## app cofiguration
 
+|optionName|default|description|
+----|----|----
 |issueClosedPastDays|7|include closed issues as long as they are not older than the given number of days|
 |issueStatus|undefined|only include issues with the specified status. possible values are "open", "closed", "*" or the id of any redmine status|
 |autocompleteMinLength|3|the minimum number of characters until the search field looks for suggestions|
@@ -60,6 +62,8 @@ the following list shows only a few of the available options. most other options
 
 ## datepicker configuration
 
+|optionName|default|description|
+----|----|----
 |maxDate|+0||
 |minDate|-6m|the earliest selectable date|
 |dateFormat|"D d.m.y"||
