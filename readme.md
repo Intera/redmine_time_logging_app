@@ -9,7 +9,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * lists spent time entries per day and allows to switch fast between days
 * automatically skips weekends if there is no time entry
 * time entry creation/edit/copy/delete
-* a click into the search field suggests issues recently changed by the user
+* a click into an empty search field suggests issues recently changed by the user
 * link to an overview page that lists the total hours per day
 * shows individual and general total spent time for issues and projects
 * existing time entries can be used as a template
@@ -31,7 +31,7 @@ alternatively, you can clone the source code repository with "git clone https://
 * on the command-line, change into the redmine instance directory and execute "bundle install"
 * if that ran successful and the file system permissions are right, the plugin should now be installed
 * restart redmine
-* go into redmine under "Administration" -> "Plugins" to check that it is listed, and eventually use the configure link there to adjust settings of the plugin
+* go into redmine under "Administration" -> "Plugins" to check that it is listed
 
 # usage
 after successful installation, if the current redmine user has the redmine permissions to log time and to edit own time entries, a menu entry "Time Logging" or similar in the topmost navigation bar in redmine should be visible.
