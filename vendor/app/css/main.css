@@ -25,7 +25,7 @@ h2 {
 }
 #timeEntries td:last-child, #timeEntries th:last-child {
   text-align: right;
-  width: 100px;
+  width: 101px;
 }
 th {
   text-align: left;
@@ -220,7 +220,8 @@ button.delete,button.duplicate,button.cancel,#timeEntries,#form,.ui-datepicker-w
   margin-top: 2px;
   padding-left: 4px;
   font-size: 9pt;
-  width: 575px;
+  /* the width is set here only to prevent long words from expanding the whole time entry list */
+  width: 525px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
