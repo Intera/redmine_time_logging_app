@@ -48,8 +48,8 @@ to edit a time entry, click on the pencil button in the list of time entries. yo
 ![screenshot-3](other/screenshots/1484135578.png?raw=true)
 
 # configuration
-there is a configuration file at vendor/app/js/config.coffee.
-it contains configuration for the datepicker and the rest of the application.
+there is a configuration file at "vendor/app/js/config.coffee".
+it contains configuration for the datepicker and other parts of the application.
 at the moment, changing the configuration requires recompilation of the javascript application, see below.
 the following list shows only a few of the available options. most other options are only relevant for developers.
 
@@ -103,6 +103,6 @@ the plugin uses the language that is configured for the user in redmine under "m
 it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
-* make the date format easier to configure
+* make the date format easier to configure. for example as a redmine plugin setting
 * make it easy to configure multi-language datepicker configurations
 * internet explorer support
