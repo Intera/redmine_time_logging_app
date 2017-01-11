@@ -1,0 +1,3 @@
+#!/bin/dash
+#arguments: directory-path-with-jquery-ui.theme.css
+sed -i s#"images/#"../../images/app/jquery-ui/#g $1/jquery-ui.theme.css

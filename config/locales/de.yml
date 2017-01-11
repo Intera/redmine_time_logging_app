@@ -1,0 +1,11 @@
+de:
+  timesheet: Erfasste Zeiten
+  label_reports: Zeiterfassung
+  menu_entry_title: Zeiterfassung
+  label_current_monthly_report: Aktueller Monatsbericht
+  label_current_monthly_reports: Aktuelle Mitarbeiter Monatsberichte
+  monthly_report_from: "Monatsbericht "
+  report_open: anzeigen
+  date:
+    formats:
+      short: "%d.%m.%Y"

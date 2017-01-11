@@ -1,0 +1,65 @@
+!!! 5
+%html
+  %head
+    = stylesheet_link_tag 'app/main', :plugin => 'redmine_time_logging_app'
+    %title= t(:time_logging_app_title)
+    %meta{"http-equiv" => "content-type", :content => "text/html;charset:UTF-8"}
+    %meta{name: "csrf-token"}
+    %meta{name: "apple-mobile-web-app-capable", content: "yes"}
+    %meta{name: "viewport", content: "width:device-width,initial-scale:1.0"}
+  / body background-color is set here to have it early on load
+  %body{style: "background-color: #aaa"}
+    #wrapper{style: "display:none"}
+      .entry
+        %h2{style: "display:none"}
+        #form
+          .topControls.editMode
+            %button.cancel
+            %button.delete
+          .row.topControls
+            .left.hbox
+              %input#date{type: "text", tabindex: "1"}
+              .dateControls
+                %button.prev
+                %button.next
+            .right.hbox
+              %button.open-in-redmine
+              %button.reload-search-data
+              %button.emptyForm
+              %button.overview{"data-href" => url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}})}
+          %textarea#search{tabindex: "2", title: "Suche...", accesskey: "f"}
+          .hbox
+            #time
+              %input#hours{type: "text", tabindex: "3"}
+              %input#minutes{type: "text", tabindex: "4"}
+            %select#activity{title: t(:label_choose_activity), tabindex: "5"}
+          %textarea#comments{maxlength: "255", title: t(:label_comment), tabindex: "6"}
+          .hbox
+            %button.submit{accesskey: "s", tabindex: "7"}
+      #loading
+        %span.text
+        .icon
+      %table#timeEntries.list
+        %thead
+          %tr
+            %th.project-task-header= t(:label_task)
+            %th.hours-header= t(:label_hours)
+            %th.activity-header= t(:label_activity)
+            %th.daySpentTime
+        %tbody
+        %tfoot
+          %tr
+            %td.hoursTotal{colspan: "4"}
+    %script#timeEntryTemplate{type: "text/html"}
+      %tr.timeEntry{"class" => "{{classes}}", "data-entry-id" => "{{entry_id}}"}
+        %td
+          %a{target: "_blank", href: "{{projectOrIssueUrl}}", class: "title"} {{name}}
+          .comments {{comments}}
+        %td
+          %a.time{target: "_blank", href: "{{timeEntriesUrl}}", title: "{#{t(:label_spent_individual)}} ({#{t(:label_spent_total)}} / {#{t(:label_estimate)}})"}  {{time}} ({{estimates}})
+        %td
+          %a.activity{target: "_blank", href: "{{timeEntriesUrl}}"} {{activity}}
+        %td
+          %button.insert
+          %button.edit
+    = javascript_include_tag 'app/main', :plugin => 'redmine_time_logging_app'

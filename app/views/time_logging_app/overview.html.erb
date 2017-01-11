@@ -1,0 +1,29 @@
+<h2><%= l(:app_name) %> <%= l(:overview_title) %></h2><span><%= t(:overview_note) %></span>
+<% # redmine includes jquery by default %>
+<% content_for(:header_tags) { %>
+  <%= stylesheet_link_tag 'overview', :plugin => 'redmine_time_logging_app' %>
+  <script>
+	  var labelApp = "App"
+	  var labelOverview = "Overview"
+  </script>
+<% } %>
+<table id="time_logging_app-overview" class="list time_entries">
+<tr>
+<% @display_column_headings.each {|heading| %>
+  <th><%= heading %></th>
+<% } %>
+</tr>
+<% @time_entries.each {|entry| %>
+  <% tr_classes = cycle('even', 'odd')
+		 if entry[:less_hours]
+       tr_classes += " less_hours"
+		 end
+     spent_on_intern = "data-spent-on=#{entry[:spent_on_intern]}"
+	%>
+  <tr class="<%= tr_classes %>" <%= spent_on_intern%>>
+  <% @display_columns.each {|column_key| %>
+    <td><%= entry[column_key] %></td>
+  <% } %>
+  </tr>
+<% } %>
+</table>

@@ -1,0 +1,52 @@
+#!/usr/bin/node
+
+var compression = true
+var watch = true
+
+var wbc = require("web-build-creator")
+var config = {
+	target_dir: '../../assets',
+	debug: !compression,
+	script: [
+		{
+			target: "javascripts/app/main.js",
+			path_prefix: "js/",
+			sources: [
+				"lib/jquery",
+				"lib/jquery-ui.custom",
+				"lib/int.jquery.contenttitle",
+				"lib/jquery.maxlength",
+				"lib/underscore",
+				"lib/spin",
+				"config",
+				"utility",
+				"redmine",
+				"app",
+				"timeEntryEditing",
+				"main"
+			]
+		}
+	],
+	style: [
+		{
+			target: "stylesheets/app/main.css",
+			path_prefix: "css/",
+			sources: ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.ext", "main", "responsive"]
+		}
+	],
+/*
+	html: [
+		{
+			target: "index",
+			path_prefix: "html/",
+			sources: "index"
+		}
+	],
+*/
+	sync:[
+		["img", "images/app"]
+	]
+}
+
+//wbc.create_build(config)
+if(watch) wbc.watch_create_build(["js/", "css/"], config)

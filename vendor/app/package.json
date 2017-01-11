@@ -1,0 +1,13 @@
+{
+  "name": "redmine_time_logging_app",
+  "version": "1.0.0",
+  "description": "",
+	"homepage": "",
+  "repository": {
+		"type": "git",
+    "url" : "git://github.com/Intera"
+  },
+	"dependencies": {
+		"web-build-creator": "*"
+	}
+}
