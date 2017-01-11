@@ -1,8 +1,7 @@
-# time logging app
+# redmine time logging app
 this redmine plugin adds a new menu entry and separate section to log and edit ones own spent time in one place, in a quick way.
 
 ![screenshot-1](other/screenshots/1484135564.png?raw=true)
-![screenshot-2](other/screenshots/1484135578.png?raw=true)
 
 # features
 * a mobile-app like interface
@@ -42,6 +41,9 @@ you can use the left/right arrow buttons at the top left, or the date field and 
 to create a new spent time entry, use the search field to search and select the desired issue or project, fill in at least a time and activity and click "create". redmine will ask you once every time your browser has restarted to enter your redmine username and password to ensure that you have permission to create or edit time entries.
 
 to edit a time entry, click on the pencil button in the list of time entries. you can change the date freely. when you click on "update" the changes will be saved.
+
+![screenshot-2](other/screenshots/arrows.png?raw=true)
+![screenshot-3](other/screenshots/1484135578.png?raw=true)
 
 # configuration
 there is a configuration file at vendor/app/js/config.coffee.
