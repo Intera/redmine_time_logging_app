@@ -26,11 +26,11 @@ all application modules/parts are consistently available in window.app.{module-n
 ## short descriptions of the modules
 js/
 
-  |name|description|
-  ----|----
-  |config|configuration: look here first if you want to change something|
-  |app|base application: time entry creation and display|
-  |main|main entry point, loads all other modules via asynchronuous script loading|
-  |timeEntryEditing|the edit mode for time-entries, technically optional|
-  |redmine|a javascript redmine api|
-  |utility|
+|name|description|
+----|----
+|config|configuration: look here first if you want to change something|
+|app|base application: time entry creation and display|
+|main|main entry point, loads all other modules via asynchronuous script loading|
+|timeEntryEditing|the edit mode for time-entries, technically optional|
+|redmine|a javascript redmine api|
+|utility||
