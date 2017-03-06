@@ -15,13 +15,16 @@ App.redmine = (->
     ).done (token) ->
       $.ajaxPrefilter addCsrfTokenFunc(token)
 
+  jQuery.ajaxSetup
+    beforeSend: (jqXHR, settings) ->
+      @url = settings.url;
+
   defaultRedmineErrorHandler = (response, x, y) ->
-    console.log response
     if 0 is response.status
       # request aborted by the user
       return
     else if 404 is response.status
-      alert tl("ticketMessage") + "Eintrag nicht gefunden"
+      alert tl("ticketMessage") + tl("error404NotFound") + ".\nrelevant url: \"#{@url}\""
     else unless response.status is 200
       message = tl("ticketMessage") + $.parseJSON(response.responseText).errors.join("\n")
       if 422 is response.status

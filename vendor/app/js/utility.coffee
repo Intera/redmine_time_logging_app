@@ -25,7 +25,7 @@ translations["de"] =
   overview: "Übersicht"
   open_in_redmine: "Ausgewähltes Projekt oder Ticket anzeigen"
   loading: "Lade Daten"
-  ticketMessage: "Ticketsystem meldet:\n"
+  ticketMessage: "Redmine meldet:\n"
   noTimeEntriesLoaded: "Keine Einträge gefunden"
   chooseActivity: "Aktivität auswählen ..."
   hours_header: "Stunden"
@@ -36,6 +36,7 @@ translations["de"] =
   datePrev: "Vorheriger Tag"
   edit: "Bearbeiten"
   error422Explanation: "Häufige Ursache: Versuch, Zeiteintrag auf ein Ticket umzubuchen das in einem anderen Projekt gespeichert ist."
+  error404NotFound: "Eine Hintergrundanfrage führte zu einer \"404 not found\" Serverantwort"
 
 translations["en"] =
   duplicate: "Insert"
@@ -63,7 +64,7 @@ translations["en"] =
   missingFields: "Missing fields"
   success: "Success"
   loading: "Loading"
-  ticketMessage: "Ticketsystem says:\n"
+  ticketMessage: "Redmine says:\n"
   noTimeEntriesLoaded: "No entries found"
   chooseActivity: "Choose activity ..."
   hours_header: "Hours"
@@ -73,6 +74,8 @@ translations["en"] =
   dateNext: "Next day"
   datePrev: "Previous day"
   edit: "Edit"
+  error404NotFound: "A request lead to a \"404 not found\" server response"
+  error422Explanation: "Common cause: trying to move time entries between projects (not supported by redmine)."
 
 $$ = (->
   # like $, but caches results - use for elements that don't change after page load

@@ -44,6 +44,10 @@ tips
   end
 
   def recent_time_entry_objects
+    if @issue_status_closed.empty? or @issue_status_open.empty?
+      render :json => []
+      return
+    end
     entries_count = 10
     # issues or projects with time entries recently created by the user
     t = "select t.issue_id,t.project_id,t.created_on from time_entries t where t.user_id=#{User.current.id}"
@@ -160,6 +164,10 @@ tips
   end
 
   def projects_and_issues
+    if @issue_status_closed.empty? or @issue_status_open.empty?
+      render :json => {"issues" => [], "projects" => []}
+      return
+    end
     projects = get_projects
     past_days = params[:closed_past_days] ? params[:closed_past_days].to_i : 7
     issues = get_issues params[:status], projects.map{|e| e["id"]}, past_days
