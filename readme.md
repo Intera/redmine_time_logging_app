@@ -90,6 +90,4 @@ the plugin tries to use the language that is configured for the user in redmine 
 it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
-* make the date format easier to configure. for example as a redmine plugin setting
-* make it easy to configure multi-language datepicker configurations
 * internet explorer support
