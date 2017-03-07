@@ -48,28 +48,15 @@ to edit a time entry, click on the pencil button in the list of time entries. yo
 ![screenshot-3](other/screenshots/1484135578.png?raw=true)
 
 # configuration
-there is a configuration file at "vendor/app/js/config.coffee".
-it contains configuration for the datepicker and other parts of the application.
-at the moment, changing the configuration requires recompilation of the javascript application, see below.
-the following list shows only a few of the available options. most other options are only relevant for developers.
-
-## app cofiguration
+see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 
 |optionName|default|description|
 ----|----|----
-|issueClosedPastDays|7|include closed issues as long as they are not older than the given number of days|
-|issueStatus|undefined|only include issues with the specified status. possible values are "open", "closed", "*" or the id of any redmine status|
-|autocompleteMinLength|3|the minimum number of characters until the search field looks for suggestions|
-|baseURL|getBaseURL|a function that returns the path to the redmine root relative to the webserver root. "/" by default|
-
-## datepicker configuration
-
-|optionName|default|description|
-----|----|----
-|maxDate|+0||
-|minDate|-6m|the earliest selectable date|
-|dateFormat|"D d.m.y"||
-|firstDay|1||
+|date format|"D d.m.y"|jQuery datepicker [format](https://api.jqueryui.com/datepicker/#utility-formatDate)|
+|earliest selectable date|-6m|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
+|latest selectable date|+0|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
+|first day of week|1|0-6, sunday to monday|
+|load issues closed of the past n days|7|include closed issues as long as they are not older than the given number of days|
 
 # developer information
 ## development dependencies
@@ -84,6 +71,7 @@ the following list shows only a few of the available options. most other options
 * the javascript application is under "vendor/app" and written in coffeescript
 * files under "assets/" are automatically created/updated by the build tool in "vendor/app"
 * "config/locales/*" and "vendor/app/js/utility.coffee". contain the translations
+* "vendor/app/js/config.coffee" is the internal configuration file and contains some additional settings
 
 ## how to add a new translation language
 * copy one of the files in "config/locales/" to a new one named with the appropriate language code
