@@ -62,4 +62,5 @@
         %td
           %button.insert
           %button.edit
-    = javascript_include_tag 'app/main', :plugin => 'redmine_time_logging_app'
+    = javascript_tag @javascript_tag_content
+    = javascript_include_tag "app/main", :plugin => "redmine_time_logging_app"

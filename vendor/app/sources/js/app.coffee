@@ -119,9 +119,9 @@ App.base = (->
     data = getSearchFormData searchValue
     if data
       if data.issue_id
-        url = App.config.baseURL + "issues/" + data.issue_id
+        url = App.config.redmine.urls.issues_redmine + "/" + data.issue_id
       else
-        url = App.config.baseURL + "projects/" + data.project_id
+        url = App.config.redmine.urls.projects_redmine + "/" + data.project_id
       $$("button.open-in-redmine").data("href", url).show()
     else
       $$("button.open-in-redmine").hide()
@@ -137,7 +137,7 @@ App.base = (->
       select: autocompleteSelect
       minLength: App.config.autocompleteMinLength
       source: (req, handleResponse) ->
-        # generates autocomplete suggestions
+        # generates/filters autocomplete suggestions
         handleResponse _.filter(searchData, App.utility.autocompleteMatchFunc(req.term))
     .on "keydown", ->
       $$("#search").autocomplete "option", "minLength", App.config.autocompleteMinLength

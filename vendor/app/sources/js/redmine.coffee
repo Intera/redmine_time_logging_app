@@ -1,4 +1,7 @@
 App.redmine = (->
+  redmineConfig = App.config.redmine
+  urls = redmineConfig.urls
+
   # functions for ajax calls between the app and the redmine backend interface.
   # all request functions return a jqXHR object.
 
@@ -10,7 +13,7 @@ App.redmine = (->
   init = ->
     # sets up the csrf token. necessary for rails applications using "protect_from_forgery" like redmine
     $.ajax(
-      url: appConfig.baseURL + csrfTokenPath
+      url: urls.get_csrf_token
       dataType: "html"
     ).done (token) ->
       $.ajaxPrefilter addCsrfTokenFunc(token)
@@ -35,49 +38,49 @@ App.redmine = (->
     $.ajax
       type: "delete"
       dataType: "html"
-      url: appConfig.baseURL + timeEntryPath + "/" + id + ".json"
+      url: urls.time_entries_redmine + "/" + id + ".json"
 
   getCurrentUser = ->
-    $.ajax url: appConfig.baseURL + userPath
+    $.ajax url: urls.current_user
 
   getTimeEntries = (config) ->
     config = {}  if _.isUndefined(config)
     config.spent_on = $.datepicker.formatDate("yy-mm-dd", config.spent_on)  if _.isDate(config.spent_on)
     $.ajax
-      url: appConfig.baseURL + timeEntryPathRead
+      url: urls.time_entries
       data: config
 
   getProjects = ->
-    $.ajax url: appConfig.baseURL + projectPath
+    $.ajax url: urls.projects
 
   getIssues = (status) ->
     status = "*"  if _.isUndefined(status)
     $.ajax
-      url: appConfig.baseURL + issuePath
+      url: urls.issues
       data:
         status: status
 
   getActivities = ->
-    $.ajax url: appConfig.baseURL + activityPath
+    $.ajax url: urls.activities
 
   getProjectsAndIssues = (status, closedPastDays) ->
     data = {}
     data.closed_past_days = closedPastDays
     data.status = status  if status
     $.ajax
-      url: appConfig.baseURL + projectAndIssuesPath
+      url: urls.projects_and_issues
       data: data
 
   getRecentTimeEntryObjects = ->
     $.ajax
-      url: appConfig.baseURL + recentTimeEntryObjectsPath
+      url: urls.recent_time_entry_objects
 
   createTimeEntry = (data) ->
     $.ajax
       type: "post"
       contentType: "application/json"
       data: JSON.stringify(time_entry: data)
-      url: appConfig.baseURL + timeEntryPath + ".json"
+      url: urls.time_entries_redmine + ".json"
 
   updateTimeEntry = (id, data) ->
     $.ajax
@@ -86,18 +89,7 @@ App.redmine = (->
       # important: does not return json data - if "json" would be written here, there would be a "200 OK" parsererror
       dataType: "html"
       data: JSON.stringify(time_entry: data)
-      url: appConfig.baseURL + timeEntryPath + "/" + id + ".json"
-
-  appConfig = App.config
-  issuePath = "time_logging_app/issues"
-  userPath = "time_logging_app/current_user"
-  csrfTokenPath = "time_logging_app/get_csrf_token"
-  projectPath = "time_logging_app/projects"
-  projectAndIssuesPath = "time_logging_app/projects_and_issues"
-  activityPath = "time_logging_app/activities"
-  recentTimeEntryObjectsPath = "time_logging_app/recent_time_entry_objects"
-  timeEntryPathRead = "time_logging_app/time_entries"
-  timeEntryPath = "time_entries"
+      url: urls.time_entries_redmine + "/" + id + ".json"
 
   $.ajaxSetup
     dataType: "json"

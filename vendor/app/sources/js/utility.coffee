@@ -140,36 +140,30 @@ getDisplayLanguage = ->
 window.displayLanguage = getDisplayLanguage()
 
 App.utility = (->
-  isIssueID = (str) ->
-    issueIDRegex.test str
   autocompleteMatchFunc = (searchstring) ->
+    # searches for words, not for special chars, in any order, case insensitive, keep one first and last whitespace. also search for the case insensitive search string as is
     regex = undefined
     match = undefined
-    if isIssueID(searchstring)
-      # quicker search for issue ids
-      regex = new RegExp(searchstring + "\\b")
-      (item, index) -> regex.test item.value
-    else
-      matchCount = 0
-      # search for words, not for special chars, in any order, case insensitive, keep one first and last whitespace
-      regex = searchstring.replace(/[^a-zA-Z0-9üöä #]/g, "").split(" ")
-      lastIsWhitespace = "" is regex[regex.length - 1]
-      firstIsWhitespace = "" is regex[0]
-      regex = _.filter regex, (e) -> e != ""
-      if lastIsWhitespace then regex[regex.length - 1] += " "
-      if firstIsWhitespace then regex[0] = " " + regex[0]
-      # split into several regexp that must all match
-      regex = _.map regex, (e) -> new RegExp(e, "i")
-      (item, index) ->
-        if matchCount >= App.config.autocompleteLimit
-          false
+    matchCount = 0
+    patterns = searchstring.replace(/[^a-zA-Z0-9üöä #]/g, "").split(" ")
+    lastIsWhitespace = "" is patterns[patterns.length - 1]
+    firstIsWhitespace = "" is patterns[0]
+    patterns = _.filter patterns, (e) -> e != ""
+    # keep a leading and trailing whitespace because if a user enters it they might want to search with it
+    if lastIsWhitespace then patterns[patterns.length - 1] += " "
+    if firstIsWhitespace then patterns[0] = " " + patterns[0]
+    regexSearchstring = new RegExp searchstring, "i"
+    regex = _.map patterns, (a) -> new RegExp(a, "i")
+    (item, index) ->
+      if matchCount >= App.config.autocompleteLimit
+        false
+      else
+        matchOne = (regex) -> regex.test item.value
+        if regex.every(matchOne) or regexSearchstring.test item.value
+          matchCount += 1
+          true
         else
-          matchOne = (regex) -> regex.test item.value
-          if regex.every matchOne
-            matchCount += 1
-            true
-          else
-            false
+          false
 
   selectAll = ->
     @select()
@@ -297,26 +291,23 @@ App.utility = (->
     window.addEventListener "orientationchange", hideAddressBar
 
   issueIDToURL = (id) ->
-    $config.baseURL + "issues/" + id
+    App.config.redmine.urls.issues_redmine + "/" + id
 
   missingFieldsError = (missingFields) ->
     _.map missingFields, (ele) ->
       if _.isArray(ele)
         missingFieldsError(ele).join " " + tl("or") + " "
       else
-        $(fieldNameToSelector[ele]).addClass $config.errorClass
+        $(fieldNameToSelector[ele]).addClass App.config.errorClass
         fieldNameToDisplayName[ele]
 
-  removeErrorClass = -> $(this).removeClass $config.errorClass
+  removeErrorClass = -> $(this).removeClass App.config.errorClass
 
   copyDateObject = (date) ->
     new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes())
 
   stringContains = (arg1, arg2) ->
     arg1.indexOf(arg2) >= 0
-
-  $config = App.config
-  issueIDRegex = new RegExp("^#\\d+$")
 
   fieldNameToSelector =
     activity_id: "#activity"
@@ -377,7 +368,6 @@ App.utility = (->
   escapeHtml: escapeHtml
   fieldNameToDisplayName: fieldNameToDisplayName
   fieldNameToSelector: fieldNameToSelector
-  isIssueID: isIssueID
   issueIDToURL: issueIDToURL
   missingFieldsError: missingFieldsError
   onKeypressRejectNaN: onKeypressRejectNaN

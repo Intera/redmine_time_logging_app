@@ -28,11 +28,41 @@ tips
     @issue_status_open = get_open_statuses()
   end
 
+  def get_backend_urls
+    urls = {}
+    actions = ["issues", "projects", "current_user", "get_csrf_token", "projects_and_issues", "activities", "recent_time_entry_objects", "time_entries"]
+    actions.each {|action|
+      urls[action] = url_for({controller: "time_logging_app", action: action})
+    }
+    urls["overview"] = url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}})
+    urls["time_entries_redmine"] = url_for({controller: "timelog"})
+    urls["issues_redmine"] = url_for({controller: "issues"})
+    urls["projects_redmine"] = url_for({controller: "projects"})
+    urls
+  end
+
+  def get_redmine_data
+    # creates a settings object passed to the frontend javascript
+    result = {"backend_urls" => get_backend_urls,
+         "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+         "datepicker" => {}}
+    datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
+    datepicker_setting_names.each {|a|
+      result["datepicker"][a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
+    }
+    ["day_names_short", "day_names_min", "month_names", "month_names_short"].each {|a|
+      result["datepicker"][a] = translate("datepicker_#{a}").split(",").map {|a| a.strip}
+    }
+    result
+  end
+
   def time_entry
     if (User.current.allowed_to?(:log_time, nil, :global => true) ||
         User.current.allowed_to?(:edit_own_time_entries, nil, :global => true) ||
         User.current.admin?)
       # gem "haml" is required
+      redmine_data = get_redmine_data
+      @javascript_tag_content = "var redmineData = " + ActiveSupport::JSON.encode(redmine_data)
       render layout: false
     else
       redirect_to signin_url
@@ -144,8 +174,8 @@ tips
               ",time_entries.project_id,time_entries.issue_id,time_entries.activity_id,time_entries.comments")
       .order("time_entries.created_on desc")
       .where("spent_on" => spent_on, "user_id" => User.current)
-    #The time_entries returned are model objects. In the following we convert them
-    #to simpler hashes and create the desired structure.
+    # The time_entries returned are model objects. In the following we convert them
+    # to simpler hashes and create the desired structure.
     time_entries = time_entries.map {|e|
       result = pick(e, "id", "spent_on", "hours", "comments")
       result["activity"] = {"id" => e["activity_id"]}

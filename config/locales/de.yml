@@ -2,6 +2,15 @@ de:
   menu_entry_title: Zeiterfassung
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
   overview_title: Zeiterfassung Übersicht
+  label_datepicker_min_date: Frühestes auswählbares Datum im Datepicker
+  label_datepicker_max_date: Spätestes auswählbares Datum im Datepicker
+  label_datepicker_first_day: Erster Tag der Woche
+  label_datepicker_date_format: Datumsformat
+  label_issues_closed_past_days: Lade geschlossene Issues nicht älter als folgende Anzahl Tage
+  datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
+  datepicker_month_names: Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember
+  datepicker_day_names_min: So,Mo,Di,Mi,Do,Fr,Sa
+  datepicker_day_names_short: So,Mo,Di,Mi,Do,Fr,Sa
   date:
     formats:
       short: "%d.%m.%Y"

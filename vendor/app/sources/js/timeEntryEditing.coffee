@@ -79,20 +79,19 @@ App.timeEntryEditing = (->
       App.base.emptyForm()
 
   createTimeEntriesUrl = (timeEntry) ->
-    r = App.config.baseURL
     if timeEntry.issue?.id?
-      r += "issues/" + timeEntry.issue.id
+      r = App.config.redmine.urls.issues_redmine + "/" + timeEntry.issue.id
     else
-      r += "projects/" + timeEntry.project.id
+      r = App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id
     r + "/time_entries"
 
   timeEntryToTableRow = (a, even) ->
     if a.issue
       name = App.utility.createIssueSearchDataEntry App.cache.issues[a.issue.id], App.cache.projects
       name = name.value if name
-      projectOrIssueUrl = App.config.baseURL + "issues/" + a.issue.id
+      projectOrIssueUrl = App.config.redmine.urls.issues_redmine + "/" + a.issue.id
     else
-      projectOrIssueUrl = App.config.baseURL + "projects/" + a.project.id
+      projectOrIssueUrl = App.config.redmine.urls.projects_redmine + "/" + a.project.id
       project = App.cache.projects[a.project.id]
       if project
         name = App.utility.createProjectSearchDataEntry project

@@ -10,7 +10,7 @@ var config = {
 	script: [
 		{
 			target: "javascripts/app/main.js",
-			path_prefix: "js/",
+			path_prefix: "sources/js/",
 			sources: [
 				"lib/jquery",
 				"lib/jquery-ui.custom",
@@ -30,7 +30,7 @@ var config = {
 	style: [
 		{
 			target: "stylesheets/app/main.css",
-			path_prefix: "css/",
+			path_prefix: "sources/css/",
 			sources: ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.ext", "main", "responsive"]
 		}
 	],

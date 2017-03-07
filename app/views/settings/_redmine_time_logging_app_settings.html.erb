@@ -1,0 +1,29 @@
+<p>
+  <%=content_tag(:label, l(:label_datepicker_date_format)) %>
+  <%=text_field_tag "settings[datepicker_date_format]", @settings["datepicker_date_format"] %><br/>
+  (jQuery datepicker format. <%=l(:label_default)%>: "D y-m-d")
+</p>
+
+<p>
+  <%=content_tag(:label, l(:label_datepicker_min_date)) %>
+  <%=text_field_tag "settings[datepicker_min_date]", @settings["datepicker_min_date"] %><br/>
+  (jQuery datepicker format. <%=l(:label_default)%>: "-6m")
+</p>
+
+<p>
+  <%=content_tag(:label, l(:label_datepicker_max_date)) %>
+  <%=text_field_tag "settings[datepicker_max_date]", @settings["datepicker_max_date"] %><br/>
+  (jQuery datepicker format. <%=l(:label_default)%>: "+0")
+</p>
+
+<p>
+  <%=content_tag(:label, l(:label_datepicker_first_day)) %>
+  <%=text_field_tag "settings[datepicker_first_day]", @settings["datepicker_first_day"] %><br/>
+  (0-6. <%=l(:label_default)%>: 1)
+</p>
+
+<p>
+  <%=content_tag(:label, l(:label_issues_closed_past_days)) %>
+  <%=text_field_tag "settings[issues_closed_past_days]", @settings["issues_closed_past_days"] %><br/>
+  (jQuery datepicker format. <%=l(:label_default)%>: 7)
+</p>

@@ -15,4 +15,12 @@ Redmine::Plugin.register :redmine_time_logging_app do
          User.current.allowed_to?(:edit_own_time_entries, nil, :global => true) ||
          User.current.admin?
        })
+  settings :partial => "settings/redmine_time_logging_app_settings",
+    :default => {
+      "datepicker_max_date" => "+0",
+      "datepicker_min_date" => "-6m",
+      "datepicker_first_day" => 1,
+      "datepicker_date_format" => "D y-m-d",
+      "issues_closed_past_days" => 7
+    }
 end
