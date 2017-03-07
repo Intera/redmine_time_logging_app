@@ -152,14 +152,13 @@ App.utility = (->
     # keep a leading and trailing whitespace because if a user enters it they might want to search with it
     if lastIsWhitespace then patterns[patterns.length - 1] += " "
     if firstIsWhitespace then patterns[0] = " " + patterns[0]
-    regexSearchstring = new RegExp searchstring, "i"
     regex = _.map patterns, (a) -> new RegExp(a, "i")
     (item, index) ->
       if matchCount >= App.config.autocompleteLimit
         false
       else
         matchOne = (regex) -> regex.test item.value
-        if regex.every(matchOne) or regexSearchstring.test item.value
+        if regex.every(matchOne) or stringContains(item.value, searchstring)
           matchCount += 1
           true
         else
