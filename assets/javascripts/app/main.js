@@ -9901,7 +9901,7 @@ App = {
     }
   }
 };
-var $$, getBrowserLanguage, getDisplayLanguage, stringContains, stringContainsAny, timeLimitedFunc, tl, translations;
+var $$, getBrowserLanguage, getDisplayLanguage, stringContains, stringContainsEvery, timeLimitedFunc, tl, translations;
 
 translations = {};
 
@@ -10088,8 +10088,8 @@ stringContains = function(a, b) {
   return a.indexOf(b) >= 0;
 };
 
-stringContainsAny = function(a, values) {
-  return values.some(function(b) {
+stringContainsEvery = function(a, values) {
+  return values.every(function(b) {
     return stringContains(a, b);
   });
 };
@@ -10097,15 +10097,16 @@ stringContainsAny = function(a, values) {
 App.utility = (function() {
   var autocompleteMatchFunc, copyDateObject, createIssueSearchDataEntry, createProjectSearchDataEntry, createProjectsIssuesAndSearchData, decimalHoursToColonFormat, decimalHoursToHours, decimalHoursToMinutes, defaultDialogConfig, delim, displayDialog, entityMap, escapeHtml, fieldNameToDisplayName, fieldNameToSelector, ignoreTicketIdRegexp, issueIDToURL, missingFieldsError, mobileHideAddressBar, onKeypressRejectNaN, padZeros, projectNameToID, removeErrorClass, selectAll, setCursorPosition, setSelectionRange, sortByLocaleIgnoreTicketId, wrapDeferred;
   autocompleteMatchFunc = function(searchstring) {
-    var exact, firstIsWhitespace, lastIsWhitespace, match, matchCount, patterns, regex;
-    regex = void 0;
-    match = void 0;
+    var firstIsWhitespace, lastIsWhitespace, matchCount, patterns;
     matchCount = 0;
-    patterns = searchstring.replace(/[^a-zA-Z0-9üöä #]/g, "").split(" ");
+    patterns = searchstring.split(" ");
     lastIsWhitespace = "" === patterns[patterns.length - 1];
     firstIsWhitespace = "" === patterns[0];
     patterns = _.filter(patterns, function(e) {
       return e !== "";
+    });
+    patterns = patterns.map(function(a) {
+      return a.toLowerCase();
     });
     if (lastIsWhitespace) {
       patterns[patterns.length - 1] += " ";
@@ -10113,20 +10114,11 @@ App.utility = (function() {
     if (firstIsWhitespace) {
       patterns[0] = " " + patterns[0];
     }
-    regex = _.map(patterns, function(a) {
-      return new RegExp(a, "i");
-    });
-    exact = searchstring.split(" ").map($.trim).concat(searchstring);
-    console.log(exact);
     return function(item, index) {
-      var matchOne;
       if (matchCount >= App.config.autocompleteLimit) {
         return false;
       } else {
-        matchOne = function(regex) {
-          return regex.test(item.value);
-        };
-        if (regex.every(matchOne) || stringContainsAny(item.value, exact)) {
+        if (stringContainsEvery(item.value, patterns) || stringContains(item.value, searchstring)) {
           matchCount += 1;
           return true;
         } else {

@@ -139,29 +139,25 @@ getDisplayLanguage = ->
 
 window.displayLanguage = getDisplayLanguage()
 stringContains = (a, b) -> a.indexOf(b) >= 0
-stringContainsAny = (a, values) -> values.some (b) -> stringContains a, b
+stringContainsEvery = (a, values) -> values.every (b) -> stringContains a, b
 
 App.utility = (->
   autocompleteMatchFunc = (searchstring) ->
     # searches for words, not for special chars, in any order, case insensitive, keep one first and last whitespace. also search for the case insensitive search string as is
-    regex = undefined
-    match = undefined
     matchCount = 0
-    patterns = searchstring.replace(/[^a-zA-Z0-9üöä #]/g, "").split(" ")
+    patterns = searchstring.split(" ")
     lastIsWhitespace = "" is patterns[patterns.length - 1]
     firstIsWhitespace = "" is patterns[0]
     patterns = _.filter patterns, (e) -> e != ""
+    patterns = patterns.map (a) -> a.toLowerCase()
     # keep a leading and trailing whitespace because if a user enters it they might want to search with it
     if lastIsWhitespace then patterns[patterns.length - 1] += " "
     if firstIsWhitespace then patterns[0] = " " + patterns[0]
-    regex = _.map patterns, (a) -> new RegExp(a, "i")
-    exact = searchstring.split(" ").map($.trim).concat(searchstring)
     (item, index) ->
       if matchCount >= App.config.autocompleteLimit
         false
       else
-        matchOne = (regex) -> regex.test item.value
-        if regex.every(matchOne) or stringContainsAny(item.value, exact)
+        if stringContainsEvery(item.value, patterns) or stringContains(item.value, searchstring)
           matchCount += 1
           true
         else
