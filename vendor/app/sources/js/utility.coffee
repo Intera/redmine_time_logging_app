@@ -138,6 +138,8 @@ getDisplayLanguage = ->
     if getBrowserLanguage() == "de" then "de" else "en"
 
 window.displayLanguage = getDisplayLanguage()
+stringContains = (a, b) -> a.indexOf(b) >= 0
+stringContainsAny = (a, values) -> values.some (b) -> stringContains a, b
 
 App.utility = (->
   autocompleteMatchFunc = (searchstring) ->
@@ -153,12 +155,13 @@ App.utility = (->
     if lastIsWhitespace then patterns[patterns.length - 1] += " "
     if firstIsWhitespace then patterns[0] = " " + patterns[0]
     regex = _.map patterns, (a) -> new RegExp(a, "i")
+    exact = searchstring.split(" ").map($.trim).concat(searchstring)
     (item, index) ->
       if matchCount >= App.config.autocompleteLimit
         false
       else
         matchOne = (regex) -> regex.test item.value
-        if regex.every(matchOne) or stringContains(item.value, searchstring)
+        if regex.every(matchOne) or stringContainsAny(item.value, exact)
           matchCount += 1
           true
         else
@@ -304,9 +307,6 @@ App.utility = (->
 
   copyDateObject = (date) ->
     new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes())
-
-  stringContains = (arg1, arg2) ->
-    arg1.indexOf(arg2) >= 0
 
   fieldNameToSelector =
     activity_id: "#activity"

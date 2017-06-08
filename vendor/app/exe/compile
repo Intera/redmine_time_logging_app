@@ -1,6 +1,6 @@
 #!/usr/bin/node
 
-var compression = true
+var compression = false
 var watch = true
 
 var wbc = require("web-build-creator")
