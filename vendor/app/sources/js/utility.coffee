@@ -157,15 +157,14 @@ App.utility = (->
       if matchCount >= App.config.autocompleteLimit
         false
       else
-        if stringContainsEvery(item.value, patterns) or stringContains(item.value, searchstring)
+        value = item.value.toLowerCase()
+        if stringContainsEvery(value, patterns) or stringContains(value, searchstring)
           matchCount += 1
           true
         else
           false
 
-  selectAll = ->
-    @select()
-
+  selectAll = -> @select()
   ignoreTicketIdRegexp = /#\d+/g
 
   sortByLocaleIgnoreTicketId = (a) ->

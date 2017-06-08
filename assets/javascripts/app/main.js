@@ -10115,10 +10115,12 @@ App.utility = (function() {
       patterns[0] = " " + patterns[0];
     }
     return function(item, index) {
+      var value;
       if (matchCount >= App.config.autocompleteLimit) {
         return false;
       } else {
-        if (stringContainsEvery(item.value, patterns) || stringContains(item.value, searchstring)) {
+        value = item.value.toLowerCase();
+        if (stringContainsEvery(value, patterns) || stringContains(value, searchstring)) {
           matchCount += 1;
           return true;
         } else {
