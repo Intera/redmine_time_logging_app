@@ -9897,7 +9897,9 @@ App = {
     titleClass: "contentTitle",
     errorClass: "ui-state-error",
     redmine: {
-      urls: redmineData.backend_urls
+      urls: redmineData.backend_urls,
+      version_major: redmineData.redmine_version_major,
+      version_minor: redmineData.redmine_version_minor
     }
   }
 };
@@ -11004,13 +11006,23 @@ App.timeEntryEditing = (function() {
     });
   };
   createTimeEntriesUrl = function(timeEntry) {
-    var r, ref;
-    if (((ref = timeEntry.issue) != null ? ref.id : void 0) != null) {
-      r = App.config.redmine.urls.issues_redmine + "/" + timeEntry.issue.id;
+    var major, minor, ref, ref1, result;
+    major = App.config.redmine.version_major;
+    minor = App.config.redmine.version_minor;
+    if (major > 3 || (major === 3 && minor >= 4)) {
+      result = App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id + "/time_entries";
+      if (((ref = timeEntry.issue) != null ? ref.id : void 0) != null) {
+        return result + "?issue_id=~" + timeEntry.issue.id;
+      } else {
+        return result;
+      }
     } else {
-      r = App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id;
+      if (((ref1 = timeEntry.issue) != null ? ref1.id : void 0) != null) {
+        return App.config.redmine.urls.issues_redmine + "/" + timeEntry.issue.id + "/time_entries";
+      } else {
+        return App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id + "/time_entries";
+      }
     }
-    return r + "/time_entries";
   };
   timeEntryToTableRow = function(a, even) {
     var classes, estimated_hours, estimates, name, project, projectOrIssueUrl, ref, ref1, spent_hours, time;

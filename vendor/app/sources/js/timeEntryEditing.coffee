@@ -79,11 +79,16 @@ App.timeEntryEditing = (->
       App.base.emptyForm()
 
   createTimeEntriesUrl = (timeEntry) ->
-    if timeEntry.issue?.id?
-      r = App.config.redmine.urls.issues_redmine + "/" + timeEntry.issue.id
+    major = App.config.redmine.version_major
+    minor = App.config.redmine.version_minor
+    if major > 3 or (major is 3 and minor >= 4)
+      result = App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id + "/time_entries"
+      if timeEntry.issue?.id? then result + "?issue_id=~" + timeEntry.issue.id else result
     else
-      r = App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id
-    r + "/time_entries"
+      if timeEntry.issue?.id?
+        App.config.redmine.urls.issues_redmine + "/" + timeEntry.issue.id + "/time_entries";
+      else
+        App.config.redmine.urls.projects_redmine + "/" + timeEntry.project.id + "/time_entries";
 
   timeEntryToTableRow = (a, even) ->
     if a.issue

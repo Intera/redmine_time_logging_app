@@ -26,7 +26,7 @@ dowload a [release](https://github.com/Intera/redmine_time_logging_app/releases)
 alternatively, you can clone the source code repository with "git clone https://github.com/Intera/redmine_time_logging_app.git".
 
 ## setup
-* make sure that "enable rest web service" is activated in redmine under "Administration" -> "Settings" -> "API". it this is not enable, redmine will ask for username and password but wont accept it
+* make sure that "enable rest web service" is activated in redmine under "Administration" -> "Settings" -> "API". if this is not enabled, redmine will ask for username and password but wont accept it
 * move the "redmine_time_logging_app" directory from the download to your redmine instance directory to "plugins/", so that it lies at "plugins/redmine_time_logging_app"
 * on the command-line, change into the redmine instance directory and execute "bundle install"
 * if that ran successful and the file system permissions are right, the plugin should now be installed
@@ -56,7 +56,7 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 |earliest selectable date|-6m|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
 |latest selectable date|+0|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
 |first day of week|1|0-6, sunday to monday|
-|load issues closed of the past n days|7|include closed issues as long as they are not older than the given number of days|
+|load closed issues of the past n days|7|include closed issues as long as they are not older than the given number of days|
 
 # developer information
 ## development dependencies

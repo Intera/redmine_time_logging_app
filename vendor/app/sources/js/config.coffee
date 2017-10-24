@@ -31,3 +31,5 @@ App =
     errorClass: "ui-state-error"
     redmine:
       urls: redmineData.backend_urls
+      version_major: redmineData.redmine_version_major
+      version_minor: redmineData.redmine_version_minor

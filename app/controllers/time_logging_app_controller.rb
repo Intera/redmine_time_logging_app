@@ -44,8 +44,10 @@ tips
   def get_redmine_data
     # creates a settings object passed to the frontend javascript
     result = {"backend_urls" => get_backend_urls,
-         "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
-         "datepicker" => {}}
+              "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+              "redmine_version_major" => Redmine::VERSION::MAJOR,
+              "redmine_version_minor" => Redmine::VERSION::MINOR,
+              "datepicker" => {}}
     datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
     datepicker_setting_names.each {|a|
       result["datepicker"][a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
@@ -253,12 +255,12 @@ tips
     result
   end
 
-  def projects_add_parent_name projects
-    projects.each {|e|
-      if e["parent_id"]
-        e["parent_name"] =
+  def projects_add_properties projects
+    projects.each {|a|
+      if a["parent_id"]
+        a["parent_name"] =
           Project.connection.select_all("select name from projects where id=" +
-                                        e["parent_id"].to_s + " limit 1")[0]["name"]
+                                        a["parent_id"].to_s + " limit 1")[0]["name"]
       end
     }
     projects
@@ -267,7 +269,7 @@ tips
   def get_projects
     projects = Project.connection.select_all("select parent_id,id,name from projects where " +
                                              project_permission_condition(User.current, :log_time))
-    projects_add_parent_name projects
+    projects_add_properties projects
     projects
   end
 
@@ -275,7 +277,6 @@ tips
     select = Issue
       .joins("left outer join versions on versions.id=issues.fixed_version_id")
       .select("issues.id,issues.project_id,issues.subject,versions.name as version_name,#{issue_is_closed_sql('issues')}")
-    logger.info "IDS------" + project_ids.to_s
     # multiple .where() just did not work
     if project_ids
       if "open" == status
