@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= stylesheet_link_tag 'app/main', :plugin => 'redmine_time_logging_app' %>
+    <title>
+      <%= t(:menu_entry_title) %>
+    </title>
+    <meta content="text/html;charset:UTF-8" http-equiv="content-type"/>
+    <meta name="csrf-token"/>
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="width:device-width,initial-scale:1.0" name="viewport"/>
+  </head>
+  <!-- body background-color is set here to have it early on load -->
+  <body style="background-color: #aaa">
+    <div id="wrapper" style="display:none">
+      <div class="entry">
+        <h2 style="display:none"></h2>
+        <div id="form">
+          <div class="topControls editMode">
+            <button class="cancel"></button>
+            <button class="delete"></button>
+          </div>
+          <div class="row topControls">
+            <div class="left hbox">
+              <input id="date" tabindex="1" type="text"/>
+              <div class="dateControls">
+                <button class="prev"></button>
+                <button class="next"></button>
+              </div>
+            </div>
+            <div class="right hbox">
+              <button class="open-in-redmine"></button>
+              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>"></button>
+              <button class="emptyForm"></button>
+            </div>
+          </div>
+          <textarea accesskey="f" id="search" tabindex="2" title="<%= t(:placeholder_search)%>"></textarea>
+          <div class="hbox">
+            <div id="time">
+              <input id="hours" tabindex="3" type="text" title="<%= t(:placeholder_hours)%>"/>
+              <input id="minutes" tabindex="4" type="text" title="<%= t(:placeholder_minutes)%>"/>
+            </div>
+            <select id="activity" tabindex="5" title="<%= t(:placeholder_activity) %>"></select>
+          </div>
+          <textarea id="comments" maxlength="255" tabindex="6" title="<%= t(:placeholder_comment) %>"></textarea>
+          <div class="hbox">
+            <button accesskey="s" class="submit" tabindex="7"></button>
+          </div>
+        </div>
+      </div>
+      <div id="loading">
+        <span class="text"></span>
+        <div class="icon"></div>
+      </div>
+      <table class="list" id="timeEntries">
+        <thead>
+          <tr>
+            <th class="project-task-header">
+              <%= t(:label_task) %>
+            </th>
+            <th class="hours-header">
+              <%= t(:label_hours) %>
+            </th>
+            <th class="activity-header">
+              <%= t(:label_activity) %>
+            </th>
+            <th class="daySpentTime"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+          <tr>
+            <td class="hoursTotal" colspan="4"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <script id="timeEntryTemplate" type="text/html">
+      <tr class="timeEntry {{classes}} " data-entry-id="{{entry_id}}">
+        <td>
+          <a class="title" href="{{projectOrIssueUrl}}" target="_blank">{{name}}</a>
+          <div class="comments">{{comments}}</div>
+        </td>
+        <td>
+          <a class="time" href="{{timeEntriesUrl}}" target="_blank"
+			       title="<%= t(:label_spent_individual) %> (<%= t(:label_spent_total) %> / <%= t(:label_estimate) %>)">{{time}} ({{estimates}})</a>
+        </td>
+        <td>
+          <a class="activity" href="{{timeEntriesUrl}}" target="_blank">{{activity}}</a>
+        </td>
+        <td>
+          <button class="insert"></button>
+          <button class="edit"></button>
+        </td>
+      </tr>
+    </script>
+    <%= javascript_tag @javascript_tag_content %>
+    <%= javascript_include_tag "app/main", :plugin => "redmine_time_logging_app" %>
+    <script>
+			app.init()
+    </script>
+  </body>
+</html>

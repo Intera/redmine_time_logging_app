@@ -10,26 +10,22 @@ datepickerConf =
   showButtonPanel: true
   autoSize: true
 
-App =
-  debug: false
-  cache:
-    template: {}
-  config:
-    # open, closed, *, or status_id
-    issueStatus: undefined
-    issueClosedPastDays: redmineData.issues_closed_past_days || 7
-    autocompleteMinLength: 3
-    autocompleteLimit: 1000
-    datepicker: datepickerConf
-    # in search results this separates projects and sub-projects
-    issueNameDelimiter: " #{String.fromCharCode(187)} "
-    path:
-      images: "img/"
-    autoReloadInterval: false
-    requiredFields: ["project_id", "date", ["hours", "minutes"], "activity_id"]
-    titleClass: "contentTitle"
-    errorClass: "ui-state-error"
-    redmine:
-      urls: redmineData.backend_urls
-      version_major: redmineData.redmine_version_major
-      version_minor: redmineData.redmine_version_minor
+module.exports =
+  # "open", "closed", "*", or "status_id"
+  issueStatus: undefined
+  issueClosedPastDays: redmineData.issues_closed_past_days || 7
+  autocompleteMinLength: 3
+  autocompleteLimit: 1000
+  datepicker: datepickerConf
+  # in search results this separates projects and sub-projects
+  issueNameDelimiter: " #{String.fromCharCode(187)} "
+  path:
+    images: "img/"
+  autoReloadInterval: false
+  requiredFields: ["project_id", "date", ["hours", "minutes"], "activity_id"]
+  titleClass: "contentTitle"
+  errorClass: "ui-state-error"
+  redmine:
+    urls: redmineData.backend_urls
+    version_major: redmineData.redmine_version_major
+    version_minor: redmineData.redmine_version_minor

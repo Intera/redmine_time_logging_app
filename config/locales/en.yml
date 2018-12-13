@@ -1,17 +1,25 @@
 en:
+  datepicker_day_names_min: So,Mo,Tu,We,Th,Fr,Sa
+  datepicker_day_names_short: So,Mo,Tu,We,Th,Fr,Sa
+  datepicker_month_names: January,February,March,April,May,June,July,August,September,October,November,December
+  datepicker_month_names_short: Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
+  label_datepicker_date_format: date format
+  label_datepicker_first_day: first day of week
+  label_datepicker_max_date: latest selectable date in the datepicker
+  label_datepicker_min_date: earliest selectable date in the datepicker
+  label_estimate: estimate
+  label_issues_closed_past_days: load closed issues not older than this number of days
   label_reports: time logging
+  label_spent_individual: own spent time
+  label_spent_total: all users
   menu_entry_title: Time-Logging
   overview_note: entries of the current year. weekends without entries are not shown.
   overview_title: Time-Logging overview
-  label_datepicker_min_date: earliest selectable date in the datepicker
-  label_datepicker_max_date: latest selectable date in the datepicker
-  label_datepicker_first_day: first day of week
-  label_datepicker_date_format: date format
-  label_issues_closed_past_days: load closed issues not older than this number of days
-  datepicker_month_names_short: Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
-  datepicker_month_names: January,February,March,April,May,June,July,August,September,October,November,December
-  datepicker_day_names_min: So,Mo,Tu,We,Th,Fr,Sa
-  datepicker_day_names_short: So,Mo,Tu,We,Th,Fr,Sa
   date:
     formats:
       short: "%Y-%m-%d"
+  placeholder_activity: Choose activity ...
+  placeholder_comment: Comment
+  placeholder_hours: Hours
+  placeholder_minutes: Minutes
+  placeholder_search: Suche ...

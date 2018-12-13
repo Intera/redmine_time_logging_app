@@ -64,25 +64,25 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 
 ## setup
 * change directory to vendor/app
-* execute "npm install" on the command-line to install all development dependencies
+* execute "npm install" on the command-line to install the required nodejs modules at once (coffeescript, browserify, coffeeify and fs-extra)
 
 ## interesting files
 * "app/controllers/time_logging_app_controller.rb" is the backend interface
 * the javascript application is under "vendor/app" and written in coffeescript
 * files under "assets/" are automatically created/updated by the build tool in "vendor/app"
-* "config/locales/*" and "vendor/app/js/utility.coffee". contain the translations
-* "vendor/app/js/config.coffee" is the internal configuration file and contains some additional settings
+* "config/locales/*" and "vendor/app/js/translations.coffee" contain the translations
+* "vendor/app/js/config.coffee" is an internal configuration file and contains some additional settings
 
 ## how to add a new translation language
 * copy one of the files in "config/locales/" to a new one named with the appropriate language code
-* in "vendor/app/js/utility.coffee", copy one of the "translations["en"] ..." blocks and use the new language code instead of "en"
+* in "vendor/app/js/translations.coffee", copy one of the "translations["en"] ..." blocks and use the new language code instead of "en"
 * recompile the javascript application, see below for how to do this
 
-the plugin tries to use the language that is configured for the user in redmine under "my account". you can check "/time_logging_app/current_user" in the browser to see the exact language code that is currently set.
+the plugin tries to use the language that the user has configured in the browser and falls back to english
 
 ## how to recompile the javascript application
 * in directory "vendor/app"
-* execute "./exe/compile". if this does not work, try "node exe/compile"
+* execute "./exe/compile". if that does not work, try "node exe/compile"
 * after success, exit with control+c
 * changes will only be visible after a redmine restart, because redmine installs new plugin assets only when it starts
 

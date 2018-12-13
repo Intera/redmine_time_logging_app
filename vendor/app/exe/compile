@@ -1,52 +1,55 @@
-#!/usr/bin/node
+#!/usr/bin/coffee
 
-var compression = false
-var watch = true
+main_target_dir = "../../assets"
 
-var wbc = require("web-build-creator")
-var config = {
-	target_dir: '../../assets',
-	debug: !compression,
-	script: [
-		{
-			target: "javascripts/app/main.js",
-			path_prefix: "sources/js/",
-			sources: [
-				"lib/jquery",
-				"lib/jquery-ui.custom",
-				"lib/int.jquery.contenttitle",
-				"lib/jquery.maxlength",
-				"lib/underscore",
-				"lib/spin",
-				"config",
-				"utility",
-				"redmine",
-				"app",
-				"timeEntryEditing",
-				"main"
-			]
-		}
-	],
-	style: [
-		{
-			target: "stylesheets/app/main.css",
-			path_prefix: "sources/css/",
-			sources: ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.ext", "main", "responsive"]
-		}
-	],
-/*
-	html: [
-		{
-			target: "index",
-			path_prefix: "html/",
-			sources: "index"
-		}
-	],
-*/
-	sync:[
-		["img", "images/app"]
-	]
-}
+fs = require "fs-extra"  # for recursive file copying
+browserify = require "browserify"
+coffeeify = require "coffeeify"
 
-//wbc.create_build(config)
-if(watch) wbc.watch_create_build(["js/", "css/"], config)
+compile_js = ->
+  # non-browserify
+  target_dir = main_target_dir + "/javascripts/app"
+  fs.ensureDirSync target_dir
+  source_dir = "sources/js"
+  sources = [
+    "lib/jquery"
+    "lib/jquery-ui.custom"
+    "lib/jquery.contenttitle"
+    "lib/jquery.maxlength"
+    "lib/underscore"
+    "lib/spin"]
+  output_file = fs.createWriteStream target_dir + "/main.js"
+  output_file.write fs.readFileSync source_dir + "/" + sources[0] + ".js"
+  output_file.write "\n;\n"
+  sources.forEach (a) ->
+    output_file.write fs.readFileSync source_dir + "/" + a + ".js"
+    output_file.write "\n;\n"
+  # browserify
+  main_js = browserify {extensions: ['.coffee'], paths: [source_dir], standalone: "app"}
+  main_js.transform coffeeify, {bare: false, header: true}
+  main_js.add(source_dir + "/main.coffee")
+  main_js.bundle().pipe output_file
+
+compile_css = ->
+  source_dir = "sources/css"
+  sources = ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.override", "main"]
+  target_dir = main_target_dir + "/stylesheets/app"
+  fs.ensureDirSync target_dir
+  target_file = target_dir + "/main.css"
+  output_file = fs.createWriteStream target_file
+  output_file.write fs.readFileSync "#{source_dir}/#{sources[0]}.css"
+  sources.forEach (a) ->
+    output_file.write fs.readFileSync "#{source_dir}/#{a}.css"
+
+copy_static_files = ->
+  sources = ["img"]
+  sources.forEach (a) -> fs.copySync a, main_target_dir + "/images/app"
+
+compile = ->
+  process.stdout.write "compile..."
+  compile_css()
+  compile_js().on "finish", -> console.log " finish"
+
+fs.ensureDirSync main_target_dir
+copy_static_files()
+compile()
