@@ -52,9 +52,8 @@ tips
     datepicker_setting_names.each {|a|
       result["datepicker"][a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
     }
-    ["day_names_short", "day_names_min", "month_names", "month_names_short"].each {|a|
-      result["datepicker"][a] = translate("datepicker_#{a}").split(",").map {|a| a.strip}
-    }
+    # currently includes redmine core translations
+    result["translations"] = I18n.translate(".")
     result
   end
 

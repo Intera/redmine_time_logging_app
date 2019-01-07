@@ -26,6 +26,7 @@ module.exports =
   titleClass: "contentTitle"
   errorClass: "ui-state-error"
   redmine:
+    translations: redmineData.translations
     urls: redmineData.backend_urls
     version_major: redmineData.redmine_version_major
     version_minor: redmineData.redmine_version_minor

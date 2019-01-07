@@ -14,37 +14,37 @@
   <body style="background-color: #aaa">
     <div id="wrapper" style="display:none">
       <div class="entry">
-        <h2 style="display:none"></h2>
+        <h2><%= t(:menu_entry_title) %></h2>
         <div id="form">
           <div class="topControls editMode">
-            <button class="cancel"></button>
-            <button class="delete"></button>
+            <button class="cancel"><%= t(:cancel) %></button>
+            <button class="delete"><%= t(:delete) %></button>
           </div>
           <div class="row topControls">
             <div class="left hbox">
               <input id="date" tabindex="1" type="text"/>
               <div class="dateControls">
-                <button class="prev"></button>
-                <button class="next"></button>
+                <button class="prev" title="<%= t(:datepicker_prev) %>"></button>
+                <button class="next" title="<%= t(:datepicker_next) %>"></button>
               </div>
             </div>
             <div class="right hbox">
-              <button class="open-in-redmine"></button>
-              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>"></button>
-              <button class="emptyForm"></button>
+              <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
+              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>" title="<%= t(:overview) %>"></button>
+              <button class="resetForm" title="<%= t(:reset_form) %>"></button>
             </div>
           </div>
-          <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:placeholder_search)%>"></textarea>
+          <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:label_search)%>"></textarea>
           <div class="hbox">
             <div id="time">
-              <input id="hours" tabindex="3" type="text" placeholder="<%= t(:placeholder_hours)%>"/>
-              <input id="minutes" tabindex="4" type="text" placeholder="<%= t(:placeholder_minutes)%>"/>
+              <input id="hours" tabindex="3" type="text" placeholder="<%= t(:hours)%>"/>
+              <input id="minutes" tabindex="4" type="text" placeholder="<%= t(:minutes)%>"/>
             </div>
-            <select id="activity" tabindex="5" placeholder="<%= t(:placeholder_activity) %>"></select>
+            <select id="activity" tabindex="5" placeholder="<%= t(:activity) %>"></select>
           </div>
-          <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:placeholder_comment) %>"></textarea>
+          <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:comment) %>"></textarea>
           <div class="hbox">
-            <button accesskey="s" class="submit" tabindex="7"></button>
+            <button accesskey="s" class="submit" tabindex="7"><%= t(:create) %></button>
           </div>
         </div>
       </div>
@@ -56,13 +56,13 @@
         <thead>
           <tr>
             <th class="project-task-header">
-              <%= t(:label_task) %>
+              <%= t(:task) %>
             </th>
             <th class="hours-header">
-              <%= t(:label_hours) %>
+              <%= t(:hours) %>
             </th>
             <th class="activity-header">
-              <%= t(:label_activity) %>
+              <%= t(:activity) %>
             </th>
             <th class="daySpentTime"></th>
           </tr>
@@ -83,7 +83,7 @@
         </td>
         <td>
           <a class="time" href="{{timeEntriesUrl}}" target="_blank"
-			       title="<%= t(:label_spent_individual) %> (<%= t(:label_spent_total) %> / <%= t(:label_estimate) %>)">{{time}} ({{estimates}})</a>
+			       title="<%= t(:spent_individual) %> (<%= t(:spent_total) %> / <%= t(:estimate) %>)">{{time}} ({{estimates}})</a>
         </td>
         <td>
           <a class="activity" href="{{timeEntriesUrl}}" target="_blank">{{activity}}</a>

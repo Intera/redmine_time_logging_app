@@ -3,7 +3,7 @@
 helper = require "./helper"
 redmine = require "./redmine"
 app_config = require "./config"
-translations = require "./translations"
+translations = app_config.redmine.translations
 
 debug = false
 cache = {template: {}}
@@ -11,7 +11,7 @@ _isLoaded = false
 sync = helper.timeLimitedFunc sync, 1250
 
 translate = (key) ->
-  translations[window.displayLanguage]?[key] or key
+   translations[window.displayLanguage]?[key] or key
 
 missingFieldsError = (missingFields) ->
   _.map missingFields, (a) ->
@@ -92,24 +92,24 @@ sync = (formData) ->
       issueOrProject = (timeEntry.issue and timeEntry.issue.id) or timeEntry.project.name
       issueOrProject = $("<a>").attr("href", helper.issueIDToURL(issueOrProject)).html("#" + issueOrProject)  if _.isNumber(issueOrProject)
       #console.log(t("success"), timeEntry.hours + " Stunden für ", issueOrProject, " erfasst.")
-      emptyFormAfterSync()
+      resetFormAfterSync()
 
-emptyFormAfterSync = ->
+resetFormAfterSync = ->
   $("#comments,#hours,#minutes").val("").blur()
   helper.$$("#search").prop "disabled", false
 
-emptyForm = ->
+resetForm = ->
   # date and activity are not reset for workflow reasons
   $("#comments,#hours,#minutes,#search:not([disabled])").val("").blur()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
   helper.$$("button.open-in-redmine").hide()
   helper.$$("#activity").val("").change()
 
-emptyFormButton = ->
+resetFormButton = ->
   if $("#wrapper").hasClass "editMode"
-    emptyFormAfterSync()
+    resetFormAfterSync()
   else
-    emptyForm()
+    resetForm()
 
 reloadSearchData = ->
   getIssuesProjectsAndSearchData app_config.issueStatus
@@ -255,25 +255,6 @@ initAutoDataReload = ->
   timer = undefined
   intervalAutoReload app_config.autoReloadInterval
 
-setTranslationTextAndTitle = (elements, key) ->
-  t = translate key
-  elements.attr("title", t).text t
-
-setTranslation = ->
-  setTranslationTextAndTitle $("button.delete"), "delete"
-  setTranslationTextAndTitle $("button.duplicate"), "duplicate"
-  setTranslationTextAndTitle $("button.cancel"), "cancel"
-  setTranslationTextAndTitle $("button.submit"), "create"
-  $("h2").text translate "appName"
-  $("button.overview").attr "title", translate "overview"
-  $("button.open-in-redmine").attr "title", translate "open_in_redmine"
-  $("button.emptyForm").attr "title", translate "emptyForm"
-  $(".dateControls .prev").attr "title", translate "datePrev"
-  $(".dateControls .next").attr "title", translate "dateNext"
-  $(".activity-header").html translate "activity_header"
-  $(".project-task-header").html translate "project_task_header"
-  $(".hours-header").html translate "hours_header"
-
 base_init = ->
   helper.mobileHideAddressBar()
   loading()
@@ -283,7 +264,6 @@ base_init = ->
     loading(false)
     initAutoDataReload()
     helper.$$("#search").trigger("focus", {onlyFocus: true}).select()
-    setTranslation()
   )
   $("button").button()
   $("button.next").button("option", "icons", {
@@ -292,7 +272,7 @@ base_init = ->
   $("button.prev").button("option", "icons", {
     primary: "ui-icon-circle-arrow-w"
   })
-  $("button.emptyForm").button("option", "icons", {
+  $("button.resetForm").button("option", "icons", {
     primary: "ui-icon-cancel"
   })
   $("button.overview").button("option", "icons", {
@@ -306,7 +286,7 @@ base_init = ->
     if url then window.open url, "_blank"
   $("#hours,#minutes").keydown helper.onKeypressRejectNaN
   $(".submit").click -> onSubmit()
-  $(".emptyForm").click emptyFormButton
+  $(".resetForm").click resetFormButton
   openInRedmineUpdateURL()
   r
 
@@ -378,14 +358,14 @@ exitEditMode = ->
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
   helper.$$("#search").trigger("focus", {onlyFocus: true}) if helper.$$("#search").hasClass(app_config.titleClass)
-  helper.$$(".emptyForm").show()
+  helper.$$(".resetForm").show()
   prevTimeEntry = false
 
 deleteTimeEntry = (id) ->
   redmine.deleteTimeEntry(id).done ->
     exitEditMode()
     helper.$$(document).trigger "timeEntriesReload", "inplace"
-    emptyForm()
+    resetForm()
 
 createTimeEntriesUrl = (timeEntry) ->
   major = app_config.redmine.version_major
@@ -619,7 +599,7 @@ module.exports =
   cache: cache
   confirmDialog: confirmDialog
   debug: debug
-  emptyForm: emptyForm
+  resetForm: resetForm
   exitEditMode: exitEditMode
   formDataToAPIData: formDataToAPIData
   getFormData: getFormData

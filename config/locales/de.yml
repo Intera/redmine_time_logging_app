@@ -1,24 +1,52 @@
 de:
+  activity: Aktivität
+  cancel: Abbrechen
+  choose_activity: Aktivität auswählen ...
+  comment: Kommentar
+  confirm_delete: Wirklich Löschen?
+  create: Erfassen
+  date: Datum
+  datepicker_date_format: Datumsformat
   datepicker_day_names_min: So,Mo,Di,Mi,Do,Fr,Sa
   datepicker_day_names_short: So,Mo,Di,Mi,Do,Fr,Sa
+  datepicker_first_day: Erster Tag der Woche
+  datepicker_max_date: Spätestes auswählbares Datum im Datepicker
+  datepicker_min_date: Frühestes auswählbares Datum im Datepicker
   datepicker_month_names: Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember
   datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
-  label_datepicker_date_format: Datumsformat
-  label_datepicker_first_day: Erster Tag der Woche
-  label_datepicker_max_date: Spätestes auswählbares Datum im Datepicker
-  label_datepicker_min_date: Frühestes auswählbares Datum im Datepicker
-  label_estimate: Geschätzt
-  label_issues_closed_past_days: Lade geschlossene Issues nicht älter als folgende Anzahl Tage
-  label_spent_individual: Eigene Zeit
-  label_spent_total: Alle Benutzer
+  datepicker_next: Nächster Tag
+  datepicker_prev: Vorheriger Tag
+  delete: Löschen
+  duplicate: Einfügen
+  edit: Bearbeiten
+  error_404_not_found: "Eine Hintergrundanfrage führte zu einer \"404 not found\" Serverantwort"
+  error_422_explanation: "Häufige Ursache: Versuch, Zeiteintrag auf ein Ticket umzubuchen das in einem anderen Projekt gespeichert ist."
+  estimate: Geschätzt
+  hours: Stunden
+  issue_or_project: Projekt oder Ticket
+  issues_closed_past_days: Lade geschlossene Issues nicht älter als folgende Anzahl Tage
+  label_search: Suche ...
+  loading: Lade Daten
   menu_entry_title: Zeiterfassung
+  minutes: Minuten
+  missing_fields: Fehlende Informationen
+  no: Nein
+  no_time_entries_loaded: Keine Einträge gefunden
+  open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
+  or: oder
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
+  overview: Übersicht
   overview_title: Zeiterfassung Übersicht
+  project_edit_not_supported: Das nachträgliche Ändern des Projekts wird vom Ticket-System bisher nicht unterstützt (http://www.redmine.org/issues/588).
+  redmine_message: "Redmine meldet:\n"
+  reports: time logging
+  reset_form: Felder zurücksetzen
+  spent_individual: Eigene Zeit
+  spent_total: Alle Benutzer
+  success: Erfolg
+  unavailable_roject: Projekt nicht verfügbar
+  update: Aktualisieren
+  yes: Ja
   date:
     formats:
-      short: "%d.%m.%Y"
-  placeholder_activity: Aktivität auswählen ...
-  placeholder_comment: Kommentar
-  placeholder_hours: Stunden
-  placeholder_minutes: Minuten
-  placeholder_search: Suche ...
+      short: "%Y-%m-%d"
