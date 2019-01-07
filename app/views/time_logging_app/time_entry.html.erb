@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%= stylesheet_link_tag 'app/main', :plugin => 'redmine_time_logging_app' %>
+    <%= stylesheet_link_tag "main", :plugin => "redmine_time_logging_app" %>
     <title>
       <%= t(:menu_entry_title) %>
     </title>
@@ -34,15 +34,15 @@
               <button class="emptyForm"></button>
             </div>
           </div>
-          <textarea accesskey="f" id="search" tabindex="2" title="<%= t(:placeholder_search)%>"></textarea>
+          <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:placeholder_search)%>"></textarea>
           <div class="hbox">
             <div id="time">
-              <input id="hours" tabindex="3" type="text" title="<%= t(:placeholder_hours)%>"/>
-              <input id="minutes" tabindex="4" type="text" title="<%= t(:placeholder_minutes)%>"/>
+              <input id="hours" tabindex="3" type="text" placeholder="<%= t(:placeholder_hours)%>"/>
+              <input id="minutes" tabindex="4" type="text" placeholder="<%= t(:placeholder_minutes)%>"/>
             </div>
-            <select id="activity" tabindex="5" title="<%= t(:placeholder_activity) %>"></select>
+            <select id="activity" tabindex="5" placeholder="<%= t(:placeholder_activity) %>"></select>
           </div>
-          <textarea id="comments" maxlength="255" tabindex="6" title="<%= t(:placeholder_comment) %>"></textarea>
+          <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:placeholder_comment) %>"></textarea>
           <div class="hbox">
             <button accesskey="s" class="submit" tabindex="7"></button>
           </div>
@@ -95,7 +95,7 @@
       </tr>
     </script>
     <%= javascript_tag @javascript_tag_content %>
-    <%= javascript_include_tag "app/main", :plugin => "redmine_time_logging_app" %>
+    <%= javascript_include_tag "main", :plugin => "redmine_time_logging_app" %>
     <script>
 			app.init()
     </script>

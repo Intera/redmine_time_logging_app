@@ -8,13 +8,12 @@ coffeeify = require "coffeeify"
 
 compile_js = ->
   # non-browserify
-  target_dir = main_target_dir + "/javascripts/app"
+  target_dir = main_target_dir + "/javascripts"
   fs.ensureDirSync target_dir
   source_dir = "sources/js"
   sources = [
     "lib/jquery"
     "lib/jquery-ui.custom"
-    "lib/jquery.contenttitle"
     "lib/jquery.maxlength"
     "lib/underscore"
     "lib/spin"]
@@ -33,7 +32,7 @@ compile_js = ->
 compile_css = ->
   source_dir = "sources/css"
   sources = ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.override", "main"]
-  target_dir = main_target_dir + "/stylesheets/app"
+  target_dir = main_target_dir + "/stylesheets"
   fs.ensureDirSync target_dir
   target_file = target_dir + "/main.css"
   output_file = fs.createWriteStream target_file
@@ -43,7 +42,7 @@ compile_css = ->
 
 copy_static_files = ->
   sources = ["img"]
-  sources.forEach (a) -> fs.copySync a, main_target_dir + "/images/app"
+  sources.forEach (a) -> fs.copySync a, main_target_dir + "/images"
 
 compile = ->
   process.stdout.write "compile..."

@@ -303,3 +303,12 @@ a.overview {
     border: 4px solid red;
   }
 }
+
+#search:focus::placeholder,
+#hours:focus::placeholder,
+#minutes:focus::placeholder,
+#comments:focus::placeholder,
+select:focus::placeholder
+{
+  color: transparent
+}

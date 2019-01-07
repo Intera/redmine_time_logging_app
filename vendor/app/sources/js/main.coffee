@@ -14,12 +14,12 @@ translate = (key) ->
   translations[window.displayLanguage]?[key] or key
 
 missingFieldsError = (missingFields) ->
-  _.map missingFields, (ele) ->
-    if _.isArray(ele)
-      missingFieldsError(ele).join " " + translate("or") + " "
+  _.map missingFields, (a) ->
+    if _.isArray(a)
+      missingFieldsError(a).join " " + translate("or") + " "
     else
-      $(fieldNameToSelector[ele]).addClass app_config.errorClass
-      fieldNameToDisplayName[ele]
+      $(fieldNameToSelector[a]).addClass app_config.errorClass
+      fieldNameToDisplayName[a]
 
 fieldNameToSelector =
   activity_id: "#activity"
@@ -94,23 +94,12 @@ sync = (formData) ->
       #console.log(t("success"), timeEntry.hours + " Stunden für ", issueOrProject, " erfasst.")
       emptyFormAfterSync()
 
-resetContentTitles = ->
-  # should be a feature of int.contenttitle
-  helper.$$("#comments,#hours,#minutes,#search").each ->
-    a = $(this)
-    if a.val()
-      a.removeClass app_config.titleClass
-    else
-      a.blur()
-      a.addClass app_config.titleClass
-  helper.$$("#activity").change()
-
 emptyFormAfterSync = ->
   $("#comments,#hours,#minutes").val("").blur()
   helper.$$("#search").prop "disabled", false
 
 emptyForm = ->
-  # date and activity are not reset for usability
+  # date and activity are not reset for workflow reasons
   $("#comments,#hours,#minutes,#search:not([disabled])").val("").blur()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
   helper.$$("button.open-in-redmine").hide()
@@ -171,6 +160,7 @@ openInRedmineUpdateURL = (searchValue) ->
 
 autocompleteSelect = (event, ui) -> openInRedmineUpdateURL ui.item.value
 autocompleteBlur = -> openInRedmineUpdateURL()
+
 autocompleteClick = ->
   @select()
   openInRedmineUpdateURL()
@@ -274,12 +264,6 @@ setTranslation = ->
   setTranslationTextAndTitle $("button.duplicate"), "duplicate"
   setTranslationTextAndTitle $("button.cancel"), "cancel"
   setTranslationTextAndTitle $("button.submit"), "create"
-  # titles will be used by .contentTitle
-  $("#hours").attr "title", translate "hours"
-  $("#minutes").attr "title",translate "minutes"
-  $("#comments").attr "title", translate "comment"
-  $("#search").attr "title", translate "search"
-  $("#activity").attr "title", translate "chooseActivity"
   $("h2").text translate "appName"
   $("button.overview").attr "title", translate "overview"
   $("button.open-in-redmine").attr "title", translate "open_in_redmine"
@@ -289,7 +273,6 @@ setTranslation = ->
   $(".activity-header").html translate "activity_header"
   $(".project-task-header").html translate "project_task_header"
   $(".hours-header").html translate "hours_header"
-  $("#search,#hours,#minutes,#comments,select").contentTitle()
 
 base_init = ->
   helper.mobileHideAddressBar()
@@ -556,7 +539,6 @@ timeEntryToDOM = (timeEntry) ->
   val = timeEntryToSearchDataEntry(timeEntry)
   helper.$$("#search").val(if val then val.value else "")
   helper.$$("#search").blur()
-  resetContentTitles()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
 
 cancelEdit = ->
@@ -645,7 +627,6 @@ module.exports =
   loading: loading
   onSubmit: onSubmit
   prevTimeEntry: prevTimeEntry
-  resetContentTitles: resetContentTitles
   setDate: setDate
   startEditMode: startEditMode
   sync: sync
