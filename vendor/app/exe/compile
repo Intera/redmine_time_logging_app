@@ -10,39 +10,38 @@ compile_js = ->
   # non-browserify
   target_dir = main_target_dir + "/javascripts"
   fs.ensureDirSync target_dir
-  source_dir = "sources/js"
-  sources = [
+  input_dir = "sources/js"
+  input_files = [
     "lib/jquery"
     "lib/jquery-ui.custom"
     "lib/jquery.maxlength"
     "lib/underscore"
     "lib/spin"]
   output_file = fs.createWriteStream target_dir + "/main.js"
-  output_file.write fs.readFileSync source_dir + "/" + sources[0] + ".js"
-  output_file.write "\n;\n"
-  sources.forEach (a) ->
-    output_file.write fs.readFileSync source_dir + "/" + a + ".js"
+  input_files.forEach (a) ->
+    output_file.write fs.readFileSync input_dir + "/" + a + ".js"
     output_file.write "\n;\n"
   # browserify
-  main_js = browserify {extensions: ['.coffee'], paths: [source_dir], standalone: "app"}
+  main_js = browserify {extensions: ['.coffee'], paths: [input_dir], standalone: "app"}
   main_js.transform coffeeify, {bare: false, header: true}
-  main_js.add(source_dir + "/main.coffee")
-  main_js.bundle().pipe output_file
+  main_js.add(input_dir + "/main.coffee")
+  bundle_write = main_js.bundle().pipe output_file
+  bundle_write.on "finish", -> output_file.close()
+  bundle_write
 
 compile_css = ->
-  source_dir = "sources/css"
-  sources = ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.override", "main"]
+  input_dir = "sources/css"
+  input_files = ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.override", "main"]
   target_dir = main_target_dir + "/stylesheets"
   fs.ensureDirSync target_dir
   target_file = target_dir + "/main.css"
   output_file = fs.createWriteStream target_file
-  output_file.write fs.readFileSync "#{source_dir}/#{sources[0]}.css"
-  sources.forEach (a) ->
-    output_file.write fs.readFileSync "#{source_dir}/#{a}.css"
+  input_files.forEach (a) ->
+    output_file.write fs.readFileSync "#{input_dir}/#{a}.css"
 
 copy_static_files = ->
-  sources = ["img"]
-  sources.forEach (a) -> fs.copySync a, main_target_dir + "/images"
+  input_files = ["img"]
+  input_files.forEach (a) -> fs.copySync a, main_target_dir + "/images"
 
 compile = ->
   process.stdout.write "compile..."

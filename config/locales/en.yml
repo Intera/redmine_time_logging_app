@@ -36,7 +36,7 @@ en:
   or: or
   overview_note: entries of the current year. weekends without entries are not shown.
   overview: Overview
-  overview_title: Time-Logging overview
+  overview_title: Spent time overview
   project_edit_not_supported: Changing the project is not supported by the ticket-system (http://www.redmine.org/issues/588).
   redmine_message: "Redmine says:\n"
   reports: time logging

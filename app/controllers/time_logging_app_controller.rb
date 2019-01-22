@@ -94,61 +94,51 @@ tips
 
   def overview
     # lists all time_entries of the last x days and marks those with unusual hours.
-    # The following statement gets the entries from the database, after that the data is formatted and
-    # converted into the structure to be send.
-    time_entries = TimeEntry.select("sum(time_entries.hours) as hours_sum,time_entries.*")
+    @display_columns = [:spent_on, :hours, :project]
+    # get column labels
+    @display_column_headings = @display_columns.map {|b| translate(("field_" + b.to_s).to_sym) }
+    # load time entries grouped by day
+    time_entries = TimeEntry.select("sum(time_entries.hours) hours_day, group_concat(project_id) project_ids, time_entries.*")
       .order("time_entries.spent_on asc")
       .where("user_id=? and tyear=?", User.current, DateTime.now.year)
       .group("time_entries.spent_on")
       .includes(:issue, :project)
-    @display_columns = [:spent_on, :hours, :project]
-    @display_column_headings = @display_columns.map {|e|
-      translation = translate(("field_" + e.to_s).to_sym)
-    }
+    # return early if empty
     if time_entries.empty?
       @time_entries = []
       render :layout => "base"
       return
     end
-    all_hours = time_entries.map {|e| e[:hours_sum] = e[:hours_sum].to_f }
-    usual_daily_hours = 0
-    time_entries.reduce(0) {|r, e|
-      if e[:hours_sum] > 0
-        count = all_hours.count(e[:hours_sum])
-        if count > r
-          usual_daily_hours = e[:hours_sum]
-          count
-        else r end
-      else r end
+    # get the most common hour value
+    hours = time_entries.map {|b| b[:hours_day]}
+    hours_and_count = hours.map {|b| [b, hours.count(b)]}
+    most_common_hours = hours_and_count.sort{|a, b| a[1] <=> b[1]}.first[0]
+    # start with earliest date and create entries for each day
+    previous_date = time_entries.first[:spent_on]
+    time_entries = time_entries.reduce([]) {|result, b|
+      # add null entries between previous and current date
+      range = previous_date..(b[:spent_on] - 1)
+      null_entries = range.map {|c|
+        next if c.saturday? or c.sunday?
+        { :spent_on => I18n.l(c), :spent_on_date => c,
+          :project => "", :issue => "", :hours => "", :less_hours => true }
+      }.compact
+      projects = b.project_ids.split(",").uniq.map{|id| id.to_i }
+      projects = Project.find(projects).map{|b| b[:name]}
+      current = {
+        :spent_on => I18n.l(b[:spent_on]),
+        :spent_on_date => b[:spent_on],
+        :project_id => b.project_id,
+        :hours => decimal_hours_to_hours_minutes(b[:hours_day].round(2)),
+        :project => projects.join(", "),
+        :issue_id => b.issue_id,
+        :issue => b.issue && b.issue[:subject]
+      }
+      current[:less_hours] = b[:hours] < most_common_hours
+      previous_date = b[:spent_on] + 1
+      result + null_entries + [current]
     }
-    prev_date = time_entries.first()[:spent_on]
-    @time_entries = time_entries.reduce([]) {|prev, e|
-      prev_date.step(e[:spent_on] - 1) {|date|
-        next if date.saturday? or date.sunday?
-        prev << {
-          :spent_on => I18n.l(date),
-          :spent_on_intern => date,
-          :project => "",
-          :issue => "",
-          #display hours as empty string if 0
-          :hours => "",
-          :less_hours => true
-        }
-      }
-      result = {
-        :spent_on => I18n.l(e[:spent_on]),
-        :spent_on_intern => e[:spent_on],
-        :project_id => e.project_id,
-        :hours => e[:hours_sum].round(2),
-        :project => e.project[:name],
-        :issue_id => e.issue_id
-      }
-      if e.issue then result[:issue] = e.issue[:subject] end
-      if result[:hours] < usual_daily_hours then result[:less_hours] = true end
-      result[:hours] = decimal_hours_to_hours_minutes result[:hours]
-      prev_date = e[:spent_on] + 1
-      prev << result
-    }.reverse
+    @time_entries = time_entries.reverse
     render :layout => "base"
   end
 

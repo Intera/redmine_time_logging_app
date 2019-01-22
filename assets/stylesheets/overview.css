@@ -1,9 +1,22 @@
+table.time_logging_app {
+  width: auto;
+}
+table.list th, table.list td {
+  text-align: left;
+}
 tr.less_hours {
   font-style: italic;
   color: #666;
 }
 tr {
 	font-weight: normal;
+}
+table.list td {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+table.list td.project {
+	max-width: 30rem;
 }
 h2 {
 	display: inline-block;
@@ -12,7 +25,4 @@ h2 {
 h2 + span {
   float: right;
   font-size: 0.8em;
-}
-th {
-  text-align: left;
 }
