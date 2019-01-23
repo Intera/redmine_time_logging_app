@@ -36,13 +36,6 @@ fieldNameToDisplayName =
   minutes: translate "minutes"
   project_id: translate "issueOrProject"
 
-getCurrentUser = ->
-  redmine.getCurrentUser().done (user) ->
-    cache.user_id = user.user.id
-    lang = user.user.language
-    cache.user_language = lang
-    window.displayLanguage = if translations[lang] then lang else "en"
-
 getIssuesProjectsAndSearchData = (status) ->
   redmine.getProjectsAndIssues(status, app_config.issueClosedPastDays).done (projectsAndIssues) ->
     t = helper.createProjectsIssuesAndSearchData projectsAndIssues.projects, projectsAndIssues.issues
@@ -72,14 +65,6 @@ getIssuesProjectsAndSearchData = (status) ->
             parent_name: e.project_parent_name
           cache.searchDataRecent.push helper.createProjectSearchDataEntry e
       cache.searchDataRecent = helper.sortByLocaleIgnoreTicketId cache.searchDataRecent
-
-getActivities = ->
-  redmine.getActivities().done (_activities) ->
-    selectEle = helper.$$("#activity")
-    cache.activities = {}
-    _.each _activities.activities, (a) ->
-      selectEle.append $("<option>").attr("value", a.id).html(a.name)
-      cache.activities[a.id] = a.name
 
 sync = (formData) ->
   # create, delete or update a time entry
@@ -116,19 +101,22 @@ reloadSearchData = ->
   helper.$$(document).trigger "timeEntriesReload"
 
 getSearchFormData = (str) ->
+  # get metadata for a valid search input string with existing project and ticket.
+  # use search input value if str is false
   str = helper.$$("#search").val() unless str
   # user may have edited the search value
-  return false unless str and _.some(cache.searchData, ((e) -> e.value == str))
+  return false unless str and _.some(cache.searchData, ((b) -> b.value == str))
   issueID = str.match(/#\d+/)
   if issueID
     issueID = parseInt(issueID[0].substring(1))
+    issue = cache.issues[issueID]
     issue_id: issueID
-    project_id: parseInt(cache.issues[issueID].project.id)
+    project_id: parseInt issue.project.id
   else
     # check if it is a parent- or sub-project
     projectName = _.last(str.split(app_config.issueNameDelimiter).map($.trim))
     project_id = parseInt(helper.projectNameToID(cache.projects, projectName))
-    project_id: project_id  if project_id
+    project_id: project_id if project_id
 
 autocompleteSourceDefault = (req, handleResponse) ->
   # generates autocomplete suggestions
@@ -189,33 +177,23 @@ formDataToAPIData = (formData) ->
   r.hours = (r.hours or 0) + ((formData.minutes or 0) / 60)
   r
 
-onSubmit = ->
-  formData = getFormData()
-  if validate(formData)
-    sync formData
-  else
-    false
-
 getFormData = ->
   formData = {}
-  formData.comments = if helper.$$("#comments").hasClass(app_config.titleClass) then "" else helper.$$("#comments").val()
-  formData.activity_id = parseInt(helper.$$("#activity").val())  unless helper.$$("#activity").hasClass(app_config.titleClass)
+  formData.comments = helper.$$("#comments").val()
+  formData.activity_id = parseInt helper.$$("#activity").val()
   formData.date = helper.$$("#date").datepicker("getDate")
-  minutes = parseInt(helper.$$("#minutes").val())
-  hours = parseInt(helper.$$("#hours").val())
-  formData.minutes = minutes  if minutes
-  formData.hours = hours  if hours
+  minutes = parseInt helper.$$("#minutes").val()
+  hours = parseInt helper.$$("#hours").val()
+  formData.minutes = minutes if minutes
+  formData.hours = hours if hours
   _.extend formData, getSearchFormData()
 
 validateFieldExistence = (formData) ->
-  formDataInclude = (a) ->
-    _.has formData, a
-  formDataIncludeExt = (a) ->
-    if _.isArray(a)
-      _.any a, formDataInclude
-    else
-      formDataInclude a
-  missingFields = _.reject(app_config.requiredFields, formDataIncludeExt)
+  formDataContainsOne = (a) -> _.has formData, a
+  formDataContains = (a) ->
+    if _.isArray(a) then _.any a, formDataContainsOne
+    else formDataContainsOne a
+  missingFields = _.reject(app_config.requiredFields, formDataContains)
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
   if missingFields.length > 0
     helper.$$("input[type=text],textarea,select").off("click", helper.removeErrorClass).one "click", helper.removeErrorClass
@@ -228,9 +206,10 @@ validateOther = (formData) ->
   true
 
 validate = (formData) ->
-  results = [validateFieldExistence, validateOther].map((proc) ->
-    proc formData
-  )
+  # object -> boolean
+  validators = [validateFieldExistence, validateOther]
+  results = validators.map((f) -> f formData)
+  # true if all elements are true
   results.every _.identity
 
 loading = (state) ->
@@ -241,10 +220,6 @@ loading = (state) ->
   else
     _isLoaded = true
 
-initDatepicker = ->
-  helper.$$("#date").datepicker app_config.datepicker
-  helper.$$("#date").datepicker "setDate", "+0"
-
 initAutoDataReload = ->
   return unless app_config.autoReloadInterval
   intervalAutoReload = (interval) ->
@@ -254,41 +229,6 @@ initAutoDataReload = ->
     , interval)
   timer = undefined
   intervalAutoReload app_config.autoReloadInterval
-
-base_init = ->
-  helper.mobileHideAddressBar()
-  loading()
-  r = $.when(redmine.init(), getCurrentUser().done(helper.wrapDeferred(initDatepicker)), getActivities(), getIssuesProjectsAndSearchData(app_config.issueStatus)).done(->
-    helper.$$("h2:first").show()
-    helper.$$("#form").show()
-    loading(false)
-    initAutoDataReload()
-    helper.$$("#search").trigger("focus", {onlyFocus: true}).select()
-  )
-  $("button").button()
-  $("button.next").button("option", "icons", {
-    primary: "ui-icon-circle-arrow-e"
-  })
-  $("button.prev").button("option", "icons", {
-    primary: "ui-icon-circle-arrow-w"
-  })
-  $("button.resetForm").button("option", "icons", {
-    primary: "ui-icon-cancel"
-  })
-  $("button.overview").button("option", "icons", {
-    primary: "ui-icon-note"
-  }).click ->
-    window.open $(@).data("href"), "_newtab"
-  helper.$$("button.open-in-redmine").hide().button("option", "icons", {
-    primary: "ui-icon-extlink"
-  }).click ->
-    url = $(@).data("href")
-    if url then window.open url, "_blank"
-  $("#hours,#minutes").keydown helper.onKeypressRejectNaN
-  $(".submit").click -> onSubmit()
-  $(".resetForm").click resetFormButton
-  openInRedmineUpdateURL()
-  r
 
 confirmDialog = null
 activeTimeEntryId = null
@@ -310,8 +250,8 @@ timeFormat = (hours, minutes) ->
   r.join " "
 
 confirmDelete = ->
-  hours = (if helper.$$("#hours").hasClass(app_config.titleClass) then `undefined` else helper.$$("#hours").val())
-  minutes = (if helper.$$("#minutes").hasClass(app_config.titleClass) then `undefined` else helper.$$("#minutes").val())
+  hours = helper.$$("#hours").val()
+  minutes = helper.$$("#minutes").val()
   message = timeFormat(hours, minutes) + "<br/><br/>\"" + helper.$$("#search").val() + "\""
   confirmDialog.html(message).dialog("option", "title", translate("confirmDelete")).dialog "open"
 
@@ -322,6 +262,13 @@ updateTimeEntry = ->
     sync(formData).done (response) ->
       exitEditMode()
       helper.$$(document).trigger "timeEntriesReload", "inplace"
+
+createTimeEntry = ->
+  formData = getFormData()
+  if validate(formData)
+    sync formData
+  else
+    false
 
 getDisplayFormData = ->
   # gets the form data in a format that can be easily reinserted
@@ -353,11 +300,11 @@ exitEditMode = ->
   activeTimeEntryId = false
   helper.$$(".delete,.cancel").off "click"
   helper.$$(".delete,.cancel").hide()
-  helper.$$("button.submit").removeClass("update").html(translate("create")).off("click").click onSubmit
+  helper.$$("button.submit").removeClass("update").html(translate("create")).off("click").click createTimeEntry
   displayFormDataToDom prevTimeEntry
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
-  helper.$$("#search").trigger("focus", {onlyFocus: true}) if helper.$$("#search").hasClass(app_config.titleClass)
+  helper.$$("#search").trigger("focus", {onlyFocus: true})
   helper.$$(".resetForm").show()
   prevTimeEntry = false
 
@@ -380,11 +327,13 @@ createTimeEntriesUrl = (timeEntry) ->
       app_config.redmine.urls.projects_redmine + "/" + timeEntry.project.id + "/time_entries";
 
 timeEntryToTableRow = (a, even) ->
+  classes = [(if even then "even" else "odd")]
   if a.issue
     name = helper.createIssueSearchDataEntry cache.issues[a.issue.id], cache.projects
     name = name.value if name
     projectOrIssueUrl = app_config.redmine.urls.issues_redmine + "/" + a.issue.id
   else
+    # is project
     projectOrIssueUrl = app_config.redmine.urls.projects_redmine + "/" + a.project.id
     project = cache.projects[a.project.id]
     if project
@@ -392,20 +341,23 @@ timeEntryToTableRow = (a, even) ->
       name = name.value if name
     else
       console.warn "project not available, id \"#{a.project.id}\""
-      classes = "unavailable-project"
+      classes.push "unavailable-project"
       name = translate "unavailableProject"
   time = helper.decimalHoursToColonFormat(a.hours)
+  # get spent hours
   spent_hours = a.issue?.spent_hours || a.project.spent_hours
-  if isNaN spent_hours
-    spent_hours = 0
+  if isNaN spent_hours then spent_hours = 0
   else
+    # round value to nearest hour unless smaller than one hour
     spent_hours = if spent_hours >= 1 then Math.round spent_hours else helper.decimalHoursToColonFormat spent_hours
+  # get estimated hours
   estimated_hours = a.issue?.estimated_hours || a.project.estimated_hours
-  if isNaN estimated_hours
-    estimated_hours = 0
+  if isNaN estimated_hours then estimated_hours = 0
   else
     estimated_hours = if estimated_hours >= 1 then Math.round estimated_hours else helper.decimalHoursToColonFormat estimated_hours
   estimates = spent_hours + (if estimated_hours then "/" + estimated_hours else "")
+  if spent_hours > estimated_hours then classes.push "overbooked"
+  # create html
   cache.template.timeEntry
     entry_id: a.id
     time: time
@@ -415,7 +367,7 @@ timeEntryToTableRow = (a, even) ->
     activity: cache.activities[a.activity.id]
     projectOrIssueUrl: projectOrIssueUrl
     timeEntriesUrl: createTimeEntriesUrl(a)
-    classes: (if even then "even" else "odd") + (if classes then " " + classes else "")
+    classes: classes.join(" ")
 
 insertTimeEntryRows = (timeEntries) ->
   targetEle = helper.$$("#timeEntries tbody")
@@ -481,7 +433,7 @@ getTimeEntries = (data, config, noEntriesFound) ->
   ).always (response) ->
     helper.$$("#loading .icon").hide()
     if response.time_entries and (response.time_entries.length is 0)
-      helper.$$("#loading .text").html translate("noTimeEntriesLoaded") if not noEntriesFound or not noEntriesFound()
+      helper.$$("#loading .text").html translate("noTimeEntriesLoaded") if (not noEntriesFound) or (not noEntriesFound())
     else
       loading(false)
 
@@ -526,9 +478,9 @@ cancelEdit = ->
   stopEditMode()
 
 extendBase = ->
-  baseOnSubmit = onSubmit
-  onSubmit = ->
-    r = baseOnSubmit()
+  baseCreateTimeEntry = createTimeEntry
+  createTimeEntry = ->
+    r = baseCreateTimeEntry()
     if r then r.done -> helper.$$(document).trigger "timeEntriesReload", "inplace"
     else r
 
@@ -558,8 +510,61 @@ onTimeEntriesReload = (event, animation) ->
     spent_on: helper.$$("#date").datepicker("getDate")
   , config
 
-editing_init = ->
-  $ ->
+
+initialise = ->
+  helper.mobileHideAddressBar()
+  loading()
+  # activities
+  selectEle = helper.$$("#activity")
+  cache.activities = {}
+  _.each redmineData.activities, (a) ->
+    selectEle.append $("<option>").attr("value", a.id).html(a.name)
+    cache.activities[a.id] = a.name
+  # current user
+  user = redmineData.user
+  cache.user_id = user.id
+  lang = user.language
+  cache.user_language = lang
+  window.displayLanguage = if translations[lang] then lang else "en"
+  # csrf token. important, otherwise "internal server error"s occur
+  token = redmineData.csrf_token
+  $.ajaxPrefilter (options, origOptions, request) ->
+    request.setRequestHeader "X-CSRF-Token", token  if options.type.match(/(post)|(put)|(delete)/i)
+  # datepicker
+  helper.$$("#date").datepicker app_config.datepicker
+  helper.$$("#date").datepicker "setDate", "+0"
+  # buttons and fields
+  $("button").button()
+  $("button.next").button("option", "icons", {
+    primary: "ui-icon-circle-arrow-e"
+  })
+  $("button.prev").button("option", "icons", {
+    primary: "ui-icon-circle-arrow-w"
+  })
+  $("button.resetForm").button("option", "icons", {
+    primary: "ui-icon-cancel"
+  })
+  $("button.overview").button("option", "icons", {
+    primary: "ui-icon-note"
+  }).click ->
+    window.open $(@).data("href"), "_newtab"
+  helper.$$("button.open-in-redmine").hide().button("option", "icons", {
+    primary: "ui-icon-extlink"
+  }).click ->
+    url = $(@).data("href")
+    if url then window.open url, "_blank"
+  $("#hours,#minutes").keydown helper.onKeypressRejectNaN
+  $(".submit").click -> createTimeEntry()
+  $(".resetForm").click resetFormButton
+  openInRedmineUpdateURL()
+  # search field
+  getIssuesProjectsAndSearchData(app_config.issueStatus).done ->
+    helper.$$("h2:first").show()
+    helper.$$("#form").show()
+    loading(false)
+    initAutoDataReload()
+    helper.$$("#search").trigger("focus", {onlyFocus: true}).select()
+    # editing
     cache.template.timeEntry = _.template($("#timeEntryTemplate").text())
     extendBase()
     initDeleteDialog()
@@ -592,22 +597,5 @@ datepickerUpdate = (->
     , false, noEntriesFound)
 )()
 
-init = -> base_init().done editing_init
-
 module.exports =
-  activeTimeEntryId: activeTimeEntryId
-  cache: cache
-  confirmDialog: confirmDialog
-  debug: debug
-  resetForm: resetForm
-  exitEditMode: exitEditMode
-  formDataToAPIData: formDataToAPIData
-  getFormData: getFormData
-  init: init
-  loading: loading
-  onSubmit: onSubmit
-  prevTimeEntry: prevTimeEntry
-  setDate: setDate
-  startEditMode: startEditMode
-  sync: sync
-  validate: validate
+  initialise: initialise

@@ -5,23 +5,6 @@ urls = redmineConfig.urls
 # functions for ajax calls between the app and the redmine backend interface.
 # all request functions return a jqXHR object.
 
-# important, otherwise "internal server error"s occur
-addCsrfTokenFunc = (token) ->
-  (options, origOptions, request) ->
-    request.setRequestHeader "X-CSRF-Token", token  if options.type.match(/(post)|(put)|(delete)/i)
-
-init = ->
-  # sets up the csrf token. necessary for rails applications using "protect_from_forgery" like redmine
-  $.ajax(
-    url: urls.get_csrf_token
-    dataType: "html"
-  ).done (token) ->
-    $.ajaxPrefilter addCsrfTokenFunc(token)
-
-jQuery.ajaxSetup
-  beforeSend: (jqXHR, settings) ->
-    @url = settings.url;
-
 defaultRedmineErrorHandler = (response, x, y) ->
   if 0 is response.status
     # request aborted by the user
@@ -95,6 +78,7 @@ $.ajaxSetup
   dataType: "json"
   async: true
   error: defaultRedmineErrorHandler
+  beforeSend: (jqXHR, settings) -> @url = settings.url
 
 module.exports =
   getActivities: getActivities
@@ -107,4 +91,3 @@ module.exports =
   getProjectsAndIssues: getProjectsAndIssues
   createTimeEntry: createTimeEntry
   updateTimeEntry: updateTimeEntry
-  init: init

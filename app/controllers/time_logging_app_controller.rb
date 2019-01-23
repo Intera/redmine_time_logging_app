@@ -42,26 +42,33 @@ tips
   end
 
   def get_redmine_data
-    # creates a settings object passed to the frontend javascript
-    result = {"backend_urls" => get_backend_urls,
-              "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
-              "redmine_version_major" => Redmine::VERSION::MAJOR,
-              "redmine_version_minor" => Redmine::VERSION::MINOR,
-              "datepicker" => {}}
+    # creates an object that is passed to the frontend javascript.
+    current_user = User.current
+    activities = TimeEntryActivity.select("id,name").map{|b| {"id" => b["id"], "name" => b["name"]}}
+    datepicker = {}
     datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
     datepicker_setting_names.each {|a|
-      result["datepicker"][a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
+      datepicker[a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
     }
-    # currently includes redmine core translations
-    result["translations"] = I18n.translate(".")
-    result
+    {"activities" => activities,
+     "backend_urls" => get_backend_urls,
+     # Token for "protect_from_forgery" csrf protection.
+     # It is rendered into the page and used by the javascript in every request.
+     # It is not entirely sure if form_authenticity_token is the correct token but it works.
+     "crsf_token" => form_authenticity_token.to_s,
+     "datepicker" => datepicker,
+     "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+     # currently includes all redmine core translations until a better way is found
+     "redmine_version_major" => Redmine::VERSION::MAJOR,
+     "redmine_version_minor" => Redmine::VERSION::MINOR,
+     "translations" => I18n.translate("."),
+     "user" => {"id" => current_user["id"], "language" => current_user["language"]}}
   end
 
   def time_entry
     if (User.current.allowed_to?(:log_time, nil, :global => true) ||
         User.current.allowed_to?(:edit_own_time_entries, nil, :global => true) ||
         User.current.admin?)
-      # gem "haml" is required
       redmine_data = get_redmine_data
       @javascript_tag_content = "var redmineData = " + ActiveSupport::JSON.encode(redmine_data)
       render layout: false
@@ -142,20 +149,6 @@ tips
     render :layout => "base"
   end
 
-  def get_csrf_token
-    # Token for "protect_from_forgery" csrf protection.
-    # It is rendered into the page and used by the javascript in every request.
-    # It is not entirely sure if form_authenticity_token is the correct token.
-    render :text => form_authenticity_token.to_s
-  end
-
-  def activities
-    render :json => {
-      "activities" =>
-      TimeEntryActivity.select("id,name").map{ |e| {"id" => e["id"], "name" => e["name"]} }
-    }
-  end
-
   def time_entries spent_on=params[:spent_on]
     spent_on = spent_on ? Date.strptime(spent_on) : Date.today
     time_entries = TimeEntry
@@ -165,7 +158,7 @@ tips
               ",time_entries.project_id,time_entries.issue_id,time_entries.activity_id,time_entries.comments")
       .order("time_entries.created_on desc")
       .where("spent_on" => spent_on, "user_id" => User.current)
-    # The time_entries returned are model objects. In the following we convert them
+    # the time_entries returned are model objects. In the following we convert them
     # to simpler hashes and create the desired structure.
     time_entries = time_entries.map {|e|
       result = pick(e, "id", "spent_on", "hours", "comments")
@@ -191,27 +184,21 @@ tips
     end
     projects = get_projects
     past_days = params[:closed_past_days] ? params[:closed_past_days].to_i : 7
-    issues = get_issues params[:status], projects.map{|e| e["id"]}, past_days
-    issues = issues.map {|iss|
+    issues = get_issues params[:status], projects.map{|b| b["id"]}, past_days
+    issues = issues.map {|b|
       {
-        "project" => {"id" => iss.project_id },
-        "id" => iss["id"],
-        "subject" => iss.subject,
-        "version" => iss.version_name,
-        "is_closed" => iss["issue_is_closed"] == 1
+        "estimated" => b["estimated"],
+        "id" => b["id"],
+        "is_closed" => b["issue_is_closed"] == 1,
+        "project" => {"id" => b.project_id },
+        "subject" => b.subject,
+        "version" => b.version_name
       }
     }
     render :json => {"issues" => issues, "projects" => projects}
   end
 
-  def projects
-    render :json => {"projects" => get_projects()}
-  end
-
-  def current_user
-    current_user = User.current
-    render :json => {"user" => {"id" => current_user["id"], "language" => current_user["language"]}}
-  end
+  def
 
   def estimate_check
     # experimental view to compare estimates with actual spent time for closed tickets
@@ -264,8 +251,8 @@ tips
 
   def get_issues status=false, project_ids=false, past_days=7
     select = Issue
-      .joins("left outer join versions on versions.id=issues.fixed_version_id")
-      .select("issues.id,issues.project_id,issues.subject,versions.name as version_name,#{issue_is_closed_sql('issues')}")
+      .joins("left outer join versions on versions.id = issues.fixed_version_id")
+      .select("issues.id, issues.project_id, issues.subject, issues.estimated_hours, versions.name as version_name, #{issue_is_closed_sql('issues')}")
     # multiple .where() just did not work
     if project_ids
       if "open" == status
