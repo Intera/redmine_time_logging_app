@@ -8,10 +8,10 @@ module.exports =
     firstDay: redmineData.datepicker.first_day || 1
     maxDate: redmineData.datepicker.max_date || "+0"
     minDate: redmineData.datepicker.min_date || "-6m"
-    monthNamesShort: redmineData.datepicker.month_names_short || ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
-    monthNames: redmineData.datepicker.month_names || ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
-    dayNamesMin: redmineData.datepicker.day_names_min || ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
-    dayNamesShort: redmineData.datepicker.day_names_short || ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+    monthNamesShort: redmineData.datepicker.month_names_short || ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    monthNames: redmineData.datepicker.month_names || ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    dayNamesMin: redmineData.datepicker.day_names_min || ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+    dayNamesShort: redmineData.datepicker.day_names_short || ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
     dateFormat: redmineData.datepicker.date_format || "D y-m-d"
     showButtonPanel: true
     autoSize: true

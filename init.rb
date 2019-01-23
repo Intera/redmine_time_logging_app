@@ -21,6 +21,7 @@ Redmine::Plugin.register :redmine_time_logging_app do
              "datepicker_min_date" => "-6m",
              "datepicker_first_day" => 1,
              "datepicker_date_format" => "D y-m-d",
+             "overbooking_warning" => "0",
              "issues_closed_past_days" => 7
            }
 end

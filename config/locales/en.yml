@@ -6,16 +6,17 @@ en:
   confirm_delete: Confirm delete
   create: Create
   date: Date
-  datepicker_date_format: date format
+  datepicker_date_format: Date format
   datepicker_day_names_min: So,Mo,Tu,We,Th,Fr,Sa
   datepicker_day_names_short: So,Mo,Tu,We,Th,Fr,Sa
-  datepicker_first_day: first day of week
-  datepicker_max_date: latest selectable date in the datepicker
-  datepicker_min_date: earliest selectable date in the datepicker
+  datepicker_first_day: First day of week
+  datepicker_max_date: Latest selectable date
+  datepicker_min_date: Earliest selectable date
   datepicker_month_names: January,February,March,April,May,June,July,August,September,October,November,December
   datepicker_month_names_short: Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
   datepicker_next: Next day
   datepicker_prev: Previous day
+  default: default
   delete: Delete
   duplicate: Insert
   edit: Edit
@@ -24,7 +25,7 @@ en:
   estimate: estimate
   hours: Hours
   issue_or_project: Project or ticket
-  issues_closed_past_days: load closed issues not older than this number of days
+  issues_closed_past_days: Dont load closed issues older than this number of days
   label_search: Search ...
   loading: Loading
   menu_entry_title: Time Tracking
@@ -34,12 +35,14 @@ en:
   no_time_entries_loaded: No entries found
   open_in_redmine: View selected project or ticket
   or: or
-  overview_note: entries of the current year. weekends without entries are not shown.
+  overbooking_warning: This entry will exceed the estimated time for this ticket. Eventually consult with a project leader first before you continue.
+  overbooking_warning_label: Warn when exceeding the estimated time of an issue
+  overview_note: Entries of the current year. weekends without entries are not shown.
   overview: Overview
   overview_title: Spent time overview
   project_edit_not_supported: Changing the project is not supported by the ticket-system (http://www.redmine.org/issues/588).
   redmine_message: "Redmine says:\n"
-  reports: time logging
+  reports: Time logging
   reset_form: Reset
   spent_individual: own spent time
   spent_total: all users

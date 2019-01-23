@@ -16,6 +16,7 @@ de:
   datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
   datepicker_next: Nächster Tag
   datepicker_prev: Vorheriger Tag
+  default: default
   delete: Löschen
   duplicate: Einfügen
   edit: Bearbeiten
@@ -34,6 +35,8 @@ de:
   no_time_entries_loaded: Keine Einträge gefunden
   open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
   or: oder
+  overbooking_warning: Dieser Eintrag wird den geschätzten Aufwand überschreiten. Stimmen sie sich eventuell erst mit einem Projektleiter ab, bevor sie fortfahren.
+  overbooking_warning_label: Warnung anzeigen, wenn der geschätzte Aufwand einer Aufgabe überschritten wird
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
   overview: Übersicht
   overview_title: Zeiterfassung Übersicht

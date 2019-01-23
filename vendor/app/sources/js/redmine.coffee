@@ -23,28 +23,12 @@ deleteTimeEntry = (id) ->
     dataType: "html"
     url: urls.time_entries_redmine + "/" + id + ".json"
 
-getCurrentUser = ->
-  $.ajax url: urls.current_user
-
 getTimeEntries = (config) ->
   config = {}  if _.isUndefined(config)
   config.spent_on = $.datepicker.formatDate("yy-mm-dd", config.spent_on)  if _.isDate(config.spent_on)
   $.ajax
     url: urls.time_entries
     data: config
-
-getProjects = ->
-  $.ajax url: urls.projects
-
-getIssues = (status) ->
-  status = "*"  if _.isUndefined(status)
-  $.ajax
-    url: urls.issues
-    data:
-      status: status
-
-getActivities = ->
-  $.ajax url: urls.activities
 
 getProjectsAndIssues = (status, closedPastDays) ->
   data = {}
@@ -54,9 +38,16 @@ getProjectsAndIssues = (status, closedPastDays) ->
     url: urls.projects_and_issues
     data: data
 
-getRecentTimeEntryObjects = ->
+getRecent = ->
   $.ajax
-    url: urls.recent_time_entry_objects
+    url: urls.recent
+
+getSpentTime = (project_id, issue_id) ->
+  $.ajax
+    url: urls.spent_time
+    data:
+      project_id: project_id
+      issue_id: issue_id
 
 createTimeEntry = (data) ->
   $.ajax
@@ -81,13 +72,10 @@ $.ajaxSetup
   beforeSend: (jqXHR, settings) -> @url = settings.url
 
 module.exports =
-  getActivities: getActivities
-  getTimeEntries: getTimeEntries
-  getProjects: getProjects
-  getIssues: getIssues
-  getCurrentUser: getCurrentUser
-  getRecentTimeEntryObjects: getRecentTimeEntryObjects
+  createTimeEntry: createTimeEntry
   deleteTimeEntry: deleteTimeEntry
   getProjectsAndIssues: getProjectsAndIssues
-  createTimeEntry: createTimeEntry
+  getRecent: getRecent
+  getSpentTime: getSpentTime
+  getTimeEntries: getTimeEntries
   updateTimeEntry: updateTimeEntry

@@ -86,7 +86,7 @@ wrapDeferred = (func) ->
     func arg
     arg
 
-projectNameToID = (projects, name) ->
+projectNameToId = (projects, name) ->
   keys = _.keys(projects)
   i = 0
   while i < keys.length
@@ -197,7 +197,7 @@ mobileHideAddressBar = ->
   window.addEventListener "load", hideAddressBar
   window.addEventListener "orientationchange", hideAddressBar
 
-issueIDToURL = (id) ->
+issueIdToUrl = (id) ->
   config.redmine.urls.issues_redmine + "/" + id
 
 removeErrorClass = -> $(this).removeClass config.errorClass
@@ -249,9 +249,9 @@ module.exports =
   decimalHoursToColonFormat: decimalHoursToColonFormat
   defaultDialogConfig: defaultDialogConfig
   escapeHtml: escapeHtml
-  issueIDToURL: issueIDToURL
+  issueIdToUrl: issueIdToUrl
   onKeypressRejectNaN: onKeypressRejectNaN
-  projectNameToID: projectNameToID
+  projectNameToId: projectNameToId
   removeErrorClass: removeErrorClass
   selectAll: selectAll
   padZeros: padZeros

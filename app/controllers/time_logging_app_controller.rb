@@ -1,87 +1,26 @@
 # -*- coding: utf-8 -*-
 class TimeLoggingAppController < ApplicationController
-=begin
-this implements a specialised read only redmine http interface for the time logging app that is substantially faster than the redmine rest-api.
-tips
-  logging:
-    logger.info argument ...
-    logger.info issue.to_json
-  database queries: http://guides.rubyonrails.org/active_record_querying.html
-=end
+  # this implements a specialised read only redmine http interface for the time logging app that is substantially faster than the redmine rest-api.
+  # tips
+  #   logging:
+  #     logger.info argument ...
+  #     logger.info issue.to_json
+  #   database queries: http://guides.rubyonrails.org/active_record_querying.html
 
   unloadable
-  accept_api_auth :issues, :activities, :projects, :current_user, :time_entries, :projects_and_issues, :get_csrf_token, :recent_time_entry_objects
-  before_filter :init
-
-  def get_open_statuses
-    IssueStatus.select("id").where("is_closed=?", false).pluck :id
-  end
-
-  def get_closed_statuses
-    IssueStatus.where("is_closed=?", true).pluck :id
-  end
+  # called before every action
+  before_filter :check_auth
 
   public
 
-  def init
-    @issue_status_closed = get_closed_statuses()
-    @issue_status_open = get_open_statuses()
-  end
-
-  def get_backend_urls
-    urls = {}
-    actions = ["issues", "projects", "current_user", "get_csrf_token", "projects_and_issues", "activities", "recent_time_entry_objects", "time_entries"]
-    actions.each {|action|
-      urls[action] = url_for({controller: "time_logging_app", action: action})
-    }
-    urls["overview"] = url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}})
-    urls["time_entries_redmine"] = url_for({controller: "timelog"})
-    urls["issues_redmine"] = url_for({controller: "issues"})
-    urls["projects_redmine"] = url_for({controller: "projects"})
-    urls
-  end
-
-  def get_redmine_data
-    # creates an object that is passed to the frontend javascript.
-    current_user = User.current
-    activities = TimeEntryActivity.select("id,name").map{|b| {"id" => b["id"], "name" => b["name"]}}
-    datepicker = {}
-    datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
-    datepicker_setting_names.each {|a|
-      datepicker[a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
-    }
-    {"activities" => activities,
-     "backend_urls" => get_backend_urls,
-     # Token for "protect_from_forgery" csrf protection.
-     # It is rendered into the page and used by the javascript in every request.
-     # It is not entirely sure if form_authenticity_token is the correct token but it works.
-     "crsf_token" => form_authenticity_token.to_s,
-     "datepicker" => datepicker,
-     "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
-     # currently includes all redmine core translations until a better way is found
-     "redmine_version_major" => Redmine::VERSION::MAJOR,
-     "redmine_version_minor" => Redmine::VERSION::MINOR,
-     "translations" => I18n.translate("."),
-     "user" => {"id" => current_user["id"], "language" => current_user["language"]}}
-  end
-
   def time_entry
-    if (User.current.allowed_to?(:log_time, nil, :global => true) ||
-        User.current.allowed_to?(:edit_own_time_entries, nil, :global => true) ||
-        User.current.admin?)
-      redmine_data = get_redmine_data
-      @javascript_tag_content = "var redmineData = " + ActiveSupport::JSON.encode(redmine_data)
-      render layout: false
-    else
-      redirect_to signin_url
-    end
+    redmine_data = get_redmine_data
+    @javascript_tag_content = "var redmineData = " + ActiveSupport::JSON.encode(redmine_data)
+    render layout: false
   end
 
-  def issue_is_closed_sql table
-    "case when #{table}.status_id in(#{@issue_status_closed.join(',')}) then 1 else 0 end issue_is_closed"
-  end
-
-  def recent_time_entry_objects
+  def recent
+    load_issue_stati()
     if @issue_status_closed.empty? or @issue_status_open.empty?
       render :json => []
       return
@@ -178,6 +117,7 @@ tips
   end
 
   def projects_and_issues
+    load_issue_stati()
     if @issue_status_closed.empty? or @issue_status_open.empty?
       render :json => {"issues" => [], "projects" => []}
       return
@@ -187,7 +127,7 @@ tips
     issues = get_issues params[:status], projects.map{|b| b["id"]}, past_days
     issues = issues.map {|b|
       {
-        "estimated" => b["estimated"],
+        "estimated_hours" => b["estimated_hours"],
         "id" => b["id"],
         "is_closed" => b["issue_is_closed"] == 1,
         "project" => {"id" => b.project_id },
@@ -198,7 +138,22 @@ tips
     render :json => {"issues" => issues, "projects" => projects}
   end
 
-  def
+  def spent_time project_id=params["project_id"], issue_id=params["issue_id"]
+    # return the current, total spent time for a project or issue.
+    return unless project_id or issue_id
+    if issue_id
+      entry = TimeEntry.select("sum(time_entries.hours) hours")
+                .where("issue_id = ?", issue_id)
+                .group("time_entries.issue_id")
+                .first
+    elsif project_id
+      entry = TimeEntry.select("sum(time_entries.hours) hours")
+                .where("project_id = ?", issue_id)
+                .group("time_entries.project_id")
+                .first
+    end
+    render :json => {"total" => entry["hours"]}
+  end
 
   def estimate_check
     # experimental view to compare estimates with actual spent time for closed tickets
@@ -213,6 +168,73 @@ tips
   end
 
   private
+
+  def get_backend_urls
+    urls = {}
+    actions = ["projects_and_issues", "recent", "spent_time", "time_entries"]
+    actions.each {|action|
+      urls[action] = url_for({controller: "time_logging_app", action: action})
+    }
+    urls["overview"] = url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}})
+    urls["time_entries_redmine"] = url_for({controller: "timelog"})
+    urls["issues_redmine"] = url_for({controller: "issues"})
+    urls["projects_redmine"] = url_for({controller: "projects"})
+    urls
+  end
+
+  def get_comma_translation key
+    b = translate key
+    b and b.split ","
+  end
+
+  def get_redmine_data
+    # creates an object that is passed to the frontend javascript.
+    current_user = User.current
+    activities = TimeEntryActivity.select("id,name").map{|b| {"id" => b["id"], "name" => b["name"]}}
+    datepicker = {
+      "month_names" => get_comma_translation("datepicker_month_names"),
+      "month_names_short" => get_comma_translation("datepicker_month_names_short"),
+      "day_names" => get_comma_translation("datepicker_day_names"),
+      "day_names_short" => get_comma_translation("datepicker_day_names_short")
+    }
+    datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
+    datepicker_setting_names.each {|a|
+      datepicker[a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
+    }
+    {"activities" => activities,
+     "backend_urls" => get_backend_urls,
+     # Token for "protect_from_forgery" csrf protection.
+     # It is rendered into the page and used by the javascript in every request.
+     # It is not entirely sure if form_authenticity_token is the correct token but it works.
+     "crsf_token" => form_authenticity_token.to_s,
+     "datepicker" => datepicker,
+     "overbooking_warning" => "1" == Setting.plugin_redmine_time_logging_app["overbooking_warning"],
+     "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+     # currently includes all redmine core translations until a better way is found
+     "redmine_version_major" => Redmine::VERSION::MAJOR,
+     "redmine_version_minor" => Redmine::VERSION::MINOR,
+     "translations" => I18n.translate("."),
+     "user" => {"id" => current_user["id"], "language" => current_user["language"]}}
+  end
+
+  def load_issue_stati
+    if not @issue_status_open
+      @issue_status_open = IssueStatus.select("id").where("is_closed=?", false).pluck :id
+      @issue_status_closed = IssueStatus.where("is_closed=?", true).pluck :id
+    end
+  end
+
+  def check_auth
+    allowed = (User.current.allowed_to?(:log_time, nil, :global => true) ||
+               User.current.allowed_to?(:edit_own_time_entries, nil, :global => true) ||
+               User.current.admin?)
+    redirect_to signin_url unless allowed
+  end
+
+  def issue_is_closed_sql table
+    load_issue_stati()
+    "case when #{table}.status_id in(#{@issue_status_closed.join(',')}) then 1 else 0 end issue_is_closed"
+  end
 
   def decimal_hours_to_hours_minutes n
     # convert a decimal hours number into a hh[:mm] string represultentation

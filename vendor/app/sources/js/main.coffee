@@ -43,7 +43,7 @@ getIssuesProjectsAndSearchData = (status) ->
     cache.issues = t[1]
     cache.searchData = t[2]
     initAutocomplete t[0], t[1], t[2]
-    redmine.getRecentTimeEntryObjects().done (recentTimeEntryObjects) ->
+    redmine.getRecent().done (recentTimeEntryObjects) ->
       cache.searchDataRecent = []
       recentTimeEntryObjects.forEach (e, index) ->
         if e.issue_id
@@ -75,7 +75,7 @@ sync = (formData) ->
     redmine.createTimeEntry(apiData).done (timeEntry) ->
       timeEntry = timeEntry.time_entry
       issueOrProject = (timeEntry.issue and timeEntry.issue.id) or timeEntry.project.name
-      issueOrProject = $("<a>").attr("href", helper.issueIDToURL(issueOrProject)).html("#" + issueOrProject)  if _.isNumber(issueOrProject)
+      issueOrProject = $("<a>").attr("href", helper.issueIdToUrl(issueOrProject)).html("#" + issueOrProject)  if _.isNumber(issueOrProject)
       #console.log(t("success"), timeEntry.hours + " Stunden für ", issueOrProject, " erfasst.")
       resetFormAfterSync()
 
@@ -106,16 +106,17 @@ getSearchFormData = (str) ->
   str = helper.$$("#search").val() unless str
   # user may have edited the search value
   return false unless str and _.some(cache.searchData, ((b) -> b.value == str))
-  issueID = str.match(/#\d+/)
-  if issueID
-    issueID = parseInt(issueID[0].substring(1))
-    issue = cache.issues[issueID]
-    issue_id: issueID
+  issueId = str.match(/#\d+/)
+  if issueId
+    issueId = parseInt(issueId[0].substring(1))
+    issue = cache.issues[issueId]
+    issue: issue
+    issue_id: issueId
     project_id: parseInt issue.project.id
   else
     # check if it is a parent- or sub-project
     projectName = _.last(str.split(app_config.issueNameDelimiter).map($.trim))
-    project_id = parseInt(helper.projectNameToID(cache.projects, projectName))
+    project_id = parseInt(helper.projectNameToId(cache.projects, projectName))
     project_id: project_id if project_id
 
 autocompleteSourceDefault = (req, handleResponse) ->
@@ -186,6 +187,9 @@ getFormData = ->
   hours = parseInt helper.$$("#hours").val()
   formData.minutes = minutes if minutes
   formData.hours = hours if hours
+  if activeTimeEntryId
+    formData.timeEntryId = activeTimeEntryId
+    formData.activeTimeEntry = cache.timeEntries[activeTimeEntryId]
   _.extend formData, getSearchFormData()
 
 validateFieldExistence = (formData) ->
@@ -202,7 +206,16 @@ validateFieldExistence = (formData) ->
   true
 
 validateOther = (formData) ->
-  # insert additional validations here, or add functions to the array in "validate"
+  # insert additional validations here, or add functions to the array in "validate".
+  if redmineData.overbooking_warning
+    # warn when overbooking for the first time
+    new_hours = (formData.hours or 0) + ((formData.minutes or 0) / 60)
+    if formData.new then old_hours = 0
+    else old_hours = formData.activeTimeEntry.hours
+    estimated = formData.issue.estimated_hours
+    total_spent = formData.activeTimeEntry.issue.spent_hours
+    if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
+      return confirm translate "overbooking_warning"
   true
 
 validate = (formData) ->
@@ -257,7 +270,7 @@ confirmDelete = ->
 
 updateTimeEntry = ->
   formData = getFormData()
-  formData.activeTimeEntryId = activeTimeEntryId
+  formData.new = false
   if validate(formData)
     sync(formData).done (response) ->
       exitEditMode()
@@ -265,10 +278,12 @@ updateTimeEntry = ->
 
 createTimeEntry = ->
   formData = getFormData()
-  if validate(formData)
-    sync formData
-  else
-    false
+  formData.new = true
+  redmine.getSpentTime(formData.project_id, formData.issue_id).done (response) ->
+    formData.activeTimeEntry =
+      issue:
+        spent_hours: response["total"]
+    if validate(formData) then sync formData
 
 getDisplayFormData = ->
   # gets the form data in a format that can be easily reinserted
@@ -276,8 +291,7 @@ getDisplayFormData = ->
   r.project.name = helper.$$("#search").val()  if r.project
   r
 
-displayFormDataToDom = (formData) ->
-  timeEntryToDOM formData
+displayFormDataToDom = (formData) -> timeEntryToDOM formData
 
 startEditMode = (timeEntryId) ->
   throw ("missing timeEntryId") unless timeEntryId
@@ -290,9 +304,9 @@ startEditMode = (timeEntryId) ->
     return
   prevTimeEntry = getDisplayFormData()
   activeTimeEntryId = timeEntryId
-  helper.$$(".delete,.cancel").show()
+  helper.$$(".delete, .cancel").show()
   helper.$$(".delete").on "click", confirmDelete
-  helper.$$("button.submit").addClass("update").html(translate("update")).off("click").one "click", updateTimeEntry
+  helper.$$("button.submit").addClass("update").html(translate("update")).off("click").on "click", updateTimeEntry
   helper.$$("button.cancel").one "click", exitEditMode
   timeEntryToDOM cache.timeEntries[timeEntryId]
 
@@ -304,7 +318,6 @@ exitEditMode = ->
   displayFormDataToDom prevTimeEntry
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
-  helper.$$("#search").trigger("focus", {onlyFocus: true})
   helper.$$(".resetForm").show()
   prevTimeEntry = false
 
@@ -497,19 +510,14 @@ datepickerChangeDays = (element, difference) ->
     datepickerUpdate ->
       datepickerChangeDays helper.$$("#date"), Math.min(difference, 1)  if dateIsWeekend(nextDate)
 
-incrementDate = ->
-  datepickerChangeDays helper.$$("#date"), 1
-
-decrementDate = ->
-  datepickerChangeDays helper.$$("#date"), -1
+incrementDate = -> datepickerChangeDays helper.$$("#date"), 1
+decrementDate = -> datepickerChangeDays helper.$$("#date"), -1
 
 onTimeEntriesReload = (event, animation) ->
-  config = undefined
-  config = animation: animation  if animation
+  config = if animation then {animation: animation} else undefined
   getTimeEntries
     spent_on: helper.$$("#date").datepicker("getDate")
   , config
-
 
 initialise = ->
   helper.mobileHideAddressBar()
@@ -598,4 +606,5 @@ datepickerUpdate = (->
 )()
 
 module.exports =
+  config: app_config
   initialise: initialise
