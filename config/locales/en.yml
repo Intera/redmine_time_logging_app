@@ -49,6 +49,7 @@ en:
   success: Success
   unavailable_roject: Project not available
   update: Update
+  warning: Warning
   yes: Yes
   date:
     formats:

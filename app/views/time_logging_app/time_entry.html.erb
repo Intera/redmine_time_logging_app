@@ -76,14 +76,14 @@
       </table>
     </div>
     <script id="timeEntryTemplate" type="text/html">
-      <tr class="timeEntry {{classes}} " data-entry-id="{{entry_id}}">
+      <tr class="timeEntry {{classes}}" data-entry-id="{{entry_id}}">
         <td>
           <a class="title" href="{{projectOrIssueUrl}}" target="_blank">{{name}}</a>
           <div class="comments">{{comments}}</div>
         </td>
         <td>
           <a class="time" href="{{timeEntriesUrl}}" target="_blank"
-			       title="<%= t(:spent_individual) %> (<%= t(:spent_total) %> / <%= t(:estimate) %>)">{{time}} ({{estimates}})</a>
+			       title="<%= t(:spent_individual) %> (<%= t(:spent_total) %> / <%= t(:estimate) %>)">{{time}} (<span class="estimates">{{estimates}}</span>)</a>
         </td>
         <td>
           <a class="activity" href="{{timeEntriesUrl}}" target="_blank">{{activity}}</a>

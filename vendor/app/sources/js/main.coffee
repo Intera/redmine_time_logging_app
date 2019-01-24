@@ -3,15 +3,11 @@
 helper = require "./helper"
 redmine = require "./redmine"
 app_config = require "./config"
-translations = app_config.redmine.translations
-
 debug = false
 cache = {template: {}}
 _isLoaded = false
 sync = helper.timeLimitedFunc sync, 1250
-
-translate = (key) ->
-   translations[window.displayLanguage]?[key] or key
+translate = (key) -> app_config.redmine.translations[key] or key
 
 missingFieldsError = (missingFields) ->
   _.map missingFields, (a) ->
@@ -64,7 +60,6 @@ getIssuesProjectsAndSearchData = (status) ->
             parent_id: e.project_parent_id
             parent_name: e.project_parent_name
           cache.searchDataRecent.push helper.createProjectSearchDataEntry e
-      cache.searchDataRecent = helper.sortByLocaleIgnoreTicketId cache.searchDataRecent
 
 sync = (formData) ->
   # create, delete or update a time entry
@@ -215,7 +210,7 @@ validateOther = (formData) ->
     estimated = formData.issue.estimated_hours
     total_spent = formData.activeTimeEntry.issue.spent_hours
     if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
-      return confirm translate "overbooking_warning"
+      return confirm translate("overbooking_warning")
   true
 
 validate = (formData) ->
@@ -283,7 +278,9 @@ createTimeEntry = ->
     formData.activeTimeEntry =
       issue:
         spent_hours: response["total"]
-    if validate(formData) then sync formData
+    if validate(formData)
+      sync(formData).done (response) ->
+        helper.$$(document).trigger "timeEntriesReload", "inplace"
 
 getDisplayFormData = ->
   # gets the form data in a format that can be easily reinserted
@@ -369,7 +366,9 @@ timeEntryToTableRow = (a, even) ->
   else
     estimated_hours = if estimated_hours >= 1 then Math.round estimated_hours else helper.decimalHoursToColonFormat estimated_hours
   estimates = spent_hours + (if estimated_hours then "/" + estimated_hours else "")
-  if spent_hours > estimated_hours then classes.push "overbooked"
+  if estimated_hours
+    if spent_hours >= estimated_hours then classes.push "overbooked"
+    else if spent_hours / estimated_hours >= 0.8 then classes.push "almost-overbooked"
   # create html
   cache.template.timeEntry
     entry_id: a.id
@@ -533,7 +532,6 @@ initialise = ->
   cache.user_id = user.id
   lang = user.language
   cache.user_language = lang
-  window.displayLanguage = if translations[lang] then lang else "en"
   # csrf token. important, otherwise "internal server error"s occur
   token = redmineData.csrf_token
   $.ajaxPrefilter (options, origOptions, request) ->
