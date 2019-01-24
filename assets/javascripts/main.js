@@ -10766,11 +10766,17 @@ return jQuery;
     helper.$$(".delete").on("click", confirmDelete);
     helper.$$("button.submit").addClass("update").html(translate("update")).off("click").on("click", updateTimeEntry);
     helper.$$("button.cancel").one("click", exitEditMode);
+    $(document).on("keyup.time_logging_app", function(event) {
+      if ("Escape" === event.key) {
+        return exitEditMode();
+      }
+    });
     return timeEntryToDOM(cache.timeEntries[timeEntryId]);
   };
 
   exitEditMode = function() {
     activeTimeEntryId = false;
+    $(document).off("keyup.time_logging_app");
     helper.$$(".delete,.cancel").off("click");
     helper.$$(".delete,.cancel").hide();
     helper.$$("button.submit").removeClass("update").html(translate("create")).off("click").click(createTimeEntry);
