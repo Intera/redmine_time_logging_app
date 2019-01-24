@@ -18,7 +18,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * translatable
 
 # browser support
-at the moment the plugin probably does not work with internet explorer.
+at the moment the plugin might not work with internet explorer.
 
 # installation
 ## download
@@ -57,37 +57,36 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 |latest selectable date|+0|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
 |first day of week|1|0-6, sunday to monday|
 |load closed issues of the past n days|7|include closed issues as long as they are not older than the given number of days|
+|warn when exceeding the estimated|off|show a warning when logging time that will exceed the estimated time of the ticket|
 
 # developer information
 ## development dependencies
 * nodejs
 
+## how to add a new translation language
+* same as for any other redmine plugin
+* copy one of the files in "config/locales/" to a new one named with the appropriate language code
+
+the plugin tries to use the language that the user has configured in redmine under "my account" and falls back to english
 ## setup
 * change directory to vendor/app
 * execute "npm install" on the command-line to install the required nodejs modules at once (coffeescript, browserify, coffeeify and fs-extra)
 
 ## interesting files
 * "app/controllers/time_logging_app_controller.rb" is the backend interface
-* the javascript application is under "vendor/app" and written in coffeescript
+* the javascript code is under "vendor/app/sources/js" and written as coffeescript
 * files under "assets/" are automatically created/updated by the build tool in "vendor/app"
-* "config/locales/*" and "vendor/app/js/translations.coffee" contain the translations
-* "vendor/app/js/config.coffee" is an internal configuration file and contains some additional settings
-
-## how to add a new translation language
-* copy one of the files in "config/locales/" to a new one named with the appropriate language code
-* in "vendor/app/js/translations.coffee", copy one of the "translations["en"] ..." blocks and use the new language code instead of "en"
-* recompile the javascript application, see below for how to do this
-
-the plugin tries to use the language that the user has configured in the browser and falls back to english
+* "config/locales/*" are the translations
+* "vendor/app/js/config.coffee" is an internal configuration file and contains some additional internal settings
 
 ## how to recompile the javascript application
 * in directory "vendor/app"
-* execute "./exe/compile". if that does not work, try "node exe/compile"
-* after success, exit with control+c
-* changes will only be visible after a redmine restart, because redmine installs new plugin assets only when it starts
+* execute "./exe/compile". should that not work then try "node exe/compile"
+* changes will only become active after a redmine restart, because redmine installs new plugin assets only when it starts
 
 ## other
 it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
+* better language detection (en-gb seems to be incorrectly detected)
 * internet explorer support
