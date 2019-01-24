@@ -1,4 +1,5 @@
 config = require "./config"
+translate = (key) -> config.redmine.translations[key] or key
 redmineConfig = config.redmine
 urls = redmineConfig.urls
 
@@ -10,11 +11,11 @@ defaultRedmineErrorHandler = (response, x, y) ->
     # request aborted by the user
     return
   else if 404 is response.status
-    alert tl("ticketMessage") + tl("error404NotFound") + ".\nrelevant url: \"#{@url}\""
+    alert translate("ticketMessage") + translate("error404NotFound") + ".\nrelevant url: \"#{@url}\""
   else unless response.status is 200
-    message = tl("ticketMessage") + $.parseJSON(response.responseText).errors.join("\n")
+    message = translate("ticketMessage") + $.parseJSON(response.responseText).errors.join("\n")
     if 422 is response.status
-      message += "\n\n" + tl("error422Explanation")
+      message += "\n\n" + translate("error422Explanation")
     alert message
 
 deleteTimeEntry = (id) ->

@@ -8,8 +8,12 @@ class TimeLoggingAppController < ApplicationController
   #   database queries: http://guides.rubyonrails.org/active_record_querying.html
 
   unloadable
-  # called before every action
-  before_filter :check_auth
+
+  if Rails::VERSION::MAJOR >= 4
+    before_action :check_auth
+  else
+    before_filter :check_auth
+  end
 
   public
 
