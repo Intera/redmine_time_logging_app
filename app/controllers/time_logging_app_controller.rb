@@ -36,9 +36,9 @@ class TimeLoggingAppController < ApplicationController
     j = "select i.id issue_id, i.project_id, j.created_on updated_on from journals j, issues i where j.journalized_type = 'Issue' and j.user_id = #{User.current.id} and j.journalized_id = i.id"
     # assigned issues
     i = "select i.id issue_id, i.project_id, i.updated_on from issues i where i.assigned_to_id = #{User.current.id}"
-    # union and limit to entries_count
+    # union and limit
     t = "select distinct issue_id, project_id from (#{t} union #{j} union #{i} order by updated_on desc) a limit #{entries_count}"
-    # add parent projects and select and rename fields
+    # add parent projects and rename fields
     t = "select t.*,i.subject issue_subject,p.name project_name,p2.id project_parent_id,p2.name project_parent_name,v.name version_name,#{issue_is_closed_sql('i')},i.updated_on from (#{t}) t inner join projects p" +
       " left outer join projects p2 on p2.id=p.parent_id left outer join issues i on i.id=t.issue_id left outer join versions v on v.id=i.fixed_version_id where p.id=t.project_id"
     render :json => TimeEntry.connection.select_all(t)
@@ -212,7 +212,7 @@ class TimeLoggingAppController < ApplicationController
      # Token for "protect_from_forgery" csrf protection.
      # It is rendered into the page and used by the javascript in every request.
      # It is not entirely sure if form_authenticity_token is the correct token but it works.
-     "crsf_token" => form_authenticity_token.to_s,
+     "csrf_token" => form_authenticity_token.to_s,
      "datepicker" => datepicker,
      "overbooking_warning" => "1" == Setting.plugin_redmine_time_logging_app["overbooking_warning"],
      "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],

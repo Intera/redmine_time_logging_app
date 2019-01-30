@@ -11230,16 +11230,21 @@ return jQuery;
   // functions for ajax calls between the app and the redmine backend interface.
   // all request functions return a jqXHR object.
   defaultRedmineErrorHandler = function(response, x, y) {
-    var message;
+    var exc, message;
     if (0 === response.status) {
 
     // request aborted by the user
     } else if (404 === response.status) {
-      return alert(translate("ticketMessage") + translate("error404NotFound") + `.\nrelevant url: "${this.url}"`);
+      return alert(translate("redmine_message") + translate("error_404_not_found") + `.\nrelevant url: "${this.url}"`);
     } else if (response.status !== 200) {
-      message = translate("ticketMessage") + $.parseJSON(response.responseText).errors.join("\n");
+      try {
+        message = translate("redmine_message") + " " + $.parseJSON(response.responseText).errors.join("\n");
+      } catch (error) {
+        exc = error;
+        message = "http status " + response.status;
+      }
       if (422 === response.status) {
-        message += "\n\n" + translate("error422Explanation");
+        message += "\n\n" + translate("error_422_explanation");
       }
       return alert(message);
     }

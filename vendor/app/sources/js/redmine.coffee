@@ -11,11 +11,12 @@ defaultRedmineErrorHandler = (response, x, y) ->
     # request aborted by the user
     return
   else if 404 is response.status
-    alert translate("ticketMessage") + translate("error404NotFound") + ".\nrelevant url: \"#{@url}\""
+    alert translate("redmine_message") + translate("error_404_not_found") + ".\nrelevant url: \"#{@url}\""
   else unless response.status is 200
-    message = translate("ticketMessage") + $.parseJSON(response.responseText).errors.join("\n")
+    try message = translate("redmine_message") + " " + $.parseJSON(response.responseText).errors.join("\n")
+    catch exc then message = "http status " + response.status
     if 422 is response.status
-      message += "\n\n" + translate("error422Explanation")
+      message += "\n\n" + translate("error_422_explanation")
     alert message
 
 deleteTimeEntry = (id) ->
