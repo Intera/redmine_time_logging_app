@@ -10078,17 +10078,19 @@ return jQuery;
     searchData = [];
     // convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
     // and fill searchData array
-    projects = _.foldl(projects, function(prev, ele) {
-      // insert projects into searchData
-      searchData.push(createProjectSearchDataEntry(ele));
+    projects = _.foldl(projects, function(prev, a) {
+      if (!redmineData.only_issues) {
+        // insert projects into searchData
+        searchData.push(createProjectSearchDataEntry(a));
+      }
       // insert into projects object
-      prev[ele.id] = ele;
+      prev[a.id] = a;
       return prev;
     }, {});
-    issues = _.foldl(issues, function(prev, ele) {
+    issues = _.foldl(issues, function(prev, a) {
       // insert into searchData
-      searchData.push(createIssueSearchDataEntry(ele, projects));
-      prev[ele.id] = ele;
+      searchData.push(createIssueSearchDataEntry(a, projects));
+      prev[a.id] = a;
       return prev;
     }, {});
     return [projects, issues, sortByLocaleIgnoreTicketId(searchData)];
@@ -10410,7 +10412,6 @@ return jQuery;
         if (_.isNumber(issueOrProject)) {
           issueOrProject = $("<a>").attr("href", helper.issueIdToUrl(issueOrProject)).html("#" + issueOrProject);
         }
-        //console.log(t("success"), timeEntry.hours + " Stunden für ", issueOrProject, " erfasst.")
         return resetFormAfterSync();
       });
     }
@@ -10612,10 +10613,12 @@ return jQuery;
       } else {
         old_hours = formData.activeTimeEntry.hours;
       }
-      estimated = formData.issue.estimated_hours;
-      total_spent = formData.activeTimeEntry.issue.spent_hours;
-      if ((!(old_hours === new_hours)) && (estimated > total_spent) && (estimated < new_hours + total_spent)) {
-        return confirm(translate("overbooking_warning"));
+      if (formData.issue && formData.activeTimeEntry) {
+        estimated = formData.issue.estimated_hours;
+        total_spent = formData.activeTimeEntry.issue.spent_hours;
+        if ((!(old_hours === new_hours)) && (estimated > total_spent) && (estimated < new_hours + total_spent)) {
+          return confirm(translate("overbooking_warning"));
+        }
       }
     }
     return true;
@@ -10720,18 +10723,27 @@ return jQuery;
     var formData;
     formData = getFormData();
     formData.new = true;
-    return redmine.getSpentTime(formData.project_id, formData.issue_id).done(function(response) {
-      formData.activeTimeEntry = {
-        issue: {
-          spent_hours: response["total"]
+    if (formData.issue_id) {
+      return redmine.getSpentTime(formData.project_id, formData.issue_id).done(function(response) {
+        formData.activeTimeEntry = {
+          issue: {
+            spent_hours: response["total"]
+          }
+        };
+        if (validate(formData)) {
+          return sync(formData).done(function(response) {
+            return helper.$$(document).trigger("timeEntriesReload", "inplace");
+          });
         }
-      };
+      });
+    } else {
+      // validateOther does not need spent time for projects
       if (validate(formData)) {
         return sync(formData).done(function(response) {
           return helper.$$(document).trigger("timeEntriesReload", "inplace");
         });
       }
-    });
+    }
   };
 
   getDisplayFormData = function() {

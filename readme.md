@@ -9,12 +9,11 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * lists spent time entries per day and allows to switch fast between days
 * automatically skips weekends if there is no time entry
 * time entry creation/edit/copy/delete
-* a click into an empty search field suggests issues recently changed by the user
-* link to an overview page that lists the total hours per day
 * shows individual and general total spent time for issues and projects
-* existing time entries can be used as a template
-* a click on the logged hours or activity opens the redmine time entry view for the issue or project
 * open issue/project button
+* a click into an empty search field suggests issues recently changed by the user
+* a click on the logged hours or activity opens the redmine time entry view for the issue or project
+* link to an overview page that lists the total hours per day
 * translatable
 
 # browser support
@@ -28,8 +27,7 @@ alternatively, you can clone the source code repository with "git clone https://
 ## setup
 * make sure that "enable rest web service" is activated in redmine under "Administration" -> "Settings" -> "API". if this is not enabled, redmine will ask for username and password but wont accept it
 * move the "redmine_time_logging_app" directory from the download to your redmine instance directory to "plugins/", so that it lies at "plugins/redmine_time_logging_app"
-* on the command-line, change into the redmine instance directory and execute "bundle install"
-* if that ran successful and the file system permissions are right, the plugin should now be installed
+* if the file system permissions are right, the plugin should now be installed
 * restart redmine
 * go into redmine under "Administration" -> "Plugins" to check that it is listed
 
@@ -57,7 +55,7 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 |latest selectable date|+0|[format](https://api.jqueryui.com/datepicker/#option-minDate)|
 |first day of week|1|0-6, sunday to monday|
 |load closed issues of the past n days|7|include closed issues as long as they are not older than the given number of days|
-|warn when exceeding the estimated|off|show a warning when logging time that will exceed the estimated time of the ticket|
+|warn when exceeding estimated time|off|show a warning when trying to log time that would exceed the estimated time of the issue|
 
 # developer information
 ## development dependencies

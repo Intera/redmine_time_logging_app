@@ -98,17 +98,17 @@ createProjectsIssuesAndSearchData = (projects, issues) ->
   searchData = []
   # convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
   # and fill searchData array
-  projects = _.foldl(projects, (prev, ele) ->
+  projects = _.foldl(projects, (prev, a) ->
     # insert projects into searchData
-    searchData.push createProjectSearchDataEntry(ele)
+    searchData.push createProjectSearchDataEntry a unless redmineData.only_issues
     # insert into projects object
-    prev[ele.id] = ele
+    prev[a.id] = a
     prev
   , {})
-  issues = _.foldl(issues, (prev, ele) ->
+  issues = _.foldl(issues, (prev, a) ->
     # insert into searchData
-    searchData.push createIssueSearchDataEntry(ele, projects)
-    prev[ele.id] = ele
+    searchData.push createIssueSearchDataEntry a, projects
+    prev[a.id] = a
     prev
   , {})
   [projects, issues, sortByLocaleIgnoreTicketId searchData]

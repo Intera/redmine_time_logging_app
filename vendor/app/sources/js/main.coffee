@@ -71,7 +71,6 @@ sync = (formData) ->
       timeEntry = timeEntry.time_entry
       issueOrProject = (timeEntry.issue and timeEntry.issue.id) or timeEntry.project.name
       issueOrProject = $("<a>").attr("href", helper.issueIdToUrl(issueOrProject)).html("#" + issueOrProject)  if _.isNumber(issueOrProject)
-      #console.log(t("success"), timeEntry.hours + " Stunden für ", issueOrProject, " erfasst.")
       resetFormAfterSync()
 
 resetFormAfterSync = ->
@@ -207,10 +206,11 @@ validateOther = (formData) ->
     new_hours = (formData.hours or 0) + ((formData.minutes or 0) / 60)
     if formData.new then old_hours = 0
     else old_hours = formData.activeTimeEntry.hours
-    estimated = formData.issue.estimated_hours
-    total_spent = formData.activeTimeEntry.issue.spent_hours
-    if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
-      return confirm translate("overbooking_warning")
+    if formData.issue and formData.activeTimeEntry
+      estimated = formData.issue.estimated_hours
+      total_spent = formData.activeTimeEntry.issue.spent_hours
+      if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
+        return confirm translate("overbooking_warning")
   true
 
 validate = (formData) ->
@@ -274,10 +274,16 @@ updateTimeEntry = ->
 createTimeEntry = ->
   formData = getFormData()
   formData.new = true
-  redmine.getSpentTime(formData.project_id, formData.issue_id).done (response) ->
-    formData.activeTimeEntry =
-      issue:
-        spent_hours: response["total"]
+  if formData.issue_id
+    redmine.getSpentTime(formData.project_id, formData.issue_id).done (response) ->
+      formData.activeTimeEntry =
+        issue:
+          spent_hours: response["total"]
+      if validate(formData)
+        sync(formData).done (response) ->
+          helper.$$(document).trigger "timeEntriesReload", "inplace"
+  else
+    # validateOther does not need spent time for projects
     if validate(formData)
       sync(formData).done (response) ->
         helper.$$(document).trigger "timeEntriesReload", "inplace"

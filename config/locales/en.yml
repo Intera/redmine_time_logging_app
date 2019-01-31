@@ -33,6 +33,7 @@ en:
   missing_fields: Missing fields
   no: No
   no_time_entries_loaded: No entries found
+  only_issues_label: Disallow logging time for projects
   open_in_redmine: View selected project or ticket
   or: or
   overbooking_warning: This entry will exceed the estimated time for this ticket. Eventually consult with a project leader first before you continue.

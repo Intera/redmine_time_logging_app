@@ -154,7 +154,7 @@ class TimeLoggingAppController < ApplicationController
                 .first
     elsif project_id
       entry = TimeEntry.select("sum(time_entries.hours) hours")
-                .where("project_id = ?", issue_id)
+                .where("project_id = ?", project_id)
                 .group("time_entries.project_id")
                 .first
     end
@@ -214,6 +214,7 @@ class TimeLoggingAppController < ApplicationController
      # It is not entirely sure if form_authenticity_token is the correct token but it works.
      "csrf_token" => form_authenticity_token.to_s,
      "datepicker" => datepicker,
+     "only_issues" => "1" == Setting.plugin_redmine_time_logging_app["only_issues"],
      "overbooking_warning" => "1" == Setting.plugin_redmine_time_logging_app["overbooking_warning"],
      "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
      # currently includes all redmine core translations until a better way is found

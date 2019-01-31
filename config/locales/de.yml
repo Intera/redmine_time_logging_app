@@ -33,6 +33,7 @@ de:
   missing_fields: Fehlende Informationen
   no: Nein
   no_time_entries_loaded: Keine Einträge gefunden
+  only_issues_label: Buchung auf Projekte nicht erlauben
   open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
   or: oder
   overbooking_warning: Dieser Eintrag wird den geschätzten Aufwand überschreiten. Stimmen sie sich eventuell erst mit einem Projektleiter ab, bevor sie fortfahren.

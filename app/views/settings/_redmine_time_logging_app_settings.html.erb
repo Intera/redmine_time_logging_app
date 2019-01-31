@@ -32,3 +32,8 @@
   <%= content_tag(:label, l(:overbooking_warning_label)) %>
   <%= check_box_tag "settings[overbooking_warning]", "1", @settings["overbooking_warning"] %><br/>
 </p>
+
+<p>
+  <%= content_tag(:label, l(:only_issues_label)) %>
+  <%= check_box_tag "settings[only_issues]", "1", @settings["only_issues"] %><br/>
+</p>
