@@ -206,7 +206,7 @@ validateOther = (formData) ->
     new_hours = (formData.hours or 0) + ((formData.minutes or 0) / 60)
     if formData.new then old_hours = 0
     else old_hours = formData.activeTimeEntry.hours
-    if formData.issue and formData.activeTimeEntry
+    if formData.issue and formData.activeTimeEntry.issue
       estimated = formData.issue.estimated_hours
       total_spent = formData.activeTimeEntry.issue.spent_hours
       if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
@@ -410,9 +410,7 @@ displayTimeEntries = (timeEntries, config) ->
   helper.$$("#timeEntries tbody").children().remove()
   if timeEntries.length
     # timeEntries in the format as retrieved from the backend interface
-    daySpentTime = _.foldl(timeEntries, (prev, a) ->
-      prev + a.hours
-    , 0)
+    daySpentTime = _.foldl(timeEntries, ((result, a) -> result + a.hours), 0)
     helper.$$(".daySpentTime").html helper.decimalHoursToColonFormat(daySpentTime)
     insertTimeEntryRows timeEntries
     $(".timeEntry .edit").button(icons:
@@ -480,11 +478,9 @@ timeEntryReceiveToSendFormat = (a) ->
 timeEntryToDOM = (timeEntry) ->
   # insert time entry data into form fields.
   # in the format as received from the backend interface
-  val = undefined
-  val = helper.decimalHoursToHours(timeEntry.hours)
-  helper.$$("#hours").val (if val and (0 isnt val) then val else "")
-  val = helper.decimalHoursToMinutes(timeEntry.hours)
-  helper.$$("#minutes").val (if val and (0 isnt val) then val else "")
+  [hours, minutes] = helper.decimalHoursToHoursAndMinutes timeEntry.hours
+  helper.$$("#hours").val (if hours and (0 isnt hours) then hours else "")
+  helper.$$("#minutes").val (if minutes and (0 isnt minutes) then minutes else "")
   val = timeEntry.comments
   helper.$$("#comments").val (if val then val else "")
   val = timeEntry.activity and timeEntry.activity.id

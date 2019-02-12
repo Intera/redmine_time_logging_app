@@ -167,19 +167,16 @@ onKeypressRejectNaN = (event) ->
   # standard number keyrange || numpad number keyrange || tab || backspace || delete || lr arrows
   ((charCode > 47) and (charCode < 58)) or ((charCode > 95) and (charCode < 106)) or (charCode is 9) or (charCode is 8) or (charCode is 46) or (charCode is 37) or (charCode is 39)
 
-decimalHoursToHours = (arg) ->
-  Math.floor Math.round(arg * 100) / 100
+decimalHoursToHoursAndMinutes = (a) ->
+  hours = Math.floor a
+  minutes = Math.round a * 60 % 60
+  if 60 is minutes then [hours + 1, 0] else [hours, minutes]
 
-decimalHoursToMinutes = (arg) ->
-  res = Math.round((1 - (Math.ceil(arg) - arg)) * 60)
-  (if 60 is res then 0 else res)
-
-decimalHoursToColonFormat = (arg) ->
-  hours = decimalHoursToHours(arg)
-  minutes = decimalHoursToMinutes(arg)
+decimalHoursToColonFormat = (a) ->
+  [hours, minutes] = decimalHoursToHoursAndMinutes a
   res = ""
-  res += hours  if hours
-  res += ":" + padZeros(minutes, 2)  if minutes
+  res += hours if hours
+  res += ":" + padZeros(minutes, 2) if minutes
   res
 
 mobileHideAddressBar = ->
@@ -244,8 +241,7 @@ module.exports =
   createProjectsIssuesAndSearchData: createProjectsIssuesAndSearchData
   createIssueSearchDataEntry: createIssueSearchDataEntry
   createProjectSearchDataEntry: createProjectSearchDataEntry
-  decimalHoursToHours: decimalHoursToHours
-  decimalHoursToMinutes: decimalHoursToMinutes
+  decimalHoursToHoursAndMinutes: decimalHoursToHoursAndMinutes
   decimalHoursToColonFormat: decimalHoursToColonFormat
   defaultDialogConfig: defaultDialogConfig
   escapeHtml: escapeHtml
