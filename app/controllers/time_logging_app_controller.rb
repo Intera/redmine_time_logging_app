@@ -158,7 +158,7 @@ class TimeLoggingAppController < ApplicationController
                 .group("time_entries.project_id")
                 .first
     end
-    render :json => {"total" => entry["hours"]}
+    render :json => {"total" => entry ? entry["hours"] : 0}
   end
 
   def estimate_check
