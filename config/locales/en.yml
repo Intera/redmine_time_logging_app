@@ -26,6 +26,7 @@ en:
   hours: Hours
   issue_or_project: Project or ticket
   issues_closed_past_days: Dont load closed issues older than this number of days
+  jquery_datepicker_format: jQuery datepicker format
   label_search: Search ...
   loading: Loading
   menu_entry_title: Time Tracking

@@ -16,7 +16,7 @@ de:
   datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
   datepicker_next: Nächster Tag
   datepicker_prev: Vorheriger Tag
-  default: default
+  default: Vorgabe
   delete: Löschen
   duplicate: Einfügen
   edit: Bearbeiten
@@ -25,7 +25,8 @@ de:
   estimate: Geschätzt
   hours: Stunden
   issue_or_project: Projekt oder Ticket
-  issues_closed_past_days: Lade geschlossene Issues nicht älter als folgende Anzahl Tage
+  issues_closed_past_days: Lade nur geschlossene Aufgaben, die nicht älter als Anzahl Tage sind
+  jquery_datepicker_format: jQuery Datepicker Format
   label_search: Suche ...
   loading: Lade Daten
   menu_entry_title: Zeiterfassung
