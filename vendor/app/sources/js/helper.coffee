@@ -212,8 +212,9 @@ defaultDialogConfig =
   autoOpen: false
 
 displayDialog = undefined
+
 $ ->
-  dialog = $("<div>").dialog(defaultDialogConfig)
+  dialog = $("<div>").dialog defaultDialogConfig
   displayDialog = (message, title) ->
     if _.isString(message)
       dialog.html message

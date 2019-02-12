@@ -32,7 +32,7 @@ de:
   menu_entry_title: Zeiterfassung
   minutes: Minuten
   missing_fields: Fehlende Informationen
-  no: Nein
+  no_label: Nein
   no_time_entries_loaded: Keine Einträge gefunden
   only_issues_label: Buchung auf Projekte nicht erlauben
   open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
@@ -52,7 +52,7 @@ de:
   unavailable_roject: Projekt nicht verfügbar
   update: Aktualisieren
   warning: Warnung
-  yes: Ja
+  yes_label: Ja
   date:
     formats:
       short: "%Y-%m-%d"

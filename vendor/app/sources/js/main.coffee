@@ -244,11 +244,11 @@ prevTimeEntry = null
 
 initDeleteDialog = ->
   config = {buttons: {}}
-  config.buttons[translate "no"] = -> $(this).dialog "close"
-  config.buttons[translate "yes"] = ->
+  config.buttons[translate "no_label"] = -> $(this).dialog "close"
+  config.buttons[translate "yes_label"] = ->
     $(@).dialog "close"
     deleteTimeEntry activeTimeEntryId
-  config = _.defaults(config, helper.defaultDialogConfig)
+  config = _.defaults config, helper.defaultDialogConfig
   confirmDialog = $("<div>").dialog config
 
 timeFormat = (hours, minutes) ->

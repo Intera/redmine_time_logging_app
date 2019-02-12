@@ -32,9 +32,9 @@ en:
   menu_entry_title: TimeTracking
   minutes: Minutes
   missing_fields: Missing fields
-  no: No
+  no_label: "No"
   no_time_entries_loaded: No entries found
-  only_issues_label: Disallow logging time for projects
+  only_issues_label: Disallow logging time on projects
   open_in_redmine: View selected project or ticket
   or: or
   overbooking_warning: This entry will exceed the estimated time for this ticket. Eventually consult with a project leader first before you continue.
@@ -52,7 +52,7 @@ en:
   unavailable_roject: Project not available
   update: Update
   warning: Warning
-  yes: Yes
+  yes_label: "Yes"
   date:
     formats:
       short: "%Y-%m-%d"

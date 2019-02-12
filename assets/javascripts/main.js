@@ -10671,10 +10671,10 @@ return jQuery;
     config = {
       buttons: {}
     };
-    config.buttons[translate("no")] = function() {
+    config.buttons[translate("no_label")] = function() {
       return $(this).dialog("close");
     };
-    config.buttons[translate("yes")] = function() {
+    config.buttons[translate("yes_label")] = function() {
       $(this).dialog("close");
       return deleteTimeEntry(activeTimeEntryId);
     };
