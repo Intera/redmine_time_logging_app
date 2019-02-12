@@ -261,7 +261,7 @@ confirmDelete = ->
   hours = helper.$$("#hours").val()
   minutes = helper.$$("#minutes").val()
   message = timeFormat(hours, minutes) + "<br/><br/>\"" + helper.$$("#search").val() + "\""
-  confirmDialog.html(message).dialog("option", "title", translate("confirmDelete")).dialog "open"
+  confirmDialog.html(message).dialog("option", "title", translate("confirm_delete")).dialog "open"
 
 updateTimeEntry = ->
   formData = getFormData()
@@ -452,7 +452,7 @@ getTimeEntries = (data, config, noEntriesFound) ->
   ).always (response) ->
     helper.$$("#loading .icon").hide()
     if response.time_entries and (response.time_entries.length is 0)
-      helper.$$("#loading .text").html translate("noTimeEntriesLoaded") if (not noEntriesFound) or (not noEntriesFound())
+      helper.$$("#loading .text").html translate("no_time_entries_loaded") if (not noEntriesFound) or (not noEntriesFound())
     else
       loading(false)
 

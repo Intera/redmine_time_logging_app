@@ -10699,7 +10699,7 @@ return jQuery;
     hours = helper.$$("#hours").val();
     minutes = helper.$$("#minutes").val();
     message = timeFormat(hours, minutes) + "<br/><br/>\"" + helper.$$("#search").val() + "\"";
-    return confirmDialog.html(message).dialog("option", "title", translate("confirmDelete")).dialog("open");
+    return confirmDialog.html(message).dialog("option", "title", translate("confirm_delete")).dialog("open");
   };
 
   updateTimeEntry = function() {
@@ -10973,7 +10973,7 @@ return jQuery;
       helper.$$("#loading .icon").hide();
       if (response.time_entries && (response.time_entries.length === 0)) {
         if ((!noEntriesFound) || (!noEntriesFound())) {
-          return helper.$$("#loading .text").html(translate("noTimeEntriesLoaded"));
+          return helper.$$("#loading .text").html(translate("no_time_entries_loaded"));
         }
       } else {
         return loading(false);
