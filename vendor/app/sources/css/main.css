@@ -306,3 +306,12 @@ select:focus::placeholder
 		display: inline-block;
 	}
 }
+/* hide the number up/down buttons but still open a number picker on mobile */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
