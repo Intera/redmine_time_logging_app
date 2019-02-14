@@ -53,6 +53,3 @@ en:
   update: Update
   warning: Warning
   yes_label: "Yes"
-  date:
-    formats:
-      short: "%Y-%m-%d"

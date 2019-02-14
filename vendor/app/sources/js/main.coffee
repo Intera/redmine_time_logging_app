@@ -253,14 +253,14 @@ initDeleteDialog = ->
 
 timeFormat = (hours, minutes) ->
   r = []
-  r.push hours + " Stunden"  if hours
-  r.push minutes + " Minuten"  if minutes
+  r.push(hours, translate("hours").toLowerCase()) if hours
+  r.push(minutes, translate("minutes").toLowerCase()) if minutes
   r.join " "
 
 confirmDelete = ->
   hours = helper.$$("#hours").val()
   minutes = helper.$$("#minutes").val()
-  message = timeFormat(hours, minutes) + "<br/><br/>\"" + helper.$$("#search").val() + "\""
+  message = timeFormat(hours, minutes) + "<br/><br/>" + helper.$$("#search").val()
   confirmDialog.html(message).dialog("option", "title", translate("confirm_delete")).dialog "open"
 
 updateTimeEntry = ->
@@ -501,18 +501,29 @@ extendBase = ->
     if r then r.done -> helper.$$(document).trigger "timeEntriesReload", "inplace"
     else r
 
-dateIsWeekend = (date) ->
-  (date.getDay() is 6) or (date.getDay() is 0)
+dateIsWeekend = (date) -> (date.getDay() is 6) or (date.getDay() is 0)
+
+dateYmdEqual = (a, b) ->
+  a.getFullYear() is b.getFullYear() and
+  a.getMonth() is b.getMonth() and
+  a.getDate() is b.getDate()
+
+hideNextDateButton = (selectedDate) ->
+  a = selectedDate || helper.$$("#date").datepicker("getDate")
+  button = helper.$$("button.next")
+  if dateYmdEqual a, (new Date()) then button.hide()
+  else button.show()
 
 datepickerChangeDays = (element, difference) ->
-  prevDate = element.datepicker("getDate")
-  nextDate = helper.copyDateObject(prevDate)
+  prevDate = element.datepicker "getDate"
+  nextDate = helper.copyDateObject prevDate
   nextDate.setDate prevDate.getDate() + difference
-  element.datepicker "setDate", nextDate
-  newDate = element.datepicker("getDate")
-  if (prevDate.getFullYear() isnt newDate.getFullYear()) or (prevDate.getMonth() isnt newDate.getMonth()) or (prevDate.getDate() isnt newDate.getDate())
+  if nextDate isnt prevDate
+    element.datepicker "setDate", nextDate
+    hideNextDateButton nextDate
     datepickerUpdate ->
-      datepickerChangeDays helper.$$("#date"), Math.min(difference, 1)  if dateIsWeekend(nextDate)
+      # no entries found
+      datepickerChangeDays helper.$$("#date"), Math.min(difference, 1) if dateIsWeekend(nextDate)
 
 incrementDate = -> datepickerChangeDays helper.$$("#date"), 1
 decrementDate = -> datepickerChangeDays helper.$$("#date"), -1
@@ -584,6 +595,7 @@ initialise = ->
     helper.$$("#date").datepicker "option", "onSelect", datepickerUpdate
     $(".dateControls .prev").click decrementDate
     $(".dateControls .next").click incrementDate
+    hideNextDateButton()
     window.dispatchEvent new CustomEvent("timeEntryEditing")
     $("#wrapper").show()
 

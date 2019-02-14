@@ -193,6 +193,29 @@ class TimeLoggingAppController < ApplicationController
     b and b.split ","
   end
 
+  def get_translations
+    # get all translations for this plugin. I18n.translate(".") didnt support fallback languages
+    keys = [:activity, :cancel, :choose_activity,
+            :comment, :confirm_delete, :create,
+            :date, :datepicker_date_format, :datepicker_day_names_min,
+            :datepicker_day_names_short, :datepicker_first_day, :datepicker_max_date,
+            :datepicker_min_date, :datepicker_month_names, :datepicker_month_names_short,
+            :datepicker_next, :datepicker_prev, :default,
+            :delete, :duplicate, :edit,
+            :error_404_not_found, :error_422_explanation, :estimate,
+            :hours, :issue_or_project, :issues_closed_past_days,
+            :jquery_datepicker_format, :label_search, :loading,
+            :menu_entry_title, :minutes, :missing_fields,
+            :no_label, :no_time_entries_loaded, :only_issues_label,
+            :open_in_redmine, :or, :overbooking_warning,
+            :overbooking_warning_label, :overview_note, :overview,
+            :overview_title, :project_edit_not_supported, :redmine_message,
+            :reports, :reset_form, :spent_individual,
+            :spent_total, :success, :unavailable_roject,
+            :update, :warning, :yes_label]
+    keys.inject({}) {|result, a| result[a] = translate(a); result}
+  end
+
   def get_redmine_data
     # creates an object that is passed to the frontend javascript.
     current_user = User.current
@@ -220,7 +243,7 @@ class TimeLoggingAppController < ApplicationController
      # currently includes all redmine core translations until a better way is found
      "redmine_version_major" => Redmine::VERSION::MAJOR,
      "redmine_version_minor" => Redmine::VERSION::MINOR,
-     "translations" => I18n.translate("."),
+     "translations" => get_translations(),
      "user" => {"id" => current_user["id"], "language" => current_user["language"]}}
   end
 
