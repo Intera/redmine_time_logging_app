@@ -21,7 +21,6 @@ en:
   duplicate: Insert
   edit: Edit
   error_404_not_found: "A request lead to a \"404 not found\" server response"
-  error_422_explanation: "Common cause: trying to move time entries between projects (not supported by redmine)."
   estimate: estimate
   hours: Hours
   issue_or_project: Project or ticket

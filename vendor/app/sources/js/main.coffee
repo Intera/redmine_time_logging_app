@@ -4,7 +4,7 @@ helper = require "./helper"
 redmine = require "./redmine"
 app_config = require "./config"
 debug = false
-cache = {template: {}}
+cache = {template: {}, timeEntries: {}}
 _isLoaded = false
 sync = helper.timeLimitedFunc sync, 1250
 translate = (key) -> app_config.redmine.translations[key] or key
@@ -436,9 +436,7 @@ displayTimeEntries = (timeEntries, config) ->
     helper.$$("#timeEntries").hide()
 
 cacheTimeEntries = (apiTimeEntries) ->
-  cache.timeEntries = {}
-  _.each apiTimeEntries, (a) ->
-    cache.timeEntries[a.id] = a
+  _.each apiTimeEntries, (a) -> cache.timeEntries[a.id] = a
 
 getTimeEntries = (data, config, noEntriesFound) ->
   throw "getTimeEntries - user_id is not set"  if _.isUndefined(cache.user_id)

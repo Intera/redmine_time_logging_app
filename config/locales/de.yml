@@ -21,7 +21,6 @@ de:
   duplicate: Einfügen
   edit: Bearbeiten
   error_404_not_found: "Eine Hintergrundanfrage führte zu einer \"404 not found\" Serverantwort"
-  error_422_explanation: "Häufige Ursache: Versuch, Zeiteintrag auf ein Ticket umzubuchen das in einem anderen Projekt gespeichert ist."
   estimate: Geschätzt
   hours: Stunden
   issue_or_project: Projekt oder Ticket

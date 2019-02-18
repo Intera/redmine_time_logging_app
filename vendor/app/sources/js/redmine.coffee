@@ -15,8 +15,6 @@ defaultRedmineErrorHandler = (response, x, y) ->
   else unless response.status is 200
     try message = translate("redmine_message") + " " + $.parseJSON(response.responseText).errors.join("\n")
     catch exc then message = "http status " + response.status
-    if 422 is response.status
-      message += "\n\n" + translate("error_422_explanation")
     alert message
 
 deleteTimeEntry = (id) ->

@@ -10316,7 +10316,8 @@ return jQuery;
   debug = false;
 
   cache = {
-    template: {}
+    template: {},
+    timeEntries: {}
   };
 
   _isLoaded = false;
@@ -10950,7 +10951,6 @@ return jQuery;
   };
 
   cacheTimeEntries = function(apiTimeEntries) {
-    cache.timeEntries = {};
     return _.each(apiTimeEntries, function(a) {
       return cache.timeEntries[a.id] = a;
     });
@@ -11264,9 +11264,6 @@ return jQuery;
       } catch (error) {
         exc = error;
         message = "http status " + response.status;
-      }
-      if (422 === response.status) {
-        message += "\n\n" + translate("error_422_explanation");
       }
       return alert(message);
     }
