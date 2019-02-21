@@ -1,4 +1,4 @@
-# the app is initialised with "app.init()"
+# the app is started with initialise()
 
 helper = require "./helper"
 redmine = require "./redmine"
@@ -9,10 +9,10 @@ _isLoaded = false
 sync = helper.timeLimitedFunc sync, 1250
 translate = (key) -> app_config.redmine.translations[key] or key
 
-missingFieldsError = (missingFields) ->
-  _.map missingFields, (a) ->
+fieldsError = (fields) ->
+  _.map fields, (a) ->
     if _.isArray(a)
-      missingFieldsError(a).join " " + translate("or") + " "
+      fieldsError(a).join " " + translate("or") + " "
     else
       $(fieldNameToSelector[a]).addClass app_config.errorClass
       fieldNameToDisplayName[a]
@@ -122,16 +122,15 @@ autocompleteSourceRecent = (req, handleResponse) ->
 
 autocompleteFocus = (event, options) ->
   if !options or !options.onlyFocus
-    if @.value == @.title
+    if @value
+      helper.$$("#search").autocomplete "search", helper.$$("#search").val()
+    else
       # show recently used entries
       helper.$$("#search").autocomplete "option", "source", autocompleteSourceRecent
       helper.$$("#search").autocomplete "option", "minLength", 0
       helper.$$("#search").autocomplete "search", ""
-    else
-      helper.$$("#search").autocomplete "search", helper.$$("#search").val()
 
-openInRedmineUpdateURL = (searchValue) ->
-  data = getSearchFormData searchValue
+openInRedmineUpdateURL = (data) ->
   if data
     if data.issue_id
       url = app_config.redmine.urls.issues_redmine + "/" + data.issue_id
@@ -141,7 +140,29 @@ openInRedmineUpdateURL = (searchValue) ->
   else
     helper.$$("button.open-in-redmine").hide()
 
-autocompleteSelect = (event, ui) -> openInRedmineUpdateURL ui.item.value
+hideActivityOption = (id) ->
+  helper.$$("#activity").find("option[value=" + id + "]").prop("disabled", true).hide()
+
+updateActivities = (project_id) ->
+  # hide/show project specific activities (project settings, time tracking).
+  options = helper.$$("#activity option")
+  options.prop("disabled", false).prop("selected", false).show()
+  _.each cache.activities, (a, id) ->
+    if a.parent_id
+      if project_id is a.project_id
+        hideActivityOption a.parent_id
+        unless a.active then hideActivityOption id
+      else hideActivityOption id
+    else
+      unless a.active then hideActivityOption id
+  # use enabled because options are always invisible
+  options.filter(":enabled:first").prop("selected", true)
+
+autocompleteSelect = (event, ui) ->
+  data = getSearchFormData ui.item.value
+  openInRedmineUpdateURL data
+  data and updateActivities data.project_id
+
 autocompleteBlur = -> openInRedmineUpdateURL()
 
 autocompleteClick = ->
@@ -175,12 +196,13 @@ formDataToAPIData = (formData) ->
 getFormData = ->
   formData = {}
   formData.comments = helper.$$("#comments").val()
-  formData.activity_id = parseInt helper.$$("#activity").val()
+  activity_id = helper.falseIfNaN parseInt helper.$$("#activity").val()
+  formData.activity_id = activity_id if _.isNumber activity_id
   formData.date = helper.$$("#date").datepicker("getDate")
-  minutes = parseInt helper.$$("#minutes").val()
-  hours = parseInt helper.$$("#hours").val()
-  formData.minutes = minutes if minutes
-  formData.hours = hours if hours
+  minutes = helper.falseIfNaN parseInt helper.$$("#minutes").val()
+  hours = helper.falseIfNaN parseInt helper.$$("#hours").val()
+  formData.minutes = minutes if _.isNumber minutes
+  formData.hours = hours if _.isNumber hours
   if activeTimeEntryId
     formData.timeEntryId = activeTimeEntryId
     formData.activeTimeEntry = cache.timeEntries[activeTimeEntryId]
@@ -191,16 +213,19 @@ validateFieldExistence = (formData) ->
   formDataContains = (a) ->
     if _.isArray(a) then _.any a, formDataContainsOne
     else formDataContainsOne a
-  missingFields = _.reject(app_config.requiredFields, formDataContains)
-  helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
+  missingFields = _.reject app_config.requiredFields, formDataContains
+  helper.$$("input,textarea,select").each helper.removeErrorClass
   if missingFields.length > 0
-    helper.$$("input[type=text],textarea,select").off("click", helper.removeErrorClass).one "click", helper.removeErrorClass
-    missingFieldsError(missingFields).join "<br/>"
+    helper.$$("input,textarea,select").off("click", helper.removeErrorClass).one "click", helper.removeErrorClass
+    fieldsError(missingFields).join "<br/>"
     return false
   true
 
 validateOther = (formData) ->
   # insert additional validations here, or add functions to the array in "validate".
+  unless 0 < ((formData.hours or 0) + (formData.minutes or 0))
+    fieldsError ["hours", "minutes"]
+    return false
   if redmineData.overbooking_warning
     # warn when overbooking for the first time
     new_hours = (formData.hours or 0) + ((formData.minutes or 0) / 60)
@@ -294,7 +319,7 @@ getDisplayFormData = ->
   r.project.name = helper.$$("#search").val()  if r.project
   r
 
-displayFormDataToDom = (formData) -> timeEntryToDOM formData
+displayFormDataToDom = (formData) -> timeEntryToDom formData
 
 startEditMode = (timeEntryId) ->
   throw ("missing timeEntryId") unless timeEntryId
@@ -303,7 +328,8 @@ startEditMode = (timeEntryId) ->
   $("#wrapper").addClass "editMode"
   if activeTimeEntryId
     activeTimeEntryId = timeEntryId
-    timeEntryToDOM cache.timeEntries[timeEntryId]
+    timeEntryToDom cache.timeEntries[timeEntryId]
+    updateActivities getSearchFormData()?.project_id
     return
   prevTimeEntry = getDisplayFormData()
   activeTimeEntryId = timeEntryId
@@ -313,7 +339,8 @@ startEditMode = (timeEntryId) ->
   helper.$$("button.cancel").one "click", exitEditMode
   $(document).on "keyup.time_logging_app", (event) ->
     if "Escape" is event.key then exitEditMode()
-  timeEntryToDOM cache.timeEntries[timeEntryId]
+  timeEntryToDom cache.timeEntries[timeEntryId]
+  updateActivities getSearchFormData()?.project_id
 
 exitEditMode = ->
   activeTimeEntryId = false
@@ -325,6 +352,7 @@ exitEditMode = ->
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
   helper.$$(".resetForm").show()
+  updateActivities getSearchFormData()?.project_id
   prevTimeEntry = false
 
 deleteTimeEntry = (id) ->
@@ -385,7 +413,7 @@ timeEntryToTableRow = (a, even) ->
     estimates: estimates
     name: name
     comments: (if a.comments then helper.escapeHtml(a.comments) else "")
-    activity: cache.activities[a.activity.id]
+    activity: cache.activities[a.activity.id].name
     projectOrIssueUrl: projectOrIssueUrl
     timeEntriesUrl: createTimeEntriesUrl(a)
     classes: classes.join(" ")
@@ -404,7 +432,7 @@ insertTimeEntryRows = (timeEntries) ->
 
 insertTimeEntryAsNew = (timeEntryId) ->
   throw ("missing timeEntryId") unless timeEntryId
-  timeEntryToDOM cache.timeEntries[timeEntryId]
+  timeEntryToDom cache.timeEntries[timeEntryId]
 
 displayTimeEntries = (timeEntries, config) ->
   helper.$$("#timeEntries tbody").children().remove()
@@ -473,7 +501,7 @@ timeEntryReceiveToSendFormat = (a) ->
   receiveFormat.project = id: a.project_id  if a.project_id
   receiveFormat
 
-timeEntryToDOM = (timeEntry) ->
+timeEntryToDom = (timeEntry) ->
   # insert time entry data into form fields.
   # in the format as received from the backend interface
   [hours, minutes] = helper.decimalHoursToHoursAndMinutes timeEntry.hours
@@ -540,7 +568,8 @@ initialise = ->
   cache.activities = {}
   _.each redmineData.activities, (a) ->
     selectEle.append $("<option>").attr("value", a.id).html(a.name)
-    cache.activities[a.id] = a.name
+    cache.activities[a.id] = a
+  updateActivities -1
   # current user
   user = redmineData.user
   cache.user_id = user.id
@@ -583,7 +612,7 @@ initialise = ->
     helper.$$("#form").show()
     loading(false)
     initAutoDataReload()
-    helper.$$("#search").trigger("focus", {onlyFocus: true}).select()
+    helper.$$("#search").val("").trigger("focus", {onlyFocus: true})
     # editing
     cache.template.timeEntry = _.template($("#timeEntryTemplate").text())
     extendBase()

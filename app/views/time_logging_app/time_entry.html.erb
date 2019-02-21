@@ -93,7 +93,7 @@
         </td>
       </tr>
     </script>
-    <%= javascript_tag @javascript_tag_content %>
+    <%= javascript_tag @javascript_tag_content, :id => "redmineData" %>
     <%= javascript_include_tag "main", :plugin => "redmine_time_logging_app" %>
     <script>
 			app.initialise()

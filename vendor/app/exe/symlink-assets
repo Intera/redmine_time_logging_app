@@ -1,0 +1,3 @@
+#!/bin/sh -e
+redmine_root=$1
+cp -rsft "$redmine_root/public/plugin_assets/redmine_time_logging_app" "$PWD/../../assets"/*

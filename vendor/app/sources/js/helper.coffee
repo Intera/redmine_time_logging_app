@@ -160,6 +160,8 @@ padZeros = (number, totalLength) ->
   numberString = "0" + numberString  while missingZeros--
   numberString
 
+falseIfNaN = (a) -> if isNaN a then false else a
+
 onKeypressRejectNaN = (event) ->
   # NaN is a number - this is why we don't use "isNumber"
   charCode = (if event.which then event.which else event.keyCode)
@@ -246,6 +248,7 @@ module.exports =
   decimalHoursToColonFormat: decimalHoursToColonFormat
   defaultDialogConfig: defaultDialogConfig
   escapeHtml: escapeHtml
+  falseIfNaN: falseIfNaN
   issueIdToUrl: issueIdToUrl
   onKeypressRejectNaN: onKeypressRejectNaN
   projectNameToId: projectNameToId

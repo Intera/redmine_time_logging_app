@@ -190,12 +190,6 @@ textarea {
 .error,.error:focus {
   border: 2px solid red;
 }
-.contentTitle {
-  color: #aaa;
-}
-option:not(.contentTitle) {
-  color: #000;
-}
 .editMode.topControls {
   width: 100%;
 }

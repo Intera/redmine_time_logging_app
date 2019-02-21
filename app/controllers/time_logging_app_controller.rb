@@ -202,7 +202,7 @@ class TimeLoggingAppController < ApplicationController
             :datepicker_min_date, :datepicker_month_names, :datepicker_month_names_short,
             :datepicker_next, :datepicker_prev, :default,
             :delete, :duplicate, :edit,
-            :error_404_not_found, :error_422_explanation, :estimate,
+            :error_404_not_found, :estimate,
             :hours, :issue_or_project, :issues_closed_past_days,
             :jquery_datepicker_format, :label_search, :loading,
             :menu_entry_title, :minutes, :missing_fields,
@@ -219,7 +219,9 @@ class TimeLoggingAppController < ApplicationController
   def get_redmine_data
     # creates an object that is passed to the frontend javascript.
     current_user = User.current
-    activities = TimeEntryActivity.select("id,name").map{|b| {"id" => b["id"], "name" => b["name"]}}
+    activities = TimeEntryActivity.select("id, name, project_id, parent_id, active").map{|b|
+      {"id" => b["id"], "name" => b["name"], "project_id" => b["project_id"],
+       "parent_id" => b["parent_id"], "active" => b["active"]}}
     datepicker = {
       "month_names" => get_comma_translation("datepicker_month_names"),
       "month_names_short" => get_comma_translation("datepicker_month_names_short"),
