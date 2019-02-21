@@ -10523,10 +10523,10 @@ return jQuery;
   };
 
   updateActivities = function(project_id) {
-    var options;
+    var options, selected;
     // hide/show project specific activities (project settings, time tracking).
     options = helper.$$("#activity option");
-    options.prop("disabled", false).prop("selected", false).show();
+    options.prop("disabled", false).show();
     _.each(cache.activities, function(a, id) {
       if (a.parent_id) {
         if (project_id === a.project_id) {
@@ -10543,8 +10543,12 @@ return jQuery;
         }
       }
     });
-    // use enabled because options are always invisible
-    return options.filter(":enabled:first").prop("selected", true);
+    // select the first option if the selected option became hidden.
+    // use :enabled because options never match :visible.
+    selected = options.filter(":enabled:selected");
+    if (!selected.length) {
+      return options.filter(":enabled:first").prop("selected", true);
+    }
   };
 
   autocompleteSelect = function(event, ui) {

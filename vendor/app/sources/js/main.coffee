@@ -146,7 +146,7 @@ hideActivityOption = (id) ->
 updateActivities = (project_id) ->
   # hide/show project specific activities (project settings, time tracking).
   options = helper.$$("#activity option")
-  options.prop("disabled", false).prop("selected", false).show()
+  options.prop("disabled", false).show()
   _.each cache.activities, (a, id) ->
     if a.parent_id
       if project_id is a.project_id
@@ -155,8 +155,10 @@ updateActivities = (project_id) ->
       else hideActivityOption id
     else
       unless a.active then hideActivityOption id
-  # use enabled because options are always invisible
-  options.filter(":enabled:first").prop("selected", true)
+  # select the first option if the selected option became hidden.
+  # use :enabled because options never match :visible.
+  selected = options.filter(":enabled:selected")
+  unless selected.length then options.filter(":enabled:first").prop("selected", true)
 
 autocompleteSelect = (event, ui) ->
   data = getSearchFormData ui.item.value
