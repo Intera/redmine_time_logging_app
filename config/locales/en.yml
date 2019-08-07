@@ -37,7 +37,7 @@ en:
   open_in_redmine: View selected project or ticket
   or: or
   overbooking_warning: This entry will exceed the estimated time for this ticket. Eventually consult with a project leader first before you continue.
-  overbooking_warning_label: Warn when exceeding the estimated time of an issue
+  overbooking_warning_label: Warn when exceeding the estimated time of issues
   overview_note: Entries of the current year. weekends without entries are not shown.
   overview: Overview
   overview_title: Spent time overview

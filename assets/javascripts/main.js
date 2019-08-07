@@ -10647,7 +10647,7 @@ return jQuery;
 
   validateOther = function(formData) {
     var estimated, new_hours, old_hours, total_spent;
-    // insert additional validations here, or add functions to the array in "validate".
+    // insert additional validations here, or add functions to the validators array in "validate".
     if (!(0 < ((formData.hours || 0) + (formData.minutes || 0)))) {
       fieldsError(["hours", "minutes"]);
       return false;
@@ -10662,7 +10662,7 @@ return jQuery;
       }
       if (formData.issue && formData.activeTimeEntry.issue) {
         estimated = formData.issue.estimated_hours;
-        total_spent = formData.activeTimeEntry.issue.spent_hours;
+        total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours;
         if ((!(old_hours === new_hours)) && (estimated > total_spent) && (estimated < new_hours + total_spent)) {
           return confirm(translate("overbooking_warning"));
         }

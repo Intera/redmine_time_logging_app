@@ -224,7 +224,7 @@ validateFieldExistence = (formData) ->
   true
 
 validateOther = (formData) ->
-  # insert additional validations here, or add functions to the array in "validate".
+  # insert additional validations here, or add functions to the validators array in "validate".
   unless 0 < ((formData.hours or 0) + (formData.minutes or 0))
     fieldsError ["hours", "minutes"]
     return false
@@ -235,7 +235,7 @@ validateOther = (formData) ->
     else old_hours = formData.activeTimeEntry.hours
     if formData.issue and formData.activeTimeEntry.issue
       estimated = formData.issue.estimated_hours
-      total_spent = formData.activeTimeEntry.issue.spent_hours
+      total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours
       if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
         return confirm translate("overbooking_warning")
   true
