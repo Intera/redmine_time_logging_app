@@ -165,14 +165,11 @@ autocompleteSelect = (event, ui) ->
   openInRedmineUpdateURL data
   data and updateActivities data.project_id
 
-autocompleteBlur = -> openInRedmineUpdateURL()
-
-autocompleteClick = ->
-  @select()
-  openInRedmineUpdateURL()
+autocompleteChange = -> openInRedmineUpdateURL()
+autocompleteClick = -> @select()
 
 initAutocomplete = (projects, issues, searchData, recentlyUpdatedSearchData) ->
-  helper.$$("#search").click(autocompleteClick).blur(autocompleteBlur).focus(autocompleteFocus).autocomplete
+  helper.$$("#search").change(autocompleteChange).click(autocompleteClick).focus(autocompleteFocus).autocomplete
     select: autocompleteSelect
     minLength: app_config.autocompleteMinLength
     source: (req, handleResponse) ->
