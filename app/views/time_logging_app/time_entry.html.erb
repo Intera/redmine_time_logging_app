@@ -16,8 +16,8 @@
         <h2><%= t(:menu_entry_title) %></h2>
         <div id="form">
           <div class="topControls editMode">
-            <button class="cancel"><%= t(:cancel) %></button>
-            <button class="delete"><%= t(:delete) %></button>
+            <button class="cancel"><%= t(:button_cancel) %></button>
+            <button class="delete"><%= t(:button_delete) %></button>
           </div>
           <div class="row topControls">
             <div class="left hbox">
@@ -29,21 +29,21 @@
             </div>
             <div class="right hbox">
               <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
-              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>" title="<%= t(:overview) %>"></button>
+              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>" title="<%= t(:label_overview) %>"></button>
               <button class="resetForm" title="<%= t(:reset_form) %>"></button>
             </div>
           </div>
           <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:label_search)%>"></textarea>
           <div class="hbox">
             <div id="time">
-              <input id="hours" tabindex="3" type="number" placeholder="<%= t(:hours)%>"/>
-              <input id="minutes" tabindex="4" type="number" placeholder="<%= t(:minutes)%>"/>
+              <input id="hours" tabindex="3" type="number" placeholder="<%= t(:field_hours)%>"/>
+              <input id="minutes" tabindex="4" type="number" placeholder="<%= t(:field_minutes)%>"/>
             </div>
-            <select id="activity" tabindex="5" placeholder="<%= t(:activity) %>"></select>
+            <select id="activity" tabindex="5" placeholder="<%= t(:field_activity) %>"></select>
           </div>
-          <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:comment) %>"></textarea>
+          <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:label_comment) %>"></textarea>
           <div class="hbox">
-            <button accesskey="s" class="submit" tabindex="7"><%= t(:create) %></button>
+            <button accesskey="s" class="submit" tabindex="7"><%= t(:button_create) %></button>
           </div>
         </div>
       </div>
@@ -55,13 +55,13 @@
         <thead>
           <tr>
             <th class="project-task-header">
-              <%= t(:task) %>
+              <%= t(:label_issue) %>
             </th>
             <th class="hours-header">
-              <%= t(:hours) %>
+              <%= t(:field_hours) %>
             </th>
             <th class="activity-header">
-              <%= t(:activity) %>
+              <%= t(:field_activity) %>
             </th>
             <th class="daySpentTime"></th>
           </tr>
@@ -82,7 +82,7 @@
         </td>
         <td>
           <a class="time" href="{{timeEntriesUrl}}" target="_blank"
-			       title="<%= t(:spent_individual) %> (<%= t(:spent_total) %> / <%= t(:estimate) %>)">{{time}} (<span class="estimates">{{estimates}}</span>)</a>
+            title="<%= t(:spent_individual) %> (<%= t(:spent_total) %> / <%= t(:estimate) %>)">{{time}} (<span class="estimates">{{estimates}}</span>)</a>
         </td>
         <td>
           <a class="activity" href="{{timeEntriesUrl}}" target="_blank">{{activity}}</a>
@@ -96,7 +96,7 @@
     <%= javascript_tag @javascript_tag_content, :id => "redmineData" %>
     <%= javascript_include_tag "main", :plugin => "redmine_time_logging_app" %>
     <script>
-			app.initialise()
+      app.initialise()
     </script>
   </body>
 </html>

@@ -9872,7 +9872,7 @@ return jQuery;
 !function(t,e,i){var o=["webkit","Moz","ms","O"],r={},n;function a(t,i){var o=e.createElement(t||"div"),r;for(r in i)o[r]=i[r];return o}function s(t){for(var e=1,i=arguments.length;e<i;e++)t.appendChild(arguments[e]);return t}var f=function(){var t=a("style",{type:"text/css"});s(e.getElementsByTagName("head")[0],t);return t.sheet||t.styleSheet}();function l(t,e,i,o){var a=["opacity",e,~~(t*100),i,o].join("-"),s=.01+i/o*100,l=Math.max(1-(1-t)/e*(100-s),t),p=n.substring(0,n.indexOf("Animation")).toLowerCase(),u=p&&"-"+p+"-"||"";if(!r[a]){f.insertRule("@"+u+"keyframes "+a+"{"+"0%{opacity:"+l+"}"+s+"%{opacity:"+t+"}"+(s+.01)+"%{opacity:1}"+(s+e)%100+"%{opacity:"+t+"}"+"100%{opacity:"+l+"}"+"}",f.cssRules.length);r[a]=1}return a}function p(t,e){var r=t.style,n,a;if(r[e]!==i)return e;e=e.charAt(0).toUpperCase()+e.slice(1);for(a=0;a<o.length;a++){n=o[a]+e;if(r[n]!==i)return n}}function u(t,e){for(var i in e)t.style[p(t,i)||i]=e[i];return t}function c(t){for(var e=1;e<arguments.length;e++){var o=arguments[e];for(var r in o)if(t[r]===i)t[r]=o[r]}return t}function d(t){var e={x:t.offsetLeft,y:t.offsetTop};while(t=t.offsetParent)e.x+=t.offsetLeft,e.y+=t.offsetTop;return e}var h={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",speed:1,trail:100,opacity:1/4,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto",position:"relative"};function m(t){if(!this.spin)return new m(t);this.opts=c(t||{},m.defaults,h)}m.defaults={};c(m.prototype,{spin:function(t){this.stop();var e=this,i=e.opts,o=e.el=u(a(0,{className:i.className}),{position:i.position,width:0,zIndex:i.zIndex}),r=i.radius+i.length+i.width,s,f;if(t){t.insertBefore(o,t.firstChild||null);f=d(t);s=d(o);u(o,{left:(i.left=="auto"?f.x-s.x+(t.offsetWidth>>1):parseInt(i.left,10)+r)+"px",top:(i.top=="auto"?f.y-s.y+(t.offsetHeight>>1):parseInt(i.top,10)+r)+"px"})}o.setAttribute("aria-role","progressbar");e.lines(o,e.opts);if(!n){var l=0,p=i.fps,c=p/i.speed,h=(1-i.opacity)/(c*i.trail/100),m=c/i.lines;(function y(){l++;for(var t=i.lines;t;t--){var r=Math.max(1-(l+t*m)%c*h,i.opacity);e.opacity(o,i.lines-t,r,i)}e.timeout=e.el&&setTimeout(y,~~(1e3/p))})()}return e},stop:function(){var t=this.el;if(t){clearTimeout(this.timeout);if(t.parentNode)t.parentNode.removeChild(t);this.el=i}return this},lines:function(t,e){var i=0,o;function r(t,o){return u(a(),{position:"absolute",width:e.length+e.width+"px",height:e.width+"px",background:t,boxShadow:o,transformOrigin:"left",transform:"rotate("+~~(360/e.lines*i+e.rotate)+"deg) translate("+e.radius+"px"+",0)",borderRadius:(e.corners*e.width>>1)+"px"})}for(;i<e.lines;i++){o=u(a(),{position:"absolute",top:1+~(e.width/2)+"px",transform:e.hwaccel?"translate3d(0,0,0)":"",opacity:e.opacity,animation:n&&l(e.opacity,e.trail,i,e.lines)+" "+1/e.speed+"s linear infinite"});if(e.shadow)s(o,u(r("#000","0 0 4px "+"#000"),{top:2+"px"}));s(t,s(o,r(e.color,"0 0 1px rgba(0,0,0,.1)")))}return t},opacity:function(t,e,i){if(e<t.childNodes.length)t.childNodes[e].style.opacity=i}});(function(){function t(t,e){return a("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',e)}var e=u(a("group"),{behavior:"url(#default#VML)"});if(!p(e,"transform")&&e.adj){f.addRule(".spin-vml","behavior:url(#default#VML)");m.prototype.lines=function(e,i){var o=i.length+i.width,r=2*o;function n(){return u(t("group",{coordsize:r+" "+r,coordorigin:-o+" "+-o}),{width:r,height:r})}var a=-(i.width+i.length)*2+"px",f=u(n(),{position:"absolute",top:a,left:a}),l;function p(e,r,a){s(f,s(u(n(),{rotation:360/i.lines*e+"deg",left:~~r}),s(u(t("roundrect",{arcsize:i.corners}),{width:o,height:i.width,left:i.radius,top:-i.width>>1,filter:a}),t("fill",{color:i.color,opacity:i.opacity}),t("stroke",{opacity:0}))))}if(i.shadow)for(l=1;l<=i.lines;l++)p(l,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(l=1;l<=i.lines;l++)p(l);return s(e,f)};m.prototype.opacity=function(t,e,i,o){var r=t.firstChild;o=o.shadow&&o.lines||0;if(r&&e+o<r.childNodes.length){r=r.childNodes[e+o];r=r&&r.firstChild;r=r&&r.firstChild;if(r)r.opacity=i}}}else n=p(e,"animation")})();if(typeof define=="function"&&define.amd)define(function(){return m});else t.Spinner=m}(window,document);
 ;
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.app = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-// Generated by CoffeeScript 2.3.2
+// Generated by CoffeeScript 2.5.1
 (function() {
   module.exports = {
     // "open", "closed", "*", or "status_id"
@@ -9912,7 +9912,7 @@ return jQuery;
 
 
 },{}],2:[function(require,module,exports){
-// Generated by CoffeeScript 2.3.2
+// Generated by CoffeeScript 2.5.1
 (function() {
   var $$, autocompleteMatchFunc, config, copyDateObject, createIssueSearchDataEntry, createProjectSearchDataEntry, createProjectsIssuesAndSearchData, decimalHoursToColonFormat, decimalHoursToHoursAndMinutes, defaultDialogConfig, delim, displayDialog, entityMap, escapeHtml, falseIfNaN, getBrowserLanguage, ignoreTicketIdRegexp, issueIdToUrl, mobileHideAddressBar, onKeypressRejectNaN, padZeros, projectNameToId, removeErrorClass, selectAll, setCursorPosition, setSelectionRange, sortByLocaleIgnoreTicketId, stringContains, stringContainsEvery, timeLimitedFunc, wrapDeferred;
 
@@ -10311,7 +10311,7 @@ return jQuery;
 
 
 },{"./config":1}],3:[function(require,module,exports){
-// Generated by CoffeeScript 2.3.2
+// Generated by CoffeeScript 2.5.1
 (function() {
   // the app is started with initialise()
   var _isLoaded, activeTimeEntryId, app_config, autocompleteClick, autocompleteFocus, autocompleteSelect, autocompleteSourceDefault, autocompleteSourceRecent, cache, cacheTimeEntries, cancelEdit, confirmDelete, confirmDialog, createTimeEntriesUrl, createTimeEntry, dateIsWeekend, dateYmdEqual, datepickerChangeDays, datepickerUpdate, debug, decrementDate, deleteTimeEntry, displayFormDataToDom, displayTimeEntries, exitEditMode, extendBase, fieldNameToDisplayName, fieldNameToSelector, fieldsError, formDataToAPIData, getDisplayFormData, getFormData, getIssuesProjectsAndSearchData, getSearchFormData, getTimeEntries, hasReceiveFormat, helper, hideActivityOption, hideNextDateButton, incrementDate, initAutoDataReload, initAutocomplete, initDeleteDialog, initialise, insertTimeEntryAsNew, insertTimeEntryRows, loading, onTimeEntriesReload, openInRedmineUpdateURL, prevTimeEntry, redmine, reloadSearchData, resetForm, resetFormAfterSync, resetFormButton, setDate, startEditMode, sync, timeEntriesLoadingDelayed, timeEntryReceiveToSendFormat, timeEntryToDom, timeEntryToSearchDataEntry, timeEntryToTableRow, timeFormat, translate, updateActivities, updateTimeEntry, validate, validateFieldExistence, validateOther;
@@ -10340,7 +10340,7 @@ return jQuery;
   fieldsError = function(fields) {
     return _.map(fields, function(a) {
       if (_.isArray(a)) {
-        return fieldsError(a).join(" " + translate("or") + " ");
+        return fieldsError(a).join(" " + translate("general_text_or") + " ");
       } else {
         $(fieldNameToSelector[a]).addClass(app_config.errorClass);
         return fieldNameToDisplayName[a];
@@ -10357,12 +10357,12 @@ return jQuery;
   };
 
   fieldNameToDisplayName = {
-    activity_id: translate("activity"),
-    comments: translate("comments"),
-    datum: translate("date"),
-    hours: translate("hours"),
-    minutes: translate("minutes"),
-    project_id: translate("issueOrProject")
+    activity_id: translate("field_activity"),
+    comments: translate("label_comment"),
+    datum: translate("label_date"),
+    hours: translate("field_hours"),
+    minutes: translate("field_minutes"),
+    project_id: translate("issue_or_project")
   };
 
   getIssuesProjectsAndSearchData = function(status) {
@@ -10716,12 +10716,13 @@ return jQuery;
   initDeleteDialog = function() {
     var config;
     config = {
-      buttons: {}
+      buttons: {},
+      modal: true
     };
-    config.buttons[translate("no_label")] = function() {
+    config.buttons[translate("general_text_no")] = function() {
       return $(this).dialog("close");
     };
-    config.buttons[translate("yes_label")] = function() {
+    config.buttons[translate("general_text_yes")] = function() {
       $(this).dialog("close");
       return deleteTimeEntry(activeTimeEntryId);
     };
@@ -10733,10 +10734,10 @@ return jQuery;
     var r;
     r = [];
     if (hours) {
-      r.push(hours, translate("hours").toLowerCase());
+      r.push(hours, translate("field_hours").toLowerCase());
     }
     if (minutes) {
-      r.push(minutes, translate("minutes").toLowerCase());
+      r.push(minutes, translate("field_minutes").toLowerCase());
     }
     return r.join(" ");
   };
@@ -10820,7 +10821,7 @@ return jQuery;
     activeTimeEntryId = timeEntryId;
     helper.$$(".delete, .cancel").show();
     helper.$$(".delete").on("click", confirmDelete);
-    helper.$$("button.submit").addClass("update").html(translate("update")).off("click").on("click", updateTimeEntry);
+    helper.$$("button.submit").addClass("update").html(translate("button_update")).off("click").on("click", updateTimeEntry);
     helper.$$("button.cancel").one("click", exitEditMode);
     $(document).on("keyup.time_logging_app", function(event) {
       if ("Escape" === event.key) {
@@ -10837,7 +10838,7 @@ return jQuery;
     $(document).off("keyup.time_logging_app");
     helper.$$(".delete,.cancel").off("click");
     helper.$$(".delete,.cancel").hide();
-    helper.$$("button.submit").removeClass("update").html(translate("create")).off("click").click(createTimeEntry);
+    helper.$$("button.submit").removeClass("update").html(translate("button_create")).off("click").click(createTimeEntry);
     displayFormDataToDom(prevTimeEntry);
     $("#timeEntries .active").removeClass("active");
     $("#wrapper").removeClass("editMode");
@@ -10893,9 +10894,9 @@ return jQuery;
           name = name.value;
         }
       } else {
-        console.warn(`project not available, id "${a.project.id}"`);
+        console.warn(`project not available, id \"${a.project.id}\"`);
         classes.push("unavailable-project");
-        name = translate("unavailableProject");
+        name = translate("unavailable_project");
       }
     }
     time = helper.decimalHoursToColonFormat(a.hours);
@@ -10978,7 +10979,7 @@ return jQuery;
         var timeEntryId;
         timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"));
         return startEditMode(timeEntryId);
-      }).attr("title", translate("edit"));
+      }).attr("title", translate("button_edit"));
       if (config && config.animation === "inplace") {
         // jquery highlight effect was not working
         helper.$$("#timeEntries").show();
@@ -10995,7 +10996,7 @@ return jQuery;
         var timeEntryId;
         timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"));
         return insertTimeEntryAsNew(timeEntryId);
-      }).attr("title", translate("duplicate"));
+      }).attr("title", translate("button_duplicate"));
     } else {
       return helper.$$("#timeEntries").hide();
     }
@@ -11287,7 +11288,7 @@ return jQuery;
 
 
 },{"./config":1,"./helper":2,"./redmine":4}],4:[function(require,module,exports){
-// Generated by CoffeeScript 2.3.2
+// Generated by CoffeeScript 2.5.1
 (function() {
   var config, createTimeEntry, defaultRedmineErrorHandler, deleteTimeEntry, getProjectsAndIssues, getRecent, getSpentTime, getTimeEntries, redmineConfig, translate, updateTimeEntry, urls;
 
@@ -11309,7 +11310,7 @@ return jQuery;
 
     // request aborted by the user
     } else if (404 === response.status) {
-      return alert(translate("redmine_message") + translate("error_404_not_found") + `.\nrelevant url: "${this.url}"`);
+      return alert(translate("redmine_message") + translate("error_404_not_found") + `.\nrelevant url: \"${this.url}\"`);
     } else if (response.status !== 200) {
       try {
         message = translate("redmine_message") + " " + $.parseJSON(response.responseText).errors.join("\n");

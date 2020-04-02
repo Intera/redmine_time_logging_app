@@ -12,7 +12,7 @@ translate = (key) -> app_config.redmine.translations[key] or key
 fieldsError = (fields) ->
   _.map fields, (a) ->
     if _.isArray(a)
-      fieldsError(a).join " " + translate("or") + " "
+      fieldsError(a).join " " + translate("general_text_or") + " "
     else
       $(fieldNameToSelector[a]).addClass app_config.errorClass
       fieldNameToDisplayName[a]
@@ -25,12 +25,12 @@ fieldNameToSelector =
   project_id: "#search"
 
 fieldNameToDisplayName =
-  activity_id: translate "activity"
-  comments: translate "comments"
-  datum: translate "date"
-  hours: translate "hours"
-  minutes: translate "minutes"
-  project_id: translate "issueOrProject"
+  activity_id: translate "field_activity"
+  comments: translate "label_comment"
+  datum: translate "label_date"
+  hours: translate "field_hours"
+  minutes: translate "field_minutes"
+  project_id: translate "issue_or_project"
 
 getIssuesProjectsAndSearchData = (status) ->
   redmine.getProjectsAndIssues(status, app_config.issueClosedPastDays).done (projectsAndIssues) ->
@@ -266,9 +266,9 @@ activeTimeEntryId = null
 prevTimeEntry = null
 
 initDeleteDialog = ->
-  config = {buttons: {}}
-  config.buttons[translate "no_label"] = -> $(this).dialog "close"
-  config.buttons[translate "yes_label"] = ->
+  config = {buttons: {}, modal: true}
+  config.buttons[translate "general_text_no"] = -> $(this).dialog "close"
+  config.buttons[translate "general_text_yes"] = ->
     $(@).dialog "close"
     deleteTimeEntry activeTimeEntryId
   config = _.defaults config, helper.defaultDialogConfig
@@ -276,8 +276,8 @@ initDeleteDialog = ->
 
 timeFormat = (hours, minutes) ->
   r = []
-  r.push(hours, translate("hours").toLowerCase()) if hours
-  r.push(minutes, translate("minutes").toLowerCase()) if minutes
+  r.push(hours, translate("field_hours").toLowerCase()) if hours
+  r.push(minutes, translate("field_minutes").toLowerCase()) if minutes
   r.join " "
 
 confirmDelete = ->
@@ -333,7 +333,7 @@ startEditMode = (timeEntryId) ->
   activeTimeEntryId = timeEntryId
   helper.$$(".delete, .cancel").show()
   helper.$$(".delete").on "click", confirmDelete
-  helper.$$("button.submit").addClass("update").html(translate("update")).off("click").on "click", updateTimeEntry
+  helper.$$("button.submit").addClass("update").html(translate("button_update")).off("click").on "click", updateTimeEntry
   helper.$$("button.cancel").one "click", exitEditMode
   $(document).on "keyup.time_logging_app", (event) ->
     if "Escape" is event.key then exitEditMode()
@@ -345,7 +345,7 @@ exitEditMode = ->
   $(document).off "keyup.time_logging_app"
   helper.$$(".delete,.cancel").off "click"
   helper.$$(".delete,.cancel").hide()
-  helper.$$("button.submit").removeClass("update").html(translate("create")).off("click").click createTimeEntry
+  helper.$$("button.submit").removeClass("update").html(translate("button_create")).off("click").click createTimeEntry
   displayFormDataToDom prevTimeEntry
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
@@ -387,7 +387,7 @@ timeEntryToTableRow = (a, even) ->
     else
       console.warn "project not available, id \"#{a.project.id}\""
       classes.push "unavailable-project"
-      name = translate "unavailableProject"
+      name = translate "unavailable_project"
   time = helper.decimalHoursToColonFormat(a.hours)
   # get spent hours
   spent_hours = a.issue?.spent_hours || a.project.spent_hours
@@ -444,7 +444,7 @@ displayTimeEntries = (timeEntries, config) ->
     ).click ->
       timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"))
       startEditMode timeEntryId
-    .attr("title", translate "edit")
+    .attr("title", translate "button_edit")
     if config and config.animation is "inplace"
       # jquery highlight effect was not working
       helper.$$("#timeEntries").show()
@@ -457,7 +457,7 @@ displayTimeEntries = (timeEntries, config) ->
     ).click ->
       timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"))
       insertTimeEntryAsNew timeEntryId
-    .attr("title", translate "duplicate")
+    .attr("title", translate "button_duplicate")
   else
     helper.$$("#timeEntries").hide()
 

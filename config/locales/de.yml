@@ -1,11 +1,6 @@
 de:
-  activity: Aktivität
-  cancel: Abbrechen
-  choose_activity: Aktivität auswählen ...
-  comment: Kommentar
-  confirm_delete: Wirklich Löschen?
-  create: Erfassen
-  date: Datum
+  button_duplicate: Einfügen
+  confirm_delete: Wirklich löschen?
   datepicker_date_format: Datumsformat
   datepicker_day_names_min: So,Mo,Di,Mi,Do,Fr,Sa
   datepicker_day_names_short: So,Mo,Di,Mi,Do,Fr,Sa
@@ -16,42 +11,26 @@ de:
   datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
   datepicker_next: Nächster Tag
   datepicker_prev: Vorheriger Tag
-  default: Vorgabe
-  delete: Löschen
-  duplicate: Einfügen
-  edit: Bearbeiten
   error_404_not_found: "Eine Hintergrundanfrage führte zu einer \"404 not found\" Serverantwort"
   estimate: Geschätzt
-  hours: Stunden
+  field_minutes: Minuten
+  general_text_or: oder
   issue_or_project: Projekt oder Ticket
   issues_closed_past_days: Lade nur geschlossene Aufgaben, die nicht älter als Anzahl Tage sind
   jquery_datepicker_format: jQuery Datepicker Format
-  label_search: Suche ...
-  loading: Lade Daten
   menu_entry_title: Zeiterfassung
-  minutes: Minuten
-  missing_fields: Fehlende Informationen
-  no_label: Nein
   no_time_entries_loaded: Keine Einträge gefunden
   only_issues_label: Buchung auf Projekte nicht erlauben
   open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
-  or: oder
   overbooking_warning: Dieser Eintrag wird den geschätzten Aufwand überschreiten. Stimmen sie sich eventuell erst mit einem Projektleiter ab, bevor sie fortfahren.
   overbooking_warning_label: Warnung anzeigen, wenn der geschätzte Aufwand einer Aufgabe überschritten wird
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
-  overview: Übersicht
   overview_title: Zeiterfassung Übersicht
-  project_edit_not_supported: Das nachträgliche Ändern des Projekts wird vom Ticket-System bisher nicht unterstützt (http://www.redmine.org/issues/588).
   redmine_message: "Redmine meldet:\n"
-  reports: time logging
   reset_form: Felder zurücksetzen
   spent_individual: Eigene Zeit
   spent_total: Alle Benutzer
-  success: Erfolg
   unavailable_roject: Projekt nicht verfügbar
-  update: Aktualisieren
-  warning: Warnung
-  yes_label: Ja
   date:
     formats:
       short: "%Y-%m-%d"

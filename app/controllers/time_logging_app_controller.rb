@@ -194,25 +194,34 @@ class TimeLoggingAppController < ApplicationController
   end
 
   def get_translations
-    # get all translations for this plugin. I18n.translate(".") didnt support fallback languages
-    keys = [:activity, :cancel, :choose_activity,
-            :comment, :confirm_delete, :create,
-            :date, :datepicker_date_format, :datepicker_day_names_min,
-            :datepicker_day_names_short, :datepicker_first_day, :datepicker_max_date,
-            :datepicker_min_date, :datepicker_month_names, :datepicker_month_names_short,
-            :datepicker_next, :datepicker_prev, :default,
-            :delete, :duplicate, :edit,
-            :error_404_not_found, :estimate,
-            :hours, :issue_or_project, :issues_closed_past_days,
-            :jquery_datepicker_format, :label_search, :loading,
-            :menu_entry_title, :minutes, :missing_fields,
-            :no_label, :no_time_entries_loaded, :only_issues_label,
-            :open_in_redmine, :or, :overbooking_warning,
-            :overbooking_warning_label, :overview_note, :overview,
-            :overview_title, :project_edit_not_supported, :redmine_message,
-            :reports, :reset_form, :spent_individual,
-            :spent_total, :success, :unavailable_roject,
-            :update, :warning, :yes_label]
+    # get translations needed in the frontend. I18n.translate(".") didnt support fallback languages.
+    # prefer redmine core translations because they are available in many languages.
+    keys = [
+      # redmine core
+      :button_create,
+      :button_delete,
+      :button_edit,
+      :button_update,
+      :field_activity,
+      :field_hours,
+      :general_text_no,
+      :general_text_yes,
+      :label_comment,
+      :label_date,
+      :text_time_entries_destroy_confirmation,
+      # plugin
+      :button_duplicate,
+      :confirm_delete,
+      :error_404_not_found,
+      :field_minutes,
+      :general_text_or,
+      :issue_or_project,
+      :no_time_entries_loaded,
+      :overbooking_warning,
+      :overview_title,
+      :redmine_message,
+      :unavailable_project
+    ]
     keys.inject({}) {|result, a| result[a] = translate(a); result}
   end
 
