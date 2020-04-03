@@ -14,7 +14,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * a click into an empty search field suggests issues recently changed by the user
 * a click on the logged hours or activity opens the redmine time entry view for the issue or project
 * link to an overview page that lists the total hours per day
-* translatable
+* easily translatable. currently included languages are: de, en, ja
 
 # browser support
 at the moment the plugin might not work with internet explorer.
@@ -63,8 +63,8 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 * nodejs
 
 ## how to add a new translation language
-* same as for any other redmine plugin
 * copy one of the files in "config/locales/" to a new one named with the appropriate language code
+* edit the file and replace the existing translations with your translations
 
 the plugin tries to use the language that the user has configured in redmine under "my account" and falls back to english
 ## setup

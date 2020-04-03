@@ -1,0 +1,35 @@
+ja:
+  button_duplicate: 入れる
+  confirm_delete: 削除を確認
+  datepicker_date_format: 日付の形式
+  datepicker_day_names_min: 日,月,火,水,木,金,土
+  datepicker_day_names_short: 日,月,火,水,木,金,土
+  datepicker_first_day: 週の開始曜日
+  datepicker_max_date: 選択できる最も遅い日付
+  datepicker_min_date: 選択できる最も早い日付
+  datepicker_month_names: １月,２月,３月,４月,５月,６月,７月,８月,９月,１０月,１１月,１２月
+  datepicker_month_names_short: １月,２月,３月,４月,５月,６月,７月,８月,９月,１０月,１１月,１２月
+  datepicker_next: 次の日
+  datepicker_prev: 前の日
+  error_404_not_found: "サーバーの応答は「リソースが見つからなかった (404)」"
+  estimate: 予定
+  field_minutes: 分間
+  general_text_or: もしくは
+  issue_or_project: チケットもしくはプロジェクト
+  issues_closed_past_days: この日数より古い完了したチケットを読み込まない
+  jquery_datepicker_format: jQuery datepicker フォーマット
+  menu_entry_title: 時間記録
+  no_time_entries_loaded: 作業時間が見つかりません
+  only_issues_label: プロジェクトに作業時間の記録を許可しない
+  open_in_redmine: 選択のプロジェクトかチケットを表示
+  overbooking_warning_label: 予定工数を超えたときに警告する
+  overbooking_warning: この記録が予定工数を超えます。先に進める前に、プロジェクトリーダーに相談してください。
+  overview_note: 今年だけ。記録ある場合のみ週末。
+  overview_title: 作業時間の概要
+  redmine_message: "Redmineは言う:\n"
+  spent_individual: 自分
+  spent_total: 全員
+  unavailable_project: 「不明なプロジェクト」
+  date:
+    formats:
+      short: "%Y-%m-%d"
