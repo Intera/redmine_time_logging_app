@@ -15,6 +15,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * a click on the logged hours or activity opens the redmine time entry view for the issue or project
 * link to an overview page that lists the total hours per day
 * easily translatable. currently included languages are: de, en, ja
+* tested with redmine 4 and 3
 
 # browser support
 at the moment the plugin might not work with internet explorer.
