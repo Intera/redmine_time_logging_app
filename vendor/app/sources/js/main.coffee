@@ -544,7 +544,6 @@ datepickerChangeDays = (element, difference) ->
   nextDate.setDate prevDate.getDate() + difference
   if nextDate isnt prevDate
     element.datepicker "setDate", nextDate
-    hideNextDateButton nextDate
     datepickerUpdate ->
       # no entries found
       datepickerChangeDays helper.$$("#date"), Math.min(difference, 1) if dateIsWeekend(nextDate)
@@ -617,7 +616,7 @@ initialise = ->
     initDeleteDialog()
     onTimeEntriesReload()
     helper.$$(document).on "timeEntriesReload", onTimeEntriesReload
-    helper.$$("#date").datepicker "option", "onSelect", datepickerUpdate
+    helper.$$("#date").datepicker "option", "onSelect", -> datepickerUpdate()
     $(".dateControls .prev").click decrementDate
     $(".dateControls .next").click incrementDate
     hideNextDateButton()
@@ -640,9 +639,8 @@ datepickerUpdate = (->
       request.abort()
       request = false
     date = helper.$$("#date").datepicker("getDate")
-    request = getTimeEntries(
-      spent_on: date
-    , false, noEntriesFound)
+    hideNextDateButton date
+    request = getTimeEntries({spent_on: date}, false, noEntriesFound)
 )()
 
 module.exports =

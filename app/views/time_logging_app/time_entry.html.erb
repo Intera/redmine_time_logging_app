@@ -30,7 +30,7 @@
             <div class="right hbox">
               <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
               <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>" title="<%= t(:label_overview) %>"></button>
-              <button class="resetForm" title="<%= t(:reset_form) %>"></button>
+              <button class="resetForm" title="<%= t(:button_reset) %>"></button>
             </div>
           </div>
           <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:label_search)%>"></textarea>
@@ -39,7 +39,7 @@
               <input id="hours" tabindex="3" type="number" placeholder="<%= t(:field_hours)%>"/>
               <input id="minutes" tabindex="4" type="number" placeholder="<%= t(:field_minutes)%>"/>
             </div>
-            <select id="activity" tabindex="5" placeholder="<%= t(:field_activity) %>"></select>
+            <select id="activity" tabindex="5" placeholder="<%= t(:field_activity) %>" title="<%= t(:field_activity) %>"></select>
           </div>
           <textarea id="comments" maxlength="255" tabindex="6" placeholder="<%= t(:label_comment) %>"></textarea>
           <div class="hbox">

@@ -11140,7 +11140,6 @@ return jQuery;
     nextDate.setDate(prevDate.getDate() + difference);
     if (nextDate !== prevDate) {
       element.datepicker("setDate", nextDate);
-      hideNextDateButton(nextDate);
       return datepickerUpdate(function() {
         if (dateIsWeekend(nextDate)) {
           // no entries found
@@ -11241,7 +11240,9 @@ return jQuery;
       initDeleteDialog();
       onTimeEntriesReload();
       helper.$$(document).on("timeEntriesReload", onTimeEntriesReload);
-      helper.$$("#date").datepicker("option", "onSelect", datepickerUpdate);
+      helper.$$("#date").datepicker("option", "onSelect", function() {
+        return datepickerUpdate();
+      });
       $(".dateControls .prev").click(decrementDate);
       $(".dateControls .next").click(incrementDate);
       hideNextDateButton();
@@ -11273,6 +11274,7 @@ return jQuery;
         request = false;
       }
       date = helper.$$("#date").datepicker("getDate");
+      hideNextDateButton(date);
       return request = getTimeEntries({
         spent_on: date
       }, false, noEntriesFound);

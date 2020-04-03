@@ -27,10 +27,9 @@ de:
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
   overview_title: Zeiterfassung Übersicht
   redmine_message: "Redmine meldet:\n"
-  reset_form: Felder zurücksetzen
   spent_individual: Eigene Zeit
   spent_total: Alle Benutzer
-  unavailable_roject: Projekt nicht verfügbar
+  unavailable_roject: [Unbekanntes Projekt]
   date:
     formats:
       short: "%Y-%m-%d"
