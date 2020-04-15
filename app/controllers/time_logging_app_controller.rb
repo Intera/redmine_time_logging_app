@@ -151,12 +151,12 @@ class TimeLoggingAppController < ApplicationController
       entry = TimeEntry.select("sum(time_entries.hours) hours")
                 .where("issue_id = ?", issue_id)
                 .group("time_entries.issue_id")
-                .first
+                .take
     elsif project_id
       entry = TimeEntry.select("sum(time_entries.hours) hours")
                 .where("project_id = ?", project_id)
                 .group("time_entries.project_id")
-                .first
+                .take
     end
     render :json => {"total" => entry ? entry["hours"] : 0}
   end
