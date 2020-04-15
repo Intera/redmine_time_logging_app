@@ -2,21 +2,23 @@ table.list th, table.list td {
   text-align: left;
 }
 tr.less_hours {
-  font-style: italic;
   color: #666;
 }
+tr.less_hours .hours {
+  font-weight: normal;
+}
 tr {
-	font-weight: normal;
+  font-weight: normal;
 }
 table.list td {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
 table.list td.project {
-	max-width: 30rem;
+  max-width: 30rem;
 }
 h2 {
-	display: inline-block;
+  display: inline-block;
   margin-bottom: 6px;
 }
 h2 + span {
