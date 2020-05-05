@@ -9,8 +9,12 @@ de:
   datepicker_min_date: Frühestes auswählbares Datum im Datepicker
   datepicker_month_names: Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember
   datepicker_month_names_short: Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
-  datepicker_next: Nächster Tag
-  datepicker_prev: Vorheriger Tag
+  datepicker_next: Nächster
+  datepicker_prev: Vorheriger
+  datepicker_close: Schließen
+  datepicker_today: Heute
+  next_day: Nächster Tag
+  prev_day: Vorheriger Tag
   error_404_not_found: "Eine Hintergrundanfrage führte zu einer \"404 not found\" Serverantwort"
   estimate: Geschätzt
   field_minutes: Minuten

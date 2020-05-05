@@ -9,8 +9,12 @@ ja:
   datepicker_min_date: 選択できる最も早い日付
   datepicker_month_names: １月,２月,３月,４月,５月,６月,７月,８月,９月,１０月,１１月,１２月
   datepicker_month_names_short: １月,２月,３月,４月,５月,６月,７月,８月,９月,１０月,１１月,１２月
-  datepicker_next: 次の日
-  datepicker_prev: 前の日
+  datepicker_next: 次
+  datepicker_prev: 前
+  datepicker_close: 閉じる
+  datepicker_today: 今日
+  next_day: 次の日
+  prev_day: 前の日
   error_404_not_found: "サーバーの応答は「リソースが見つからなかった (404)」"
   estimate: 予定
   field_minutes: 分間

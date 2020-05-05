@@ -3,6 +3,9 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+html {
+  font-size: 13px;
+}
 body {
   background-color: #aaa;
   min-width: 200px;
@@ -12,7 +15,7 @@ body {
   background-color: #222;
   margin: auto;
   max-width: 810px;
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 h2 {
   color: #eaeaea;
@@ -34,7 +37,7 @@ button {
   cursor: pointer;
 }
 #date {
-  width: 7rem;
+  width: 11ch;
   vertical-align: top;
 }
 #activity {
@@ -106,7 +109,7 @@ input,button,textarea,select {
   height: 44px;
 }
 #comments {
-  height: 5rem;
+  height: 65px;
 }
 input:focus,textarea:focus,select:focus {
   opacity: 1;
@@ -217,7 +220,7 @@ button.delete,button.duplicate,button.cancel,#timeEntries,#form,.ui-datepicker-w
 }
 button.submit {
   border-color: #999;
-  font-size: 1.1rem;
+  font-size: 110%;
   width: 100%;
 }
 button.submit:hover {
@@ -273,6 +276,9 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+.ui-button-text-only .ui-button-text {
+  padding: 0;
 }
 @media screen and (max-width: 740px) {
   #activity {

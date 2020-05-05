@@ -8,9 +8,9 @@
     "url": "git://github.com/Intera"
   },
   "dependencies": {
-    "browserify": "*",
+    "browserify": "^16.5.1",
     "coffeeify": "*",
-    "coffeescript": "*",
-    "fs-extra": "*"
+    "coffeescript": "^2.5.1",
+    "fs-extra": "^9.0.0"
   }
 }
