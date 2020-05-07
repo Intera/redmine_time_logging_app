@@ -29,7 +29,10 @@
             </div>
             <div class="right hbox">
               <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
-              <button class="overview" data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>" title="<%= t(:label_overview) %>"></button>
+              <button class="overview"
+                      data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>"
+                      title="<%= t(:label_overview) %>">
+              </button>
               <button class="resetForm" title="<%= t(:button_reset) %>"></button>
             </div>
           </div>

@@ -61,8 +61,6 @@ table {
 }
 .ui-autocomplete .closed a {
 }* {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 body {
@@ -96,7 +94,7 @@ button {
   cursor: pointer;
 }
 #date {
-  width: 7rem;
+  width: 13ch;
   vertical-align: top;
 }
 #activity {
@@ -156,6 +154,7 @@ input,select,textarea,button {
 }
 input,select,textarea {
   padding: 5px;
+  padding-right: 0;
 }
 body,input,textarea,select {
   -khtml-border-radius: 5px;
