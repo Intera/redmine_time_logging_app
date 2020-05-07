@@ -13,6 +13,10 @@ module.exports =
     dayNamesMin: redmineData.datepicker.day_names_min || ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
     dayNamesShort: redmineData.datepicker.day_names_short || ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
     dateFormat: redmineData.datepicker.date_format || "D y-m-d"
+    closeText: redmineData.datepicker.close || "close"
+    currentText: redmineData.datepicker.today || "today"
+    prevText: redmineData.datepicker.prev || "previous"
+    nextText: redmineData.datepicker.next || "next"
     showButtonPanel: true
     autoSize: true
   # in search results this separates projects and sub-projects

@@ -37,7 +37,7 @@ compile_css = ->
   target_file = target_dir + "/main.css"
   output_file = fs.createWriteStream target_file
   input_files.forEach (a) ->
-    output_file.write fs.readFileSync "#{input_dir}/#{a}.css"
+    output_file.write fs.readFileSync("#{input_dir}/#{a}.css") + "\n"
 
 copy_static_files = ->
   input_files = ["img"]

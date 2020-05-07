@@ -235,7 +235,12 @@ class TimeLoggingAppController < ApplicationController
       "month_names" => get_comma_translation("datepicker_month_names"),
       "month_names_short" => get_comma_translation("datepicker_month_names_short"),
       "day_names" => get_comma_translation("datepicker_day_names"),
-      "day_names_short" => get_comma_translation("datepicker_day_names_short")
+      "day_names_min" => get_comma_translation("datepicker_day_names_min"),
+      "day_names_short" => get_comma_translation("datepicker_day_names_short"),
+      "today" => translate("datepicker_today"),
+      "close" => translate("datepicker_close"),
+      "next" => translate("datepicker_next"),
+      "prev" => translate("datepicker_prev")
     }
     datepicker_setting_names = ["date_format", "max_date", "min_date", "first_day"]
     datepicker_setting_names.each {|a|
