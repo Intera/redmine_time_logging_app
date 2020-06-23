@@ -86,7 +86,7 @@ class TimeLoggingAppController < ApplicationController
         :hours => decimal_hours_to_hours_minutes(a["hours_day"].round(2)),
         :project => projects.join(", ")
       }
-      current[:less_hours] = a["hours_day"] < most_common_hours
+      current[:less_hours] = (most_common_hours - a["hours_day"]).abs > 0.1
       previous_date = a["spent_on"] + 1
       result + null_entries + [current]
     }
