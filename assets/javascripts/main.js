@@ -10385,7 +10385,7 @@ return jQuery;
             return;
           }
           if (a.issue_id) {
-            if (!cache.issues[a.project_id]) {
+            if (!cache.issues[a.issue_id]) {
               return;
             }
             a = {

@@ -44,7 +44,7 @@ getIssuesProjectsAndSearchData = (status) ->
       recentTimeEntryObjects.forEach (a, index) ->
         return unless cache.projects[a.project_id]
         if a.issue_id
-          return unless cache.issues[a.project_id]
+          return unless cache.issues[a.issue_id]
           a =
             id: a.issue_id
             subject: a.issue_subject
