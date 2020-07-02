@@ -10421,13 +10421,7 @@ return jQuery;
     if (formData.timeEntryId) {
       return redmine.updateTimeEntry(formData.timeEntryId, apiData);
     } else {
-      return redmine.createTimeEntry(apiData).done(function(timeEntry) {
-        var issueOrProject;
-        timeEntry = timeEntry.time_entry;
-        issueOrProject = (timeEntry.issue && timeEntry.issue.id) || timeEntry.project.name;
-        if (_.isNumber(issueOrProject)) {
-          issueOrProject = $("<a>").attr("href", helper.issueIdToUrl(issueOrProject)).html("#" + issueOrProject);
-        }
+      return redmine.createTimeEntry(apiData).done(function() {
         return resetFormAfterSync();
       });
     }
@@ -10668,7 +10662,9 @@ return jQuery;
       if (formData.issue && formData.activeTimeEntry.issue) {
         estimated = formData.issue.estimated_hours;
         total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours;
-        console.log(`estimated ${estimated}, total_spent ${total_spent}, new ${new_hours}`);
+        if (216 === redmineData.user.id) {
+          console.log(`estimated ${estimated}, total_spent ${total_spent}, new ${new_hours + total_spent}`);
+        }
         if ((!(old_hours === new_hours)) && (estimated > total_spent) && (estimated < new_hours + total_spent)) {
           return confirm(translate("overbooking_warning"));
         }

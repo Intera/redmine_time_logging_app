@@ -69,11 +69,7 @@ sync = (formData) ->
   if formData.timeEntryId
     redmine.updateTimeEntry formData.timeEntryId, apiData
   else
-    redmine.createTimeEntry(apiData).done (timeEntry) ->
-      timeEntry = timeEntry.time_entry
-      issueOrProject = (timeEntry.issue and timeEntry.issue.id) or timeEntry.project.name
-      issueOrProject = $("<a>").attr("href", helper.issueIdToUrl(issueOrProject)).html("#" + issueOrProject)  if _.isNumber(issueOrProject)
-      resetFormAfterSync()
+    redmine.createTimeEntry(apiData).done () -> resetFormAfterSync()
 
 resetFormAfterSync = ->
   $("#comments,#hours,#minutes").val("").blur()
@@ -233,7 +229,8 @@ validateOther = (formData) ->
     if formData.issue and formData.activeTimeEntry.issue
       estimated = formData.issue.estimated_hours
       total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours
-      console.log "estimated #{estimated}, total_spent #{total_spent}, new #{new_hours}"
+      if 216 is redmineData.user.id
+        console.log "estimated #{estimated}, total_spent #{total_spent}, new #{new_hours + total_spent}"
       if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
         return confirm translate("overbooking_warning")
   true
