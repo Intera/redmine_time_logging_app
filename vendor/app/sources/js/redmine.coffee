@@ -17,12 +17,6 @@ defaultRedmineErrorHandler = (response, x, y) ->
     catch exc then message = "http status " + response.status
     alert message
 
-deleteTimeEntry = (id) ->
-  $.ajax
-    type: "delete"
-    dataType: "html"
-    url: urls.time_entries_redmine + "/" + id + ".json"
-
 getTimeEntries = (config) ->
   config = {}  if _.isUndefined(config)
   config.spent_on = $.datepicker.formatDate("yy-mm-dd", config.spent_on)  if _.isDate(config.spent_on)
@@ -53,17 +47,23 @@ createTimeEntry = (data) ->
   $.ajax
     type: "post"
     contentType: "application/json"
-    data: JSON.stringify(time_entry: data)
-    url: urls.time_entries_redmine + ".json"
+    data: JSON.stringify(data)
+    url: urls.time_entries
 
 updateTimeEntry = (id, data) ->
+  data.id = id
   $.ajax
     type: "put"
     contentType: "application/json"
-    # important: does not return json data - if "json" would be written here, there would be a "200 OK" parsererror
-    dataType: "html"
-    data: JSON.stringify(time_entry: data)
-    url: urls.time_entries_redmine + "/" + id + ".json"
+    data: JSON.stringify(data)
+    url: urls.time_entries
+
+deleteTimeEntry = (id) ->
+  $.ajax
+    type: "delete"
+    contentType: "application/json"
+    data: JSON.stringify({id})
+    url: urls.time_entries
 
 $.ajaxSetup
   dataType: "json"

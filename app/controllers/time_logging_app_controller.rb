@@ -17,7 +17,7 @@ class TimeLoggingAppController < ApplicationController
 
   public
 
-  def time_entry
+  def index
     redmine_data = get_redmine_data
     @javascript_tag_content = "var redmineData = " + ActiveSupport::JSON.encode(redmine_data)
     render layout: false
@@ -94,7 +94,7 @@ class TimeLoggingAppController < ApplicationController
     render :layout => "base"
   end
 
-  def time_entries spent_on=params[:spent_on]
+  def time_entries_list spent_on
     spent_on = spent_on ? Date.strptime(spent_on) : Date.today
     time_entries = TimeEntry
                    .includes(:issue, :project)
@@ -120,6 +120,34 @@ class TimeLoggingAppController < ApplicationController
       result
     }
     render :json => {"time_entries" => time_entries}
+  end
+
+  def time_entries
+    if request.get?
+      time_entries_list params[:spent_on]
+    elsif request.post? or request.put?
+      spent_on = Date.strptime(params["spent_on"], "%Y-%m-%d")
+      data = {
+          :user_id => User.current.id,
+          :activity_id => params["activity_id"].to_i,
+          :comments => params["comments"],
+          :hours => params["hours"].to_f,
+          :project_id => params["project_id"].to_i,
+          :issue_id => params["issue_id"].to_i,
+          :spent_on => spent_on
+      }
+      if request.post?
+        TimeEntry.new(data).save!
+      else
+        a = TimeEntry.find(params["id"])
+        return unless User.current.id == a.user_id
+        a.update!(data)
+      end
+    elsif request.delete?
+      a = TimeEntry.find(params["id"])
+      return unless User.current.id == a.user_id
+      a.delete
+    end
   end
 
   def projects_and_issues
@@ -148,17 +176,16 @@ class TimeLoggingAppController < ApplicationController
     # return the current, total spent time for a project or issue.
     return unless project_id or issue_id
     if issue_id
-      entry = TimeEntry.select("sum(time_entries.hours) hours")
-                .where("issue_id = ?", issue_id)
-                .group("time_entries.issue_id")
-                .take
+      sql_condition = "issue_id = #{issue_id.to_i}"
+      sql_group = "issue_id"
     elsif project_id
-      entry = TimeEntry.select("sum(time_entries.hours) hours")
-                .where("project_id = ?", project_id)
-                .group("time_entries.project_id")
-                .take
+      sql_condition = "project_id = #{project_id.to_i}"
+      sql_group = "project_id"
     end
-    render :json => {"total" => entry ? entry["hours"] : 0}
+    sql = "select sum(hours) hours from #{TimeEntry.table_name} where #{sql_condition} group by #{sql_group}"
+    entry = TimeEntry.connection.select_all(sql)
+    return unless 1 == entry.length
+    render :json => {"total" => entry ? entry.first["hours"].to_f : 0}
   end
 
   def estimate_check
@@ -181,8 +208,6 @@ class TimeLoggingAppController < ApplicationController
     actions.each {|action|
       urls[action] = url_for({controller: "time_logging_app", action: action})
     }
-    urls["overview"] = url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}})
-    urls["time_entries_redmine"] = url_for({controller: "timelog"})
     urls["issues_redmine"] = url_for({controller: "issues"})
     urls["projects_redmine"] = url_for({controller: "projects"})
     urls

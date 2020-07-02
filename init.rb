@@ -7,7 +7,7 @@ Redmine::Plugin.register :redmine_time_logging_app do
   description "adds a new menu entry to log and edit spent time in one place"
   version "1.1.3"
   menu(
-    :top_menu, :time_logging_app, {:controller => :time_logging_app, :action => :time_entry}, :caption => :menu_entry_title,
+    :top_menu, :time_logging_app, {:controller => :time_logging_app, :action => :index}, :caption => :menu_entry_title,
     :html => {:target => "_blank"},
     :if => Proc.new {
       # require relevant permissions for showing the menu entry

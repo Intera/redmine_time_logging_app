@@ -12,5 +12,7 @@
 .ui-autocomplete .closed {
   text-decoration: line-through;
 }
-.ui-autocomplete .closed a {
+.ui-dialog .ui-dialog-buttonpane button {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }

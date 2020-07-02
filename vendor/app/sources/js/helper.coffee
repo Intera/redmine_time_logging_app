@@ -53,7 +53,8 @@ stringContains = (a, b) -> a.indexOf(b) >= 0
 stringContainsEvery = (a, values) -> values.every (b) -> stringContains a, b
 
 autocompleteMatchFunc = (searchstring) ->
-  # searches for words, not for special chars, in any order, case insensitive, keep one first and last whitespace. also search for the case insensitive search string as is
+  # searches for words, not for special chars, in any order, case insensitive, keep one leading and one trailing whitespace.
+  # also search for the case insensitive search string as is.
   matchCount = 0
   patterns = searchstring.split(" ")
   lastIsWhitespace = "" is patterns[patterns.length - 1]
@@ -95,9 +96,9 @@ projectNameToId = (projects, name) ->
   false
 
 createProjectsIssuesAndSearchData = (projects, issues) ->
-  searchData = []
   # convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
-  # and fill searchData array
+  # and fill searchData array.
+  searchData = []
   projects = _.foldl(projects, (prev, a) ->
     # insert projects into searchData
     searchData.push createProjectSearchDataEntry a unless redmineData.only_issues

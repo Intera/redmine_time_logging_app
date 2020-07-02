@@ -41,25 +41,27 @@ getIssuesProjectsAndSearchData = (status) ->
     initAutocomplete t[0], t[1], t[2]
     redmine.getRecent().done (recentTimeEntryObjects) ->
       cache.searchDataRecent = []
-      recentTimeEntryObjects.forEach (e, index) ->
-        if e.issue_id
-          e =
-            id: e.issue_id
-            subject: e.issue_subject
-            project_id: e.project_id
-            version: e.version_name
-            is_closed: e.issue_is_closed == 1
+      recentTimeEntryObjects.forEach (a, index) ->
+        return unless cache.projects[a.project_id]
+        if a.issue_id
+          return unless cache.issues[a.project_id]
+          a =
+            id: a.issue_id
+            subject: a.issue_subject
+            project_id: a.project_id
+            version: a.version_name
+            is_closed: a.issue_is_closed == 1
             project:
-              name: e.project_name
-              id: e.project_id
-          cache.searchDataRecent.push helper.createIssueSearchDataEntry e, t[0]
+              id: a.project_id
+              name: a.project_name
+          cache.searchDataRecent.push helper.createIssueSearchDataEntry a, cache.projects
         else
-          e =
-            id: e.project_id
-            name: e.project_name
-            parent_id: e.project_parent_id
-            parent_name: e.project_parent_name
-          cache.searchDataRecent.push helper.createProjectSearchDataEntry e
+          a =
+            id: a.project_id
+            name: a.project_name
+            parent_id: a.project_parent_id
+            parent_name: a.project_parent_name
+          cache.searchDataRecent.push helper.createProjectSearchDataEntry a
 
 sync = (formData) ->
   # create, delete or update a time entry
@@ -183,7 +185,6 @@ initAutocomplete = (projects, issues, searchData, recentlyUpdatedSearchData) ->
     listItem
 
 formDataToAPIData = (formData) ->
-  # taken as is
   r = _.pick(formData, "activity_id", "comments", "hours", "project_id", "issue_id")
   # format change necessary
   r.spent_on = $.datepicker.formatDate("yy-mm-dd", formData.date)
@@ -232,6 +233,7 @@ validateOther = (formData) ->
     if formData.issue and formData.activeTimeEntry.issue
       estimated = formData.issue.estimated_hours
       total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours
+      console.log "estimated #{estimated}, total_spent #{total_spent}, new #{new_hours}"
       if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
         return confirm translate("overbooking_warning")
   true

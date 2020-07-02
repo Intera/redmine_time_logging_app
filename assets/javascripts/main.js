@@ -10011,7 +10011,8 @@ return jQuery;
 
   autocompleteMatchFunc = function(searchstring) {
     var firstIsWhitespace, lastIsWhitespace, matchCount, patterns;
-    // searches for words, not for special chars, in any order, case insensitive, keep one first and last whitespace. also search for the case insensitive search string as is
+    // searches for words, not for special chars, in any order, case insensitive, keep one leading and one trailing whitespace.
+    // also search for the case insensitive search string as is.
     matchCount = 0;
     patterns = searchstring.split(" ");
     lastIsWhitespace = "" === patterns[patterns.length - 1];
@@ -10079,9 +10080,9 @@ return jQuery;
 
   createProjectsIssuesAndSearchData = function(projects, issues) {
     var searchData;
-    searchData = [];
     // convert redmine result arrays. {"projects": [project-data, ...]} -> {project-id: project-data, ...}
-    // and fill searchData array
+    // and fill searchData array.
+    searchData = [];
     projects = _.foldl(projects, function(prev, a) {
       if (!redmineData.only_issues) {
         // insert projects into searchData
@@ -10379,28 +10380,34 @@ return jQuery;
       initAutocomplete(t[0], t[1], t[2]);
       return redmine.getRecent().done(function(recentTimeEntryObjects) {
         cache.searchDataRecent = [];
-        return recentTimeEntryObjects.forEach(function(e, index) {
-          if (e.issue_id) {
-            e = {
-              id: e.issue_id,
-              subject: e.issue_subject,
-              project_id: e.project_id,
-              version: e.version_name,
-              is_closed: e.issue_is_closed === 1,
+        return recentTimeEntryObjects.forEach(function(a, index) {
+          if (!cache.projects[a.project_id]) {
+            return;
+          }
+          if (a.issue_id) {
+            if (!cache.issues[a.project_id]) {
+              return;
+            }
+            a = {
+              id: a.issue_id,
+              subject: a.issue_subject,
+              project_id: a.project_id,
+              version: a.version_name,
+              is_closed: a.issue_is_closed === 1,
               project: {
-                name: e.project_name,
-                id: e.project_id
+                id: a.project_id,
+                name: a.project_name
               }
             };
-            return cache.searchDataRecent.push(helper.createIssueSearchDataEntry(e, t[0]));
+            return cache.searchDataRecent.push(helper.createIssueSearchDataEntry(a, cache.projects));
           } else {
-            e = {
-              id: e.project_id,
-              name: e.project_name,
-              parent_id: e.project_parent_id,
-              parent_name: e.project_parent_name
+            a = {
+              id: a.project_id,
+              name: a.project_name,
+              parent_id: a.project_parent_id,
+              parent_name: a.project_parent_name
             };
-            return cache.searchDataRecent.push(helper.createProjectSearchDataEntry(e));
+            return cache.searchDataRecent.push(helper.createProjectSearchDataEntry(a));
           }
         });
       });
@@ -10589,7 +10596,6 @@ return jQuery;
 
   formDataToAPIData = function(formData) {
     var r;
-    // taken as is
     r = _.pick(formData, "activity_id", "comments", "hours", "project_id", "issue_id");
     // format change necessary
     r.spent_on = $.datepicker.formatDate("yy-mm-dd", formData.date);
@@ -10662,6 +10668,7 @@ return jQuery;
       if (formData.issue && formData.activeTimeEntry.issue) {
         estimated = formData.issue.estimated_hours;
         total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours;
+        console.log(`estimated ${estimated}, total_spent ${total_spent}, new ${new_hours}`);
         if ((!(old_hours === new_hours)) && (estimated > total_spent) && (estimated < new_hours + total_spent)) {
           return confirm(translate("overbooking_warning"));
         }
@@ -11328,14 +11335,6 @@ return jQuery;
     }
   };
 
-  deleteTimeEntry = function(id) {
-    return $.ajax({
-      type: "delete",
-      dataType: "html",
-      url: urls.time_entries_redmine + "/" + id + ".json"
-    });
-  };
-
   getTimeEntries = function(config) {
     if (_.isUndefined(config)) {
       config = {};
@@ -11382,23 +11381,27 @@ return jQuery;
     return $.ajax({
       type: "post",
       contentType: "application/json",
-      data: JSON.stringify({
-        time_entry: data
-      }),
-      url: urls.time_entries_redmine + ".json"
+      data: JSON.stringify(data),
+      url: urls.time_entries
     });
   };
 
   updateTimeEntry = function(id, data) {
+    data.id = id;
     return $.ajax({
       type: "put",
       contentType: "application/json",
-      // important: does not return json data - if "json" would be written here, there would be a "200 OK" parsererror
-      dataType: "html",
-      data: JSON.stringify({
-        time_entry: data
-      }),
-      url: urls.time_entries_redmine + "/" + id + ".json"
+      data: JSON.stringify(data),
+      url: urls.time_entries
+    });
+  };
+
+  deleteTimeEntry = function(id) {
+    return $.ajax({
+      type: "delete",
+      contentType: "application/json",
+      data: JSON.stringify({id}),
+      url: urls.time_entries
     });
   };
 
