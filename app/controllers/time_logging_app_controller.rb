@@ -174,7 +174,10 @@ class TimeLoggingAppController < ApplicationController
 
   def spent_time project_id=params["project_id"], issue_id=params["issue_id"]
     # return the current, total spent time for a project or issue.
-    return unless project_id or issue_id
+    unless issue_id or project_id
+      render :json => {"total" => 0}
+      return
+    end
     if issue_id
       sql_condition = "issue_id = #{issue_id.to_i}"
       sql_group = "issue_id"
@@ -184,8 +187,8 @@ class TimeLoggingAppController < ApplicationController
     end
     sql = "select sum(hours) hours from #{TimeEntry.table_name} where #{sql_condition} group by #{sql_group}"
     entry = TimeEntry.connection.select_all(sql)
-    return unless 1 == entry.length
-    render :json => {"total" => entry ? entry.first["hours"].to_f : 0}
+    hours = 1 == entry.length ? entry.first["hours"].to_f : 0
+    render :json => {"total" => hours}
   end
 
   def estimate_check
