@@ -228,9 +228,8 @@ validateOther = (formData) ->
     else old_hours = formData.activeTimeEntry.hours
     if formData.issue and formData.activeTimeEntry.issue
       estimated = formData.issue.estimated_hours
+      return true unless estimated
       total_spent = formData.activeTimeEntry.issue.spent_hours - old_hours
-      if 216 is redmineData.user.id
-        console.log "estimated #{estimated}, total_spent #{total_spent}, new #{new_hours + total_spent}"
       if ((not (old_hours is new_hours)) and (estimated > total_spent) and (estimated < new_hours + total_spent))
         return confirm translate("overbooking_warning")
   true

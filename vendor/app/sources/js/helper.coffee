@@ -238,6 +238,8 @@ escapeHtml = (string) ->
   String(string).replace /[&<>"'\/]/g, (s) ->
     entityMap[s]
 
+roundFloat = (a) -> parseFloat(a.toPrecision(2))
+
 module.exports =
   $$: $$
   autocompleteMatchFunc: autocompleteMatchFunc
@@ -256,6 +258,7 @@ module.exports =
   removeErrorClass: removeErrorClass
   selectAll: selectAll
   padZeros: padZeros
+  roundFloat: roundFloat
   stringContains: stringContains
   wrapDeferred: wrapDeferred
   mobileHideAddressBar: mobileHideAddressBar
