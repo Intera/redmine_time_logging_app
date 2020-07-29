@@ -56,7 +56,7 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 |first day of week|1|0-6, sunday to monday|
 |load closed issues of the past n days|7|include closed issues as long as they are not older than the given number of days|
 |warn when exceeding estimated time|off|show a warning when trying to log time that would exceed the estimated time of the issue|
-|Disallow logging time on projects|off|redmine allows spent time on issues and projects, this setting requires time entries to be for specific issues|
+|disallow logging time on projects|off|redmine allows spent time on issues and projects, this setting allows time entries only on issues|
 
 # developer information
 ## development dependencies
@@ -80,7 +80,7 @@ the plugin tries to use the language that the user has configured in redmine und
 
 ## how to recompile the javascript application
 * in directory "vendor/app"
-* execute "./exe/compile". should that not work then try "node exe/compile"
+* execute "./exe/compile". should that not work, try "node exe/compile"
 * changes will only become active after a redmine restart, because redmine installs new plugin assets only when it starts
 
 ## other
@@ -89,4 +89,4 @@ it is possible to replace the jquery-ui theme.
 ## possible enhancements
 * better language detection (en-gb for example seems to be incorrectly detected)
 * loading indicator
-* remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not succeed)
+* remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not work)
