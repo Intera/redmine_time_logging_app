@@ -18,7 +18,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * tested with redmine 4 and 3
 
 # browser support
-at the moment the plugin might not work with internet explorer.
+the plugin does not work with internet explorer.
 
 # installation
 ## download
@@ -38,7 +38,7 @@ clicking on the menu entry should open a new browser tab where the time entry ed
 if you have made time entries today, a list of your spent time entries for today is displayed.
 you can use the left/right arrow buttons at the top left, or the date field and date picker, to change between days.
 
-to create a new spent time entry, use the search field to search and select the desired issue or project, fill in at least a time and activity and click "create". redmine will ask you once every time your browser has restarted to enter your redmine username and password to ensure that you have permission to create or edit time entries.
+to create a new spent time entry, use the search field to search and select the desired issue or project, fill in at least a time and activity and click "create".
 
 to edit a time entry, click on the pencil button in the list of time entries. you can change the date freely. when you click on "update" the changes will be saved.
 
@@ -87,7 +87,6 @@ the plugin tries to use the language that the user has configured in redmine und
 it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
-* better language detection (en-gb seems to be incorrectly detected)
-* loading indicator and indicate reaching most current date (hide next day button)
-* remove the focus style on buttons on touch devices (first try fixing it by overwriting .ui-state-focus css did not succeed)
-* internet explorer support
+* better language detection (en-gb for example seems to be incorrectly detected)
+* loading indicator
+* remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not succeed)

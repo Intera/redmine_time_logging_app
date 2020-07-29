@@ -133,9 +133,11 @@ class TimeLoggingAppController < ApplicationController
           :comments => params["comments"],
           :hours => params["hours"].to_f,
           :project_id => params["project_id"].to_i,
-          :issue_id => params["issue_id"].to_i,
           :spent_on => spent_on
       }
+      if params["issue_id"]
+        data[:issue_id] = params["issue_id"].to_i
+      end
       if request.post?
         TimeEntry.new(data).save!
       else
