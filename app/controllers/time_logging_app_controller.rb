@@ -175,7 +175,7 @@ class TimeLoggingAppController < ApplicationController
   end
 
   def spent_time project_id=params["project_id"], issue_id=params["issue_id"]
-    # return the current, total spent time for a project or issue.
+    # return the current total spent time for a project or issue.
     unless issue_id or project_id
       render :json => {"total" => 0}
       return
@@ -256,7 +256,7 @@ class TimeLoggingAppController < ApplicationController
   end
 
   def get_redmine_data
-    # creates an object that is passed to the frontend javascript.
+    # creates an object that is passed to the frontend javascript
     current_user = User.current
     activities = TimeEntryActivity.select("id, name, project_id, parent_id, active").map{|b|
       {"id" => b["id"], "name" => b["name"], "project_id" => b["project_id"],
@@ -280,7 +280,7 @@ class TimeLoggingAppController < ApplicationController
      "backend_urls" => get_backend_urls,
      # Token for "protect_from_forgery" csrf protection.
      # It is rendered into the page and used by the javascript in every request.
-     # It is not entirely sure if form_authenticity_token is the correct token but it works.
+     # It is not entirely sure if form_authenticity_token is the ideal token but it works.
      "csrf_token" => form_authenticity_token.to_s,
      "datepicker" => datepicker,
      "only_issues" => "1" == Setting.plugin_redmine_time_logging_app["only_issues"],
@@ -313,7 +313,7 @@ class TimeLoggingAppController < ApplicationController
   end
 
   def decimal_hours_to_hours_minutes n
-    # convert a decimal hours number into a hh[:mm] string represultentation
+    # convert a decimal hours number into a hh[:mm] string
     minutes = ((n % 1) * 60).round(0)
     hours = n.floor
     r = hours.to_s
