@@ -150,6 +150,9 @@ button.cancel {
 .hbox > * {
   display: inline-block;
 }
+table thead {
+  color: #222;
+}
 table.list {
   background-color: #fff;
   border: 1px solid #E4E4E4;
