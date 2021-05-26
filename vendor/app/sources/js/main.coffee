@@ -165,9 +165,15 @@ autocompleteSelect = (event, ui) ->
 
 autocompleteClick = -> @select()
 
+autocompleteChange = (event, ui) ->
+  if ui.item
+    data = getSearchFormData ui.item.value
+  openInRedmineUpdateURL data
+
 initAutocomplete = (projects, issues, searchData, recentlyUpdatedSearchData) ->
   helper.$$("#search").click(autocompleteClick).focus(autocompleteFocus).autocomplete
     select: autocompleteSelect
+    change: autocompleteChange
     minLength: app_config.autocompleteMinLength
     source: (req, handleResponse) ->
       # generates/filters autocomplete suggestions
@@ -420,7 +426,7 @@ insertTimeEntryRows = (timeEntries) ->
     even = (index % 2) is 0
     if a.issue and not cache.issues[a.issue.id]
       # is a time entry of an issue that has not been loaded while getting issues (for example an old closed issue or a new issue).
-      # we handle it by using the loaded time entry information
+      # we handle it by using the available time entry information
       cache.issues[a.issue.id] = a.issue
       val = timeEntryToSearchDataEntry(a)
       cache.searchData.push val
@@ -511,6 +517,7 @@ timeEntryToDom = (timeEntry) ->
   helper.$$("#search").val(if val then val.value else "")
   helper.$$("#search").blur()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
+  openInRedmineUpdateURL {issue_id: timeEntry.issue.id, project_id: timeEntry.project.id}
 
 cancelEdit = ->
   resetFields()
