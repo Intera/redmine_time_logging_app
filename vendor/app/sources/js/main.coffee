@@ -517,7 +517,7 @@ timeEntryToDom = (timeEntry) ->
   helper.$$("#search").val(if val then val.value else "")
   helper.$$("#search").blur()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
-  openInRedmineUpdateURL {issue_id: timeEntry.issue.id, project_id: timeEntry.project.id}
+  openInRedmineUpdateURL {issue_id: timeEntry.issue?.id, project_id: timeEntry.project?.id}
 
 cancelEdit = ->
   resetFields()
@@ -614,7 +614,7 @@ initialise = ->
     helper.$$("#form").show()
     loading(false)
     initAutoDataReload()
-    helper.$$("#search").val("").trigger("focus", {onlyFocus: true})
+    helper.$$("#search").val("")
     # editing
     cache.template.timeEntry = _.template($("#timeEntryTemplate").text())
     extendBase()

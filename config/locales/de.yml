@@ -1,5 +1,6 @@
 de:
   button_duplicate: Einfügen
+  button_delete: Löschen
   confirm_delete: Wirklich löschen?
   datepicker_date_format: Datumsformat
   datepicker_day_names_min: So,Mo,Di,Mi,Do,Fr,Sa

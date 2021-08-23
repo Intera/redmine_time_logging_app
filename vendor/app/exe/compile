@@ -31,7 +31,7 @@ compile_js = ->
 
 compile_css = ->
   input_dir = "sources/css"
-  input_files = ["reset", "jquery-ui.structure", "jquery-ui.theme", "jquery-ui.override", "main"]
+  input_files = ["reset", "jquery-ui", "jquery-ui.override", "main"]
   target_dir = main_target_dir + "/stylesheets"
   fs.ensureDirSync target_dir
   target_file = target_dir + "/main.css"

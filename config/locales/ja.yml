@@ -1,5 +1,6 @@
 ja:
   button_duplicate: 入れる
+  button_delete: 削除
   confirm_delete: 削除を確認
   datepicker_date_format: 日付の形式
   datepicker_day_names_min: 日,月,火,水,木,金,土
