@@ -279,9 +279,6 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.ui-button-text-only .ui-button-text {
-  padding: 0;
-}
 @media screen and (max-width: 740px) {
   #activity {
     width: 100%;

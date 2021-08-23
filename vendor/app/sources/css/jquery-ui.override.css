@@ -1,5 +1,11 @@
+.ui-button-text-only .ui-button-text {
+  padding: 0;
+}
 .ui-button-text-icon-primary .ui-button-icon-primary {
   left: 0.9em;
+}
+button .ui-button-icon {
+  margin-left: -1px;
 }
 .ui-autocomplete {
   max-height: 40%;
