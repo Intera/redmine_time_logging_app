@@ -76,7 +76,9 @@ button .ui-button-icon {
 }
 
 .ui-menu .ui-menu-item:hover,
-.ui-menu .ui-menu-item:hover .ui-state-active
+.ui-menu .ui-menu-item:active,
+.ui-menu .ui-menu-item:focus,
+.ui-menu .ui-state-active
 {
   background: #ddd;
   color: #333;

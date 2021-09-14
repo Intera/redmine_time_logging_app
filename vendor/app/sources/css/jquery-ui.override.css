@@ -23,13 +23,12 @@ button .ui-button-icon {
   padding-left: 1rem;
   padding-right: 1rem;
 }
-
 .ui-menu .ui-menu-item {
   padding: 6px 1em 6px .4em;
 }
-
 .ui-menu .ui-menu-item:hover,
-.ui-menu .ui-menu-item:hover .ui-state-active
+.ui-menu .ui-menu-item:focus,
+.ui-menu .ui-state-active
 {
   background: #ddd;
   color: #333;
