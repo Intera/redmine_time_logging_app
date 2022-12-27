@@ -35,6 +35,12 @@ en:
   spent_individual: own spent time
   spent_total: all users
   unavailable_project: [unknown project]
+  average: average
+  overview_per_week: per week
+  overview_per_day: per day
+  overview_per_year: per year
+  field_tweek: week
+  field_tyear: year
   date:
     formats:
       short: "%Y-%m-%d"

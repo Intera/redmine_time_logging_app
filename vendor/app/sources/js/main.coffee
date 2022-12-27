@@ -583,7 +583,8 @@ initialise = ->
     request.setRequestHeader "X-CSRF-Token", token  if options.type.match(/(post)|(put)|(delete)/i)
   # datepicker
   helper.$$("#date").datepicker app_config.datepicker
-  helper.$$("#date").datepicker "setDate", "+0"
+  datepicker_date = if redmineData.spent_on then (new Date(redmineData.spent_on)) else "+0"
+  helper.$$("#date").datepicker "setDate", datepicker_date
   # buttons and fields
   $("button").button()
   $("button.next").button("option", "icons", {

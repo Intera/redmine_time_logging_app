@@ -45,52 +45,14 @@ class TimeLoggingAppController < ApplicationController
   end
 
   def overview
-    # lists all time_entries of the last x days and marks those with unusual hours.
-    @display_columns = [:spent_on, :hours, :project]
-    # get column labels
-    @display_column_headings = @display_columns.map {|a| translate(("field_" + a.to_s).to_sym) }
-    # load time entries grouped by day
-    sql_select = "select spent_on, sum(hours) hours_day, group_concat(project_id) project_ids"
-    sql_where = "where user_id=#{User.current.id} and tyear=#{DateTime.now.year}"
-    sql = "#{sql_select} from time_entries #{sql_where} group by spent_on order by spent_on asc"
-    time_entries = TimeEntry.connection.select_all(sql).to_a
-    # return early if empty
-    if time_entries.empty?
-      @time_entries = []
-      render :layout => "base"
-      return
-    end
-    if time_entries.first["spent_on"].is_a? String
-      # dealing with database without a date type
-      time_entries.each {|a| a["spent_on"] = Date.strptime(a["spent_on"], "%Y-%m-%d")}
-    end
-    # get the most common hour value
-    hours = time_entries.map {|a| a["hours_day"]}
-    hours_and_count = hours.map {|a| [a, hours.count(a)]}.sort{|a, b| b[1] <=> a[1]}
-    most_common_hours = hours_and_count.first[0]
-    # start with earliest date and create entries for each day
-    previous_date = time_entries.first["spent_on"]
-    time_entries = time_entries.reduce([]) {|result, a|
-      # add null entries between previous and current date
-      range = previous_date..(a["spent_on"] - 1)
-      null_entries = range.map {|b|
-        next if b.saturday? or b.sunday?
-        { :spent_on => I18n.l(b), :spent_on_date => b,
-          :project => "", :issue => "", :hours => "", :less_hours => true }
-      }.compact
-      projects = a["project_ids"].split(",").uniq.map{|id| id.to_i }
-      projects = Project.find(projects).map{|a| a[:name]}
-      current = {
-        :spent_on => I18n.l(a["spent_on"]),
-        :spent_on_date => a["spent_on"],
-        :hours => decimal_hours_to_hours_minutes(a["hours_day"].round(2)),
-        :project => projects.join(", ")
-      }
-      current[:less_hours] = (most_common_hours - a["hours_day"]).abs > 0.1
-      previous_date = a["spent_on"] + 1
-      result + null_entries + [current]
+    @redmine_data = {
+      "time_logging_app_url" => url_for({controller: "time_logging_app", action: "index"})
     }
-    @time_entries = time_entries.reverse
+    @data = {
+      :per_day => overview_rows(:day),
+      :per_week => overview_rows(:week),
+      :per_year => overview_rows(:year)
+    }
     render :layout => "base"
   end
 
@@ -207,6 +169,63 @@ class TimeLoggingAppController < ApplicationController
 
   private
 
+  def overview_rows_get_projects ids, type, time_column, time
+    ids_sql = ids.join ","
+    time = "str_to_date('#{time}', '%Y-%m-%d')" if :day == type
+    where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
+    sql = "select project_id, sum(hours) hours_sum from time_entries #{where_sql} group by project_id order by hours_sum desc"
+    time_entries = TimeEntry.connection.select_all(sql).to_a
+    total_hours = time_entries.reduce(0) {|sum, a| sum + a["hours_sum"]}
+    projects = TimeEntry.connection.select_all("select id, name from projects where id in (#{ids_sql})").to_a
+    project_names = {}
+    projects.each {|a| project_names[a["id"]] = a["name"]}
+    time_entries = time_entries.map {|a|
+      percentage = (100 * a["hours_sum"] / total_hours).floor
+      name = project_names[a["project_id"]]
+      if percentage < 1 then name
+      else "#{name} (#{percentage}%)" end
+    }
+    time_entries.join ", "
+  end
+
+  def overview_rows type
+    group_column_by_type = {:year => "tyear", :week => "tweek", :day => "spent_on"}
+    group_column = group_column_by_type[type]
+    year = DateTime.now.year
+    if :year == type
+      year_sql = ((year - 5)..year).to_a.join ","
+      year_sql = "tyear in (#{year_sql})"
+    else year_sql = "tyear=#{year}" end
+    select_sql = "select #{group_column}, sum(hours) hours_sum, group_concat(project_id) project_ids"
+    where_sql = "where user_id=#{User.current.id} and #{year_sql}"
+    sql = "#{select_sql} from time_entries #{where_sql} group by #{group_column} order by #{group_column} desc"
+    time_entries = TimeEntry.connection.select_all(sql).to_a
+    average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
+    time_entries = time_entries.map {|a|
+      projects = a["project_ids"].split(",").uniq.map{|id| id.to_i }
+      projects = overview_rows_get_projects projects, type, group_column, a[group_column]
+      highlight_hours = 0.5 <= (average - a["hours_sum"])
+      if :year == type
+        spent_on_date = Date.new(a[group_column]).strftime("%Y-%m-%d")
+      elsif :week == type
+        spent_on_date = Date.commercial(year, a[group_column], 1).strftime("%Y-%m-%d")
+      else
+        spent_on_date = a[group_column]
+      end
+      {
+        group_column => a[group_column],
+        :hours => decimal_hours_to_hours_minutes(a["hours_sum"].round(2)),
+        :spent_on_date => spent_on_date,
+        :project => projects,
+        :highlight_hours => highlight_hours
+      }
+    }
+    columns = [group_column, :hours, :project]
+    headings = columns.map{|a| translate("field_#{a}".to_sym)}
+    headings[1] += " (⌀ #{average.round})"
+    {:columns => columns, :headings => headings, :rows => time_entries}
+  end
+
   def get_backend_urls
     urls = {}
     actions = ["projects_and_issues", "recent", "spent_time", "time_entries"]
@@ -276,8 +295,17 @@ class TimeLoggingAppController < ApplicationController
     datepicker_setting_names.each {|a|
       datepicker[a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
     }
+    issues_closed_past_days = Setting.plugin_redmine_time_logging_app["issues_closed_past_days"].to_i
+    spent_on = params[:spent_on]
+    if spent_on
+      spent_on_date = Date.parse spent_on
+      past_days = (Date.today - spent_on_date).to_i
+      issues_closed_past_days = [past_days, issues_closed_past_days].max
+      datepicker["min_date"] = "-#{issues_closed_past_days}d"
+    end
     {"activities" => activities,
      "backend_urls" => get_backend_urls,
+     "spent_on" => spent_on,
      # Token for "protect_from_forgery" csrf protection.
      # It is rendered into the page and used by the javascript in every request.
      # It is not entirely sure if form_authenticity_token is the ideal token but it works.
@@ -285,7 +313,7 @@ class TimeLoggingAppController < ApplicationController
      "datepicker" => datepicker,
      "only_issues" => "1" == Setting.plugin_redmine_time_logging_app["only_issues"],
      "overbooking_warning" => "1" == Setting.plugin_redmine_time_logging_app["overbooking_warning"],
-     "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+     "issues_closed_past_days" => issues_closed_past_days,
      # currently includes all redmine core translations until a better way is found
      "redmine_version_major" => Redmine::VERSION::MAJOR,
      "redmine_version_minor" => Redmine::VERSION::MINOR,

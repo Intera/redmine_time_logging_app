@@ -1549,7 +1549,7 @@ var n="1.13.1",r="object"==typeof self&&self.self===self&&self||"object"==typeof
   };
 
   initialise = function() {
-    var lang, selectEle, token, user;
+    var datepicker_date, lang, selectEle, token, user;
     helper.mobileHideAddressBar();
     loading();
     // activities
@@ -1574,7 +1574,8 @@ var n="1.13.1",r="object"==typeof self&&self.self===self&&self||"object"==typeof
     });
     // datepicker
     helper.$$("#date").datepicker(app_config.datepicker);
-    helper.$$("#date").datepicker("setDate", "+0");
+    datepicker_date = redmineData.spent_on ? new Date(redmineData.spent_on) : "+0";
+    helper.$$("#date").datepicker("setDate", datepicker_date);
     // buttons and fields
     $("button").button();
     $("button.next").button("option", "icons", {
