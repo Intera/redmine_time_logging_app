@@ -169,23 +169,29 @@ class TimeLoggingAppController < ApplicationController
 
   private
 
-  def overview_rows_get_projects ids, type, time_column, time
-    ids_sql = ids.join ","
+  def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time
+    ids_sql = project_ids.join ","
     time = "str_to_date('#{time}', '%Y-%m-%d')" if :day == type
     where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
     sql = "select project_id, sum(hours) hours_sum from time_entries #{where_sql} group by project_id order by hours_sum desc"
     time_entries = TimeEntry.connection.select_all(sql).to_a
     total_hours = time_entries.reduce(0) {|sum, a| sum + a["hours_sum"]}
-    projects = TimeEntry.connection.select_all("select id, name from projects where id in (#{ids_sql})").to_a
-    project_names = {}
-    projects.each {|a| project_names[a["id"]] = a["name"]}
     time_entries = time_entries.map {|a|
       percentage = (100 * a["hours_sum"] / total_hours).floor
-      name = project_names[a["project_id"]]
+      name = project_id_to_name[a["project_id"]]
       if percentage < 1 then name
       else "#{name} (#{percentage}%)" end
     }
     time_entries.join ", "
+  end
+
+  def overview_rows_get_project_id_to_name time_entries
+    ids_sql = time_entries.pluck("project_ids").flatten.uniq.join ","
+    id_and_name = TimeEntry.connection.select_all("select id, name from projects where id in (#{ids_sql})").to_a
+    id_and_name.reduce({}) {|result, a|
+      result[a["id"]] = a["name"]
+      result
+    }
   end
 
   def overview_rows type
@@ -200,10 +206,13 @@ class TimeLoggingAppController < ApplicationController
     where_sql = "where user_id=#{User.current.id} and #{year_sql}"
     sql = "#{select_sql} from time_entries #{where_sql} group by #{group_column} order by #{group_column} desc"
     time_entries = TimeEntry.connection.select_all(sql).to_a
+    time_entries.each {|a|
+      a["project_ids"] = a["project_ids"].split(",").uniq.map{|id| id.to_i}
+    }
+    project_id_to_name = overview_rows_get_project_id_to_name time_entries
     average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
     time_entries = time_entries.map {|a|
-      projects = a["project_ids"].split(",").uniq.map{|id| id.to_i }
-      projects = overview_rows_get_projects projects, type, group_column, a[group_column]
+      projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, a[group_column]
       highlight_hours = 0.5 <= (average - a["hours_sum"])
       if :year == type
         spent_on_date = Date.new(a[group_column]).strftime("%Y-%m-%d")
