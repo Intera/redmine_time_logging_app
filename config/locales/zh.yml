@@ -1,0 +1,39 @@
+zh:
+  button_duplicate: 插入
+  button_delete: 删除
+  confirm_delete: 确认删除
+  datepicker_date_format: 日期格式
+  datepicker_day_names_min: 周日,周一,周二,周三,周四,周五,周六
+  datepicker_day_names_short: 日,一,二,三,四,五,六
+  datepicker_first_day: 一周的第一天
+  datepicker_max_date: 最新的可选日期
+  datepicker_min_date: 最早的可选日期
+  datepicker_month_names: 一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月
+  datepicker_month_names_short: 一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月
+  datepicker_next: 次
+  datepicker_prev: 前
+  datepicker_close: 弹出
+  datepicker_today: 今天
+  next_day: 次日
+  prev_day: 前日
+  error_404_not_found: 请求导致 404 未找到服务器响应
+  estimate: 预期
+  field_minutes: 分
+  general_text_or: 或者
+  issue_or_project: 项目或问题
+  issues_closed_past_days: 不要加载早于此天数的已关闭问题
+  jquery_datepicker_format: jQuery 日期选择器格式
+  menu_entry_title: 时间记录
+  no_time_entries_loaded: 没有找到条目
+  only_issues_label: 禁止在项目上记录时间
+  open_in_redmine: 查看选定的项目或问题
+  overbooking_warning_label: 当超过预期的问题时间时发出警告
+  overbooking_warning: 此条目将超过此问题的预期时间。 在继续之前咨询项目负责人。
+  overview_title: 花费的时间概述
+  redmine_message: "Redmine 说:\n"
+  spent_individual: 自己度过时间
+  spent_total: 全部用户
+  unavailable_project: [未知项目]
+  date:
+    formats:
+      short: "%Y-%m-%d"

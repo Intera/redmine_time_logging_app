@@ -48,10 +48,11 @@ class TimeLoggingAppController < ApplicationController
     @redmine_data = {
       "time_logging_app_url" => url_for({controller: "time_logging_app", action: "index"})
     }
+    year = DateTime.now.year
     @data = {
-      :per_day => overview_rows(:day),
-      :per_week => overview_rows(:week),
-      :per_year => overview_rows(:year)
+      :per_day => overview_rows(:day, year),
+      :per_week => overview_rows(:week, year),
+      :per_year => overview_rows(:year, year)
     }
     render :layout => "base"
   end
@@ -170,6 +171,7 @@ class TimeLoggingAppController < ApplicationController
   private
 
   def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time
+    return "" if project_ids.empty?
     ids_sql = project_ids.join ","
     time = "str_to_date('#{time}', '%Y-%m-%d')" if :day == type
     where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
@@ -185,19 +187,17 @@ class TimeLoggingAppController < ApplicationController
     time_entries.join ", "
   end
 
-  def overview_rows_get_project_id_to_name time_entries
-    ids_sql = time_entries.pluck("project_ids").flatten.uniq.join ","
-    id_and_name = TimeEntry.connection.select_all("select id, name from projects where id in (#{ids_sql})").to_a
+  def overview_rows_get_project_id_to_name
+    id_and_name = TimeEntry.connection.select_all("select id, name from projects").to_a
     id_and_name.reduce({}) {|result, a|
       result[a["id"]] = a["name"]
       result
     }
   end
 
-  def overview_rows type
+  def overview_rows type, year
     group_column_by_type = {:year => "tyear", :week => "tweek", :day => "spent_on"}
     group_column = group_column_by_type[type]
-    year = DateTime.now.year
     if :year == type
       year_sql = ((year - 5)..year).to_a.join ","
       year_sql = "tyear in (#{year_sql})"
@@ -209,7 +209,7 @@ class TimeLoggingAppController < ApplicationController
     time_entries.each {|a|
       a["project_ids"] = a["project_ids"].split(",").uniq.map{|id| id.to_i}
     }
-    project_id_to_name = overview_rows_get_project_id_to_name time_entries
+    project_id_to_name = overview_rows_get_project_id_to_name
     average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
     time_entries = time_entries.map {|a|
       projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, a[group_column]
