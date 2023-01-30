@@ -76,11 +76,6 @@ autocompleteMatchFunc = (searchstring) ->
         false
 
 selectAll = -> @select()
-ignoreTicketIdRegexp = /#\d+/g
-
-sortByLocaleIgnoreTicketId = (a) ->
-  a.sort (a, b) ->
-    a.value.replace(ignoreTicketIdRegexp, "").localeCompare b.value.replace ignoreTicketIdRegexp, ""
 
 wrapDeferred = (func) ->
   (arg) ->
@@ -112,7 +107,7 @@ createProjectsIssuesAndSearchData = (projects, issues) ->
     prev[a.id] = a
     prev
   , {})
-  [projects, issues, sortByLocaleIgnoreTicketId searchData]
+  [projects, issues, searchData]
 
 delim = config.issueNameDelimiter
 
@@ -264,5 +259,4 @@ module.exports =
   mobileHideAddressBar: mobileHideAddressBar
   setSelectionRange: setSelectionRange
   setCursorPosition: setCursorPosition
-  sortByLocaleIgnoreTicketId: sortByLocaleIgnoreTicketId
   timeLimitedFunc: timeLimitedFunc

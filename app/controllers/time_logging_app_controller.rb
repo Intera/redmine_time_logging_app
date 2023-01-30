@@ -380,7 +380,7 @@ class TimeLoggingAppController < ApplicationController
 
   def get_projects
     projects = Project.connection.select_all("select parent_id,id,name from projects where " +
-                                             project_permission_condition(User.current, :log_time))
+                                             project_permission_condition(User.current, :log_time) + " order by projects.id desc")
     projects_add_properties projects
     projects
   end
@@ -392,24 +392,24 @@ class TimeLoggingAppController < ApplicationController
     # multiple .where() just did not work
     if project_ids
       if "open" == status
-        select.where("status_id" => @issue_status_open, "project_id" => project_ids)
+        select.order("issues.id desc").where("status_id" => @issue_status_open, "project_id" => project_ids)
       elsif "closed" == status
-        select.where("status_id" => @issue_status_closed, "project_id" => project_ids)
+        select.order("issues.id desc").where("status_id" => @issue_status_closed, "project_id" => project_ids)
       else
         time_now = DateTime.now
-        select.where(
+        select.order("issues.id desc").where(
                    "(issues.status_id in(?) or (issues.status_id in(?) and issues.updated_on between ? and ?))" +
                      " and issues.project_id in(?)",
                    @issue_status_open, @issue_status_closed, time_now - past_days, time_now, project_ids)
       end
     else
       if "open" == status
-        select.where("status_id" => @issue_status_open)
+        select.order("issues.id desc").where("status_id" => @issue_status_open)
       elsif "closed" == status
-        select.where("status_id" => @issue_status_closed)
+        select.order("issues.id desc").where("status_id" => @issue_status_closed)
       else
         time_now = DateTime.now
-        select.where(
+        select.order("issues.id desc").where(
                    "(issues.status_id in(?) or (issues.status_id in(?) and issues.updated_on between ? and ?))",
                    @issue_status_open, @issue_status_closed, time_now - past_days, time_now)
       end
