@@ -231,7 +231,8 @@ class TimeLoggingAppController < ApplicationController
     }
     columns = [group_column, :hours, :project]
     headings = columns.map{|a| translate("field_#{a}".to_sym)}
-    headings[1] += " (⌀ #{average.round})"
+    average_hours = decimal_hours_to_hours_minutes average.round(2)
+    headings[1] += " (⌀ #{average_hours})"
     {:columns => columns, :headings => headings, :rows => time_entries}
   end
 
@@ -445,5 +446,4 @@ class TimeLoggingAppController < ApplicationController
     }
     result
   end
-
 end
