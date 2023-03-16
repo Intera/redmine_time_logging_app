@@ -29,19 +29,24 @@ class TimeLoggingAppController < ApplicationController
       render :json => []
       return
     end
-    entries_count = 10
-    # issues or projects with time entries recently created by the user
-    t = "select t.issue_id, t.project_id, t.updated_on from time_entries t where t.user_id = #{User.current.id}"
-    # issues with journal entries recently created by the user
-    j = "select i.id issue_id, i.project_id, j.created_on updated_on from journals j, issues i where j.journalized_type = 'Issue' and j.user_id = #{User.current.id} and j.journalized_id = i.id"
+    time_now = DateTime.now
+    # recent time entry issues
+    t = "select distinct t.issue_id, t.project_id, t.updated_on from time_entries t where t.issue_id is not null and t.user_id = #{User.current.id}" +
+        " and t.updated_on > from_unixtime(#{(time_now - 180).to_i}) group by t.issue_id limit 10"
     # assigned issues
-    i = "select i.id issue_id, i.project_id, i.updated_on from issues i where i.assigned_to_id = #{User.current.id}"
-    # union and limit
-    t = "select distinct issue_id, project_id from (#{t} union #{j} union #{i} order by updated_on desc) a limit #{entries_count}"
-    # add parent projects and rename fields
-    t = "select t.*,i.subject issue_subject,p.name project_name,p2.id project_parent_id,p2.name project_parent_name,v.name version_name,#{issue_is_closed_sql('i')},i.updated_on from (#{t}) t inner join projects p" +
-      " left outer join projects p2 on p2.id=p.parent_id left outer join issues i on i.id=t.issue_id left outer join versions v on v.id=i.fixed_version_id where p.id=t.project_id"
-    render :json => TimeEntry.connection.select_all(t)
+    i = "select id, project_id, updated_on from issues where assigned_to_id = #{User.current.id} order by updated_on desc limit 10"
+    # recently assigned issues
+    columns = "distinct i.id issue_id, i.project_id, i.updated_on"
+    tables = "issues i, journals j, journal_details jd"
+    where = "i.id = j.journalized_id and jd.journal_id = j.id and prop_key='assigned_to_id' and jd.old_value = #{User.current.id}"
+    j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 10"
+    # union
+    u = "select distinct issue_id, project_id, updated_on from ((#{t}) union (#{i}) union (#{j}) order by updated_on desc) a limit 10"
+    columns = "distinct t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on, p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
+    tables = "(#{u}) t inner join projects p on p.id = t.project_id left outer join projects p2 on p2.id = p.parent_id left outer join issues i on i.id = t.issue_id" +
+             " left outer join versions v on v.id = i.fixed_version_id"
+    r = "select distinct #{columns} from #{tables}"
+    render :json => TimeEntry.connection.select_all(r)
   end
 
   def overview

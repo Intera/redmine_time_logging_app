@@ -53,8 +53,8 @@ stringContains = (a, b) -> a.indexOf(b) >= 0
 stringContainsEvery = (a, values) -> values.every (b) -> stringContains a, b
 
 autocompleteMatchFunc = (searchstring) ->
-  # searches for words, not for special chars, in any order, case insensitive, keep one leading and one trailing whitespace.
-  # also search for the case insensitive search string as is.
+  # searches for words, ignoring special chars, in any order, case insensitive, keeping one leading and one trailing whitespace.
+  # also searchs for the case insensitive search string as typed.
   matchCount = 0
   patterns = searchstring.split(" ")
   lastIsWhitespace = "" is patterns[patterns.length - 1]

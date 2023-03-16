@@ -367,8 +367,8 @@ var n="1.13.1",r="object"==typeof self&&self.self===self&&self||"object"==typeof
 
   autocompleteMatchFunc = function(searchstring) {
     var firstIsWhitespace, lastIsWhitespace, matchCount, patterns;
-    // searches for words, not for special chars, in any order, case insensitive, keep one leading and one trailing whitespace.
-    // also search for the case insensitive search string as is.
+    // searches for words, ignoring special chars, in any order, case insensitive, keeping one leading and one trailing whitespace.
+    // also searchs for the case insensitive search string as typed.
     matchCount = 0;
     patterns = searchstring.split(" ");
     lastIsWhitespace = "" === patterns[patterns.length - 1];
@@ -1565,7 +1565,12 @@ var n="1.13.1",r="object"==typeof self&&self.self===self&&self||"object"==typeof
     });
     // datepicker
     helper.$$("#date").datepicker(app_config.datepicker);
-    datepicker_date = redmineData.spent_on ? new Date(redmineData.spent_on) : "+0";
+    if (redmineData.spent_on) {
+      datepicker_date = new Date(redmineData.spent_on);
+      helper.$$("#date").datepicker("option", "minDate", "-180d");
+    } else {
+      datepicker_date = "+0";
+    }
     helper.$$("#date").datepicker("setDate", datepicker_date);
     // buttons and fields
     $("button").button();
