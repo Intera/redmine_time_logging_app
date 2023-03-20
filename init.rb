@@ -1,11 +1,11 @@
 require "redmine"
 
 Redmine::Plugin.register :redmine_time_logging_app do
-  name "redmine time logging app"
-  author "intera gmbh"
+  name "Redmine Time Logging App"
+  author "Intera gmbh"
   author_url "https://github.com/intera"
-  description "adds a new menu entry to log and edit spent time in one place"
-  version "1.2"
+  description "Adds a new menu entry to log and edit spent time in one place"
+  version "1.3"
   menu(
     :top_menu, :time_logging_app, {:controller => :time_logging_app, :action => :index}, :caption => :menu_entry_title,
     :html => {:target => "_blank"},
