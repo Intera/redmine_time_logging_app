@@ -29,68 +29,36 @@ class TimeLoggingAppController < ApplicationController
       render :json => []
       return
     end
-    entries_count = 10
-    # issues or projects with time entries recently created by the user
-    t = "select t.issue_id, t.project_id, t.updated_on from time_entries t where t.user_id = #{User.current.id}"
-    # issues with journal entries recently created by the user
-    j = "select i.id issue_id, i.project_id, j.created_on updated_on from journals j, issues i where j.journalized_type = 'Issue' and j.user_id = #{User.current.id} and j.journalized_id = i.id"
+    time_now = DateTime.now
+    # recent time entry issues
+    t = "select distinct t.issue_id, t.project_id, t.updated_on from time_entries t where t.issue_id is not null and t.user_id = #{User.current.id}" +
+        " and t.updated_on > from_unixtime(#{(time_now - 180).to_i}) group by t.issue_id limit 10"
     # assigned issues
-    i = "select i.id issue_id, i.project_id, i.updated_on from issues i where i.assigned_to_id = #{User.current.id}"
-    # union and limit
-    t = "select distinct issue_id, project_id from (#{t} union #{j} union #{i} order by updated_on desc) a limit #{entries_count}"
-    # add parent projects and rename fields
-    t = "select t.*,i.subject issue_subject,p.name project_name,p2.id project_parent_id,p2.name project_parent_name,v.name version_name,#{issue_is_closed_sql('i')},i.updated_on from (#{t}) t inner join projects p" +
-      " left outer join projects p2 on p2.id=p.parent_id left outer join issues i on i.id=t.issue_id left outer join versions v on v.id=i.fixed_version_id where p.id=t.project_id"
-    render :json => TimeEntry.connection.select_all(t)
+    i = "select id, project_id, updated_on from issues where assigned_to_id = #{User.current.id} order by updated_on desc limit 10"
+    # recently assigned issues
+    columns = "distinct i.id issue_id, i.project_id, i.updated_on"
+    tables = "issues i, journals j, journal_details jd"
+    where = "i.id = j.journalized_id and jd.journal_id = j.id and prop_key='assigned_to_id' and jd.old_value = #{User.current.id}"
+    j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 10"
+    # union
+    u = "select distinct issue_id, project_id, updated_on from ((#{t}) union (#{i}) union (#{j}) order by updated_on desc) a limit 10"
+    columns = "distinct t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on, p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
+    tables = "(#{u}) t inner join projects p on p.id = t.project_id left outer join projects p2 on p2.id = p.parent_id left outer join issues i on i.id = t.issue_id" +
+             " left outer join versions v on v.id = i.fixed_version_id"
+    r = "select distinct #{columns} from #{tables}"
+    render :json => TimeEntry.connection.select_all(r)
   end
 
   def overview
-    # lists all time_entries of the last x days and marks those with unusual hours.
-    @display_columns = [:spent_on, :hours, :project]
-    # get column labels
-    @display_column_headings = @display_columns.map {|a| translate(("field_" + a.to_s).to_sym) }
-    # load time entries grouped by day
-    sql_select = "select spent_on, sum(hours) hours_day, group_concat(project_id) project_ids"
-    sql_where = "where user_id=#{User.current.id} and tyear=#{DateTime.now.year}"
-    sql = "#{sql_select} from time_entries #{sql_where} group by spent_on order by spent_on asc"
-    time_entries = TimeEntry.connection.select_all(sql).to_a
-    # return early if empty
-    if time_entries.empty?
-      @time_entries = []
-      render :layout => "base"
-      return
-    end
-    if time_entries.first["spent_on"].is_a? String
-      # dealing with database without a date type
-      time_entries.each {|a| a["spent_on"] = Date.strptime(a["spent_on"], "%Y-%m-%d")}
-    end
-    # get the most common hour value
-    hours = time_entries.map {|a| a["hours_day"]}
-    hours_and_count = hours.map {|a| [a, hours.count(a)]}.sort{|a, b| b[1] <=> a[1]}
-    most_common_hours = hours_and_count.first[0]
-    # start with earliest date and create entries for each day
-    previous_date = time_entries.first["spent_on"]
-    time_entries = time_entries.reduce([]) {|result, a|
-      # add null entries between previous and current date
-      range = previous_date..(a["spent_on"] - 1)
-      null_entries = range.map {|b|
-        next if b.saturday? or b.sunday?
-        { :spent_on => I18n.l(b), :spent_on_date => b,
-          :project => "", :issue => "", :hours => "", :less_hours => true }
-      }.compact
-      projects = a["project_ids"].split(",").uniq.map{|id| id.to_i }
-      projects = Project.find(projects).map{|a| a[:name]}
-      current = {
-        :spent_on => I18n.l(a["spent_on"]),
-        :spent_on_date => a["spent_on"],
-        :hours => decimal_hours_to_hours_minutes(a["hours_day"].round(2)),
-        :project => projects.join(", ")
-      }
-      current[:less_hours] = (most_common_hours - a["hours_day"]).abs > 0.1
-      previous_date = a["spent_on"] + 1
-      result + null_entries + [current]
+    @redmine_data = {
+      "time_logging_app_url" => url_for({controller: "time_logging_app", action: "index"})
     }
-    @time_entries = time_entries.reverse
+    year = DateTime.now.year
+    @data = {
+      :per_day => overview_rows(:day, year),
+      :per_week => overview_rows(:week, year),
+      :per_year => overview_rows(:year, year)
+    }
     render :layout => "base"
   end
 
@@ -207,6 +175,72 @@ class TimeLoggingAppController < ApplicationController
 
   private
 
+  def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time
+    return "" if project_ids.empty?
+    ids_sql = project_ids.join ","
+    time = "str_to_date('#{time}', '%Y-%m-%d')" if :day == type
+    where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
+    sql = "select project_id, sum(hours) hours_sum from time_entries #{where_sql} group by project_id order by hours_sum desc"
+    time_entries = TimeEntry.connection.select_all(sql).to_a
+    total_hours = time_entries.reduce(0) {|sum, a| sum + a["hours_sum"]}
+    time_entries = time_entries.map {|a|
+      percentage = (100 * a["hours_sum"] / total_hours).floor
+      name = project_id_to_name[a["project_id"]]
+      if percentage < 1 then name
+      else "#{name} (#{percentage}%)" end
+    }
+    time_entries.join ", "
+  end
+
+  def overview_rows_get_project_id_to_name
+    id_and_name = TimeEntry.connection.select_all("select id, name from projects").to_a
+    id_and_name.reduce({}) {|result, a|
+      result[a["id"]] = a["name"]
+      result
+    }
+  end
+
+  def overview_rows type, year
+    group_column_by_type = {:year => "tyear", :week => "tweek", :day => "spent_on"}
+    group_column = group_column_by_type[type]
+    if :year == type
+      year_sql = ((year - 5)..year).to_a.join ","
+      year_sql = "tyear in (#{year_sql})"
+    else year_sql = "tyear=#{year}" end
+    select_sql = "select #{group_column}, sum(hours) hours_sum, group_concat(project_id) project_ids"
+    where_sql = "where user_id=#{User.current.id} and #{year_sql}"
+    sql = "#{select_sql} from time_entries #{where_sql} group by #{group_column} order by #{group_column} desc"
+    time_entries = TimeEntry.connection.select_all(sql).to_a
+    time_entries.each {|a|
+      a["project_ids"] = a["project_ids"].split(",").uniq.map{|id| id.to_i}
+    }
+    project_id_to_name = overview_rows_get_project_id_to_name
+    average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
+    time_entries = time_entries.map {|a|
+      projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, a[group_column]
+      highlight_hours = 0.5 <= (average - a["hours_sum"])
+      if :year == type
+        spent_on_date = Date.new(a[group_column]).strftime("%Y-%m-%d")
+      elsif :week == type
+        spent_on_date = Date.commercial(year, a[group_column], 1).strftime("%Y-%m-%d")
+      else
+        spent_on_date = a[group_column]
+      end
+      {
+        group_column => a[group_column],
+        :hours => decimal_hours_to_hours_minutes(a["hours_sum"].round(2)),
+        :spent_on_date => spent_on_date,
+        :project => projects,
+        :highlight_hours => highlight_hours
+      }
+    }
+    columns = [group_column, :hours, :project]
+    headings = columns.map{|a| translate("field_#{a}".to_sym)}
+    average_hours = decimal_hours_to_hours_minutes average.round(2)
+    headings[1] += " (⌀ #{average_hours})"
+    {:columns => columns, :headings => headings, :rows => time_entries}
+  end
+
   def get_backend_urls
     urls = {}
     actions = ["projects_and_issues", "recent", "spent_time", "time_entries"]
@@ -276,8 +310,17 @@ class TimeLoggingAppController < ApplicationController
     datepicker_setting_names.each {|a|
       datepicker[a] = Setting.plugin_redmine_time_logging_app["datepicker_#{a}"]
     }
+    issues_closed_past_days = Setting.plugin_redmine_time_logging_app["issues_closed_past_days"].to_i
+    spent_on = params[:spent_on]
+    if spent_on
+      spent_on_date = Date.parse spent_on
+      past_days = (Date.today - spent_on_date).to_i
+      issues_closed_past_days = [past_days, issues_closed_past_days].max
+      datepicker["min_date"] = "-#{issues_closed_past_days}d"
+    end
     {"activities" => activities,
      "backend_urls" => get_backend_urls,
+     "spent_on" => spent_on,
      # Token for "protect_from_forgery" csrf protection.
      # It is rendered into the page and used by the javascript in every request.
      # It is not entirely sure if form_authenticity_token is the ideal token but it works.
@@ -285,7 +328,7 @@ class TimeLoggingAppController < ApplicationController
      "datepicker" => datepicker,
      "only_issues" => "1" == Setting.plugin_redmine_time_logging_app["only_issues"],
      "overbooking_warning" => "1" == Setting.plugin_redmine_time_logging_app["overbooking_warning"],
-     "issues_closed_past_days" => Setting.plugin_redmine_time_logging_app["issues_closed_past_days"],
+     "issues_closed_past_days" => issues_closed_past_days,
      # currently includes all redmine core translations until a better way is found
      "redmine_version_major" => Redmine::VERSION::MAJOR,
      "redmine_version_minor" => Redmine::VERSION::MINOR,
@@ -342,7 +385,7 @@ class TimeLoggingAppController < ApplicationController
 
   def get_projects
     projects = Project.connection.select_all("select parent_id,id,name from projects where " +
-                                             project_permission_condition(User.current, :log_time))
+                                             project_permission_condition(User.current, :log_time) + " order by projects.id desc")
     projects_add_properties projects
     projects
   end
@@ -354,24 +397,24 @@ class TimeLoggingAppController < ApplicationController
     # multiple .where() just did not work
     if project_ids
       if "open" == status
-        select.where("status_id" => @issue_status_open, "project_id" => project_ids)
+        select.order("issues.id desc").where("status_id" => @issue_status_open, "project_id" => project_ids)
       elsif "closed" == status
-        select.where("status_id" => @issue_status_closed, "project_id" => project_ids)
+        select.order("issues.id desc").where("status_id" => @issue_status_closed, "project_id" => project_ids)
       else
         time_now = DateTime.now
-        select.where(
+        select.order("issues.id desc").where(
                    "(issues.status_id in(?) or (issues.status_id in(?) and issues.updated_on between ? and ?))" +
                      " and issues.project_id in(?)",
                    @issue_status_open, @issue_status_closed, time_now - past_days, time_now, project_ids)
       end
     else
       if "open" == status
-        select.where("status_id" => @issue_status_open)
+        select.order("issues.id desc").where("status_id" => @issue_status_open)
       elsif "closed" == status
-        select.where("status_id" => @issue_status_closed)
+        select.order("issues.id desc").where("status_id" => @issue_status_closed)
       else
         time_now = DateTime.now
-        select.where(
+        select.order("issues.id desc").where(
                    "(issues.status_id in(?) or (issues.status_id in(?) and issues.updated_on between ? and ?))",
                    @issue_status_open, @issue_status_closed, time_now - past_days, time_now)
       end
@@ -408,5 +451,4 @@ class TimeLoggingAppController < ApplicationController
     }
     result
   end
-
 end

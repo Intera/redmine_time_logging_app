@@ -1,27 +1,42 @@
-table.list th, table.list td {
-  text-align: left;
+.time_logging_app table.list th, table.list td {
+    text-align: left;
 }
-tr.less_hours {
-  color: #666;
+.time_logging_app tr.highlight_hours td.hours {
+    font-weight: normal;
 }
-tr.less_hours .hours {
-  font-weight: normal;
+.time_logging_app td.hours {
+    font-weight: bold;
 }
-tr {
-  font-weight: normal;
+.time_logging_app table.list td {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
-table.list td {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+.time_logging_app table.list tr {
+    cursor: pointer;
 }
-table.list td.project {
-  max-width: 30rem;
+.time_logging_app table.list td.project {
+    max-width: 30rem;
 }
-h2 {
-  display: inline-block;
-  margin-bottom: 6px;
+.time_logging_app h2 {
+    display: inline-block;
+    margin-bottom: 6px;
 }
-h2 + span {
-  float: right;
-  font-size: 0.8em;
+.time_logging_app > .buttons > div {
+    display: inline-block;
+    cursor: pointer;
+}
+.time_logging_app > .buttons > div:hover {
+    text-decoration: underline;
+}
+.time_logging_app > .buttons {
+    text-align: left;
+}
+.time_logging_app > .content > * {
+    display: none;
+}
+.time_logging_app > .content > .active {
+    display: block;
+}
+.time_logging_app > .buttons > .active {
+    font-weight: bold;
 }

@@ -6,7 +6,7 @@ module.exports =
   autocompleteLimit: 1000
   datepicker:
     firstDay: redmineData.datepicker.first_day || 1
-    maxDate: redmineData.datepicker.max_date || "+0"
+    maxDate: redmineData.datepicker.max_date || "+7"
     minDate: redmineData.datepicker.min_date || "-6m"
     monthNamesShort: redmineData.datepicker.month_names_short || ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     monthNames: redmineData.datepicker.month_names || ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]

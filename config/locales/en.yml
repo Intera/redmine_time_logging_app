@@ -26,15 +26,21 @@ en:
   menu_entry_title: TimeTracking
   no_time_entries_loaded: No entries found
   only_issues_label: Disallow logging time on projects
-  open_in_redmine: View selected project or ticket
+  open_in_redmine: View selected project or issue
   overbooking_warning_label: Warn when exceeding the estimated time of issues
-  overbooking_warning: This entry will exceed the estimated time for this ticket. Consult with a project leader first before you continue.
+  overbooking_warning: This entry will exceed the estimated time for this issue. Consult with a project leader first before you continue.
   overview_note: Entries of the current year. weekends without entries are not shown.
   overview_title: Spent time overview
   redmine_message: "Redmine says:\n"
   spent_individual: own spent time
   spent_total: all users
   unavailable_project: [unknown project]
+  average: average
+  overview_per_week: per week
+  overview_per_day: per day
+  overview_per_year: per year
+  field_tweek: week
+  field_tyear: year
   date:
     formats:
       short: "%Y-%m-%d"

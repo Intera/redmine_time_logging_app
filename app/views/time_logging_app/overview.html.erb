@@ -1,21 +1,66 @@
-<h2><%= l(:overview_title) %></h2><span><%= t(:overview_note) %></span>
-<% # note: redmine includes jquery by default %>
+<h2><%= l(:overview_title) %></h2>
 <% content_for(:header_tags) { %>
-  <%= stylesheet_link_tag 'overview', :plugin => 'redmine_time_logging_app' %>
+<%= stylesheet_link_tag 'overview', :plugin => 'redmine_time_logging_app' %>
 <% } %>
-<table class="time_logging_app list time_entries">
-  <tr>
-    <% @display_column_headings.each {|heading| %><th><%= heading %></th><% } %>
-  </tr>
-  <% @time_entries.each {|entry| %>
-    <% tr_classes = cycle('even', 'odd')
-		   if entry[:less_hours]
-         tr_classes += " less_hours"
-		   end
-       spent_on_date = "data-spent-on=#{entry[:spent_on_date]}"
-	  %>
-    <tr class="<%= tr_classes %>" <%= spent_on_date %>>
-      <% @display_columns.each {|column_key| %><td class="<%= column_key %>"><%= entry[column_key] %></td><% } %>
-    </tr>
-  <% } %>
-</table>
+
+<div class="time_logging_app overview-tabs">
+    <div class="buttons">
+        <% @data.each {|key, data| %>
+          <div><%= t("overview_#{key}".to_sym)%></div>
+        <% } %>
+    </div>
+    <div class="content">
+        <% @data.each {|key, data| %>
+        <div>
+            <table class="list time_entries">
+                <thead>
+                    <tr>
+                        <% @data[key][:headings].each {|a| %><th><%= a %></th><% } %>
+                    </tr>
+                </thead>
+                <tbody>
+                <% @data[key][:rows].each {|row| %>
+                    <% tr_classes = cycle('even', 'odd')
+	            if row[:highlight_hours] then tr_classes += " highlight_hours" end
+                    spent_on_date = "data-spent-on=#{row[:spent_on_date]}"
+	            %>
+                    <tr class="<%= tr_classes %>" <%= spent_on_date %>>
+                        <% @data[key][:columns].each {|a| %><td class="<%= a %>"><%= row[a] %></td><% } %>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+ const redmine_data = <%=raw @redmine_data.to_json %>
+ const tabs = {
+     dom: {
+         buttons: document.querySelectorAll(".overview-tabs > .buttons > div"),
+         content: document.querySelectorAll(".overview-tabs > .content > div"),
+         content_container: document.querySelector(".overview-tabs > .content")
+     },
+     init() {
+         tabs.dom.buttons.forEach((a, i) => {
+             a.addEventListener("click", () => {
+                 tabs.dom.content.forEach((a) => {a.classList.remove("active")})
+                 tabs.dom.content[i].classList.add("active")
+                 tabs.dom.buttons.forEach((a) => {a.classList.remove("active")})
+                 tabs.dom.buttons[i].classList.add("active")
+             })
+         })
+         tabs.dom.buttons[0].click()
+         tabs.dom.content_container.querySelectorAll("tr").forEach((a) => {
+             let spent_on = a.getAttribute("data-spent-on")
+             if (!spent_on) return
+             a.addEventListener("click", () => {
+                 window.open(redmine_data.time_logging_app_url + "?spent_on=" + spent_on, "_blank")
+             })
+         })
+     }
+ }
+ tabs.init()
+</script>
