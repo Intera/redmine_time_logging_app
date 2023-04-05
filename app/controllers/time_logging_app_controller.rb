@@ -31,8 +31,8 @@ class TimeLoggingAppController < ApplicationController
     end
     time_now = DateTime.now
     # recent time entry issues
-    t = "select distinct t.issue_id, t.project_id, t.updated_on from time_entries t where t.issue_id is not null and t.user_id = #{User.current.id}" +
-        " and t.updated_on > from_unixtime(#{(time_now - 180).to_i}) group by t.issue_id limit 10"
+    t1 = "select issue_id from time_entries where issue_id is not null and user_id = #{User.current.id} and updated_on > from_unixtime(#{(time_now - 180).to_i})"
+    t = "select distinct id as issue_id, project_id, updated_on from issues where id in (#{t1})"
     # assigned issues
     i = "select id, project_id, updated_on from issues where assigned_to_id = #{User.current.id} order by updated_on desc limit 10"
     # recently assigned issues
@@ -42,9 +42,11 @@ class TimeLoggingAppController < ApplicationController
     j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 10"
     # union
     u = "select distinct issue_id, project_id, updated_on from ((#{t}) union (#{i}) union (#{j}) order by updated_on desc) a limit 10"
-    columns = "distinct t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on, p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
-    tables = "(#{u}) t inner join projects p on p.id = t.project_id left outer join projects p2 on p2.id = p.parent_id left outer join issues i on i.id = t.issue_id" +
-             " left outer join versions v on v.id = i.fixed_version_id"
+    columns = "distinct t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on," +
+      " p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
+    tables = "(#{u}) t inner join projects p on p.id = t.project_id" +
+      " left outer join projects p2 on p2.id = p.parent_id left outer join issues i on i.id = t.issue_id" +
+      " left outer join versions v on v.id = i.fixed_version_id"
     r = "select distinct #{columns} from #{tables}"
     render :json => TimeEntry.connection.select_all(r)
   end
@@ -67,23 +69,20 @@ class TimeLoggingAppController < ApplicationController
     time_entries = TimeEntry
                    .includes(:issue, :project)
                    .joins("left outer join projects on time_entries.project_id=projects.id")
-      .select("projects.name,time_entries.id,time_entries.spent_on,time_entries.hours" +
-              ",time_entries.project_id,time_entries.issue_id,time_entries.activity_id,time_entries.comments")
+      .select("projects.name, time_entries.id, time_entries.spent_on, time_entries.hours, " +
+              "time_entries.project_id, time_entries.issue_id, time_entries.activity_id, time_entries.comments")
       .order("time_entries.created_on desc")
       .where("spent_on" => spent_on, "user_id" => User.current)
-    # the time_entries returned are model objects. In the following we convert them
-    # to simpler hashes and create the desired structure.
-    time_entries = time_entries.map {|e|
-      result = pick(e, "id", "spent_on", "hours", "comments")
-      result["activity"] = {"id" => e["activity_id"]}
-      result["project"] = {"id" => e["project_id"], "name" => e.project["name"]}
-      if e["issue_id"]
-        result["issue"] = {"id" => e["issue_id"], "subject" => e.issue["subject"],
-          "spent_hours" => TimeEntry.select("sum(hours) as spent_hours").where("issue_id" => e.issue_id).first["spent_hours"],
-          "estimated_hours" => e.issue["estimated_hours"]}
+    time_entries = time_entries.map {|a|
+      result = pick(a, "id", "spent_on", "hours", "comments")
+      result["activity"] = {"id" => a["activity_id"]}
+      result["project"] = {"id" => a["project_id"], "name" => a.project["name"]}
+      if a["issue_id"]
+        result["issue"] = {"id" => a["issue_id"], "subject" => a.issue["subject"],
+          "spent_hours" => TimeEntry.where("issue_id" => a.issue_id).sum("hours"),
+          "estimated_hours" => a.issue["estimated_hours"]}
       else
-        result["project"]["spent_hours"] = TimeEntry.select("sum(hours) as spent_hours")
-          .where("project_id" => e["project_id"], "user_id" => User.current).first["spent_hours"]
+        result["project"]["spent_hours"] = TimeEntry.where("project_id" => e["project_id"], "user_id" => User.current).sum("hours")
       end
       result
     }
