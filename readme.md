@@ -14,7 +14,7 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * a click into an empty search field suggests issues recently changed by the user
 * a click on the logged hours or activity opens the redmine time entry view for the issue or project
 * link to an overview page that lists the total hours per day, week and year with percentages per project
-* easily translatable. currently included languages are: de, en, ja
+* easily translatable. currently included languages are: cn, de, en, ja
 * tested with redmine 5 and 4
 * stopwatch timer
 
