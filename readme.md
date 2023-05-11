@@ -1,7 +1,7 @@
 # redmine time logging app
 this redmine plugin adds a new menu entry and separate section to log and edit ones own spent time in one place, in a quick way.
 
-![screenshot-1](other/screenshots/1484135564.png?raw=true)
+![screenshot-1](other/screenshots/2023-05-11.png?raw=true)
 
 # features
 * a mobile-app like interface
