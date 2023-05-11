@@ -181,18 +181,10 @@ class TimeLoggingAppController < ApplicationController
 
   private
 
-  def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time
+  def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time_sql
     return "" if project_ids.empty?
     ids_sql = project_ids.join ","
-    year, month, day = time.split("-").map do |part| part.to_i end
-    p time, time_column
-    time = Date.new(year, month, day).to_time.to_i
-    if "SQLite" == ActiveRecord::Base.connection.adapter_name
-      past_date_sql = "datetime(#{time}, 'unixepoch')"
-    else
-      past_date_sql = "str_to_date('#{time}', '%Y-%m-%d')"
-    end
-    where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
+    where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time_sql}"
     sql = "select project_id, sum(hours) hours_sum from time_entries #{where_sql} group by project_id order by hours_sum desc"
     time_entries = TimeEntry.connection.select_all(sql).to_a
     total_hours = time_entries.reduce(0) {|sum, a| sum + a["hours_sum"]}
@@ -230,7 +222,17 @@ class TimeLoggingAppController < ApplicationController
     project_id_to_name = overview_rows_get_project_id_to_name
     average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
     time_entries = time_entries.map {|a|
-      projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, a[group_column]
+      if "spent_on" == group_column
+        timestamp = a[group_column].to_time.to_i
+        if "SQLite" == ActiveRecord::Base.connection.adapter_name
+          group_value_sql = "datetime(#{timestamp}, 'unixepoch')"
+        else
+          group_value_sql = "from_unixtime(#{timestamp})"
+        end
+      else
+        group_value_sql = a[group_column]
+      end
+      projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, group_value_sql
       highlight_hours = 0.5 <= (average - a["hours_sum"])
       if :year == type
         spent_on_date = Date.new(a[group_column]).strftime("%Y-%m-%d")

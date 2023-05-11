@@ -13,12 +13,10 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 * open issue/project button
 * a click into an empty search field suggests issues recently changed by the user
 * a click on the logged hours or activity opens the redmine time entry view for the issue or project
-* link to an overview page that lists the total hours per day
+* link to an overview page that lists the total hours per day, week and year with percentages per project
 * easily translatable. currently included languages are: de, en, ja
-* tested with redmine 4 and 3
-
-# browser support
-the plugin does not work with internet explorer.
+* tested with redmine 5 and 4
+* stopwatch timer
 
 # installation
 ## download
@@ -88,5 +86,4 @@ it is possible to replace the jquery-ui theme.
 
 ## possible enhancements
 * better language detection (en-gb for example seems to be incorrectly detected)
-* loading indicator
 * remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not work)
