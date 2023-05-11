@@ -29,20 +29,27 @@ class TimeLoggingAppController < ApplicationController
       render :json => []
       return
     end
-    time_now = DateTime.now
+    user_id = User.current.id
+    past_date = (DateTime.now - 180).to_i
+    if "SQLite" == ActiveRecord::Base.connection.adapter_name
+      past_date_sql = "datetime(#{past_date}, 'unixepoch')"
+    else
+      past_date_sql = "from_unixtime(#{past_date})"
+    end
     # recent time entry issues
-    t1 = "select issue_id from time_entries where issue_id is not null and user_id = #{User.current.id} and updated_on > from_unixtime(#{(time_now - 180).to_i})"
+    t1 = "select issue_id from time_entries where issue_id is not null and user_id = #{user_id} and updated_on > #{past_date}"
     t = "select distinct id as issue_id, project_id, updated_on from issues where id in (#{t1})"
     # assigned issues
-    i = "select id, project_id, updated_on from issues where assigned_to_id = #{User.current.id} order by updated_on desc limit 10"
+    i = "select id, project_id, updated_on from issues where assigned_to_id = #{user_id} order by updated_on desc limit 10"
     # recently assigned issues
     columns = "distinct i.id issue_id, i.project_id, i.updated_on"
     tables = "issues i, journals j, journal_details jd"
-    where = "i.id = j.journalized_id and jd.journal_id = j.id and prop_key='assigned_to_id' and jd.old_value = #{User.current.id}"
+    where = "i.id = j.journalized_id and jd.journal_id = j.id and prop_key='assigned_to_id' and jd.old_value = #{user_id}"
     j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 10"
     # union
-    u = "select distinct issue_id, project_id, updated_on from ((#{t}) union (#{i}) union (#{j}) order by updated_on desc) a limit 10"
-    columns = "distinct t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on," +
+    u = "select distinct issue_id, project_id, updated_on from (select * from (#{t}) t union select * from (#{i}) i union select * from (#{j}) j order by updated_on desc limit 10) a"
+    # add data from related tables
+    columns = "t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on," +
       " p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
     tables = "(#{u}) t inner join projects p on p.id = t.project_id" +
       " left outer join projects p2 on p2.id = p.parent_id left outer join issues i on i.id = t.issue_id" +
@@ -177,7 +184,14 @@ class TimeLoggingAppController < ApplicationController
   def overview_rows_get_projects project_id_to_name, project_ids, type, time_column, time
     return "" if project_ids.empty?
     ids_sql = project_ids.join ","
-    time = "str_to_date('#{time}', '%Y-%m-%d')" if :day == type
+    year, month, day = time.split("-").map do |part| part.to_i end
+    p time, time_column
+    time = Date.new(year, month, day).to_time.to_i
+    if "SQLite" == ActiveRecord::Base.connection.adapter_name
+      past_date_sql = "datetime(#{time}, 'unixepoch')"
+    else
+      past_date_sql = "str_to_date('#{time}', '%Y-%m-%d')"
+    end
     where_sql = "where user_id=#{User.current.id} and project_id in(#{ids_sql}) and #{time_column}=#{time}"
     sql = "select project_id, sum(hours) hours_sum from time_entries #{where_sql} group by project_id order by hours_sum desc"
     time_entries = TimeEntry.connection.select_all(sql).to_a

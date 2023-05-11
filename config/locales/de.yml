@@ -27,6 +27,7 @@ de:
   no_time_entries_loaded: Keine Einträge gefunden
   only_issues_label: Buchung auf Projekte nicht erlauben
   open_in_redmine: Ausgewähltes Projekt oder Ticket anzeigen
+  start_stop_timer: Stoppuhr starten oder stoppen
   overbooking_warning: Dieser Eintrag wird den geschätzten Aufwand überschreiten. Stimmen sie sich eventuell erst mit einem Projektleiter ab, bevor sie fortfahren.
   overbooking_warning_label: Warnung anzeigen, wenn der geschätzte Aufwand einer Aufgabe überschritten wird
   overview_note: Einträge dieses Jahres. Wochenenden ohne Zeiteintrag werden nicht angezeigt.
@@ -41,6 +42,7 @@ de:
   overview_per_year: Pro Jahr
   field_tweek: Woche
   field_tyear: Jahr
+  button_reset: Felder leeren
   date:
     formats:
       short: "%Y-%m-%d"

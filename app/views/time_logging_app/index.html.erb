@@ -28,6 +28,7 @@
               </div>
             </div>
             <div class="right hbox">
+              <button class="start-stop-timer" title="<%= t(:start_stop_timer) %>"></button>
               <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
               <button class="overview"
                       data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>"
@@ -99,7 +100,7 @@
     <%= javascript_tag @javascript_tag_content, :id => "redmineData" %>
     <%= javascript_include_tag "main", :plugin => "redmine_time_logging_app" %>
     <script>
-      app.initialise()
+      app.initialize()
     </script>
   </body>
 </html>

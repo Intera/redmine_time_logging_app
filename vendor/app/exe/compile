@@ -7,16 +7,14 @@ browserify = require "browserify"
 coffeeify = require "coffeeify"
 
 compile_js = ->
-  # non-browserify
+  # non-browserify files
   target_dir = main_target_dir + "/javascripts"
   fs.ensureDirSync target_dir
   input_dir = "sources/js"
   input_files = [
     "lib/jquery"
     "lib/jquery-ui.custom"
-    "lib/jquery.maxlength"
-    "lib/underscore"
-    "lib/spin"]
+    "lib/underscore"]
   output_file = fs.createWriteStream target_dir + "/main.js"
   input_files.forEach (a) ->
     output_file.write fs.readFileSync input_dir + "/" + a + ".js"

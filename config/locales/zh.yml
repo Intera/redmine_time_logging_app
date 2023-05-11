@@ -27,6 +27,7 @@ zh:
   no_time_entries_loaded: 没有找到条目
   only_issues_label: 禁止在项目上记录时间
   open_in_redmine: 查看选定的项目或问题
+  start_stop_timer: 启动或停止计时器
   overbooking_warning_label: 当超过预期的问题时间时发出警告
   overbooking_warning: 此条目将超过此问题的预期时间。 在继续之前咨询项目负责人。
   overview_title: 花费的时间概述

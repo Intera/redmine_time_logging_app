@@ -27,6 +27,7 @@ ja:
   no_time_entries_loaded: 作業時間が見つかりません
   only_issues_label: プロジェクトに作業時間の記録を許可しない
   open_in_redmine: 選択のプロジェクトかチケットを表示
+  start_stop_timer: タイマーを開始または停止します
   overbooking_warning_label: 予定工数を超えたときに警告する
   overbooking_warning: この記録が予定工数を超えます。先に進める前に、プロジェクトリーダーに相談してください。
   overview_note: 今年だけ。記録ある場合のみ週末。

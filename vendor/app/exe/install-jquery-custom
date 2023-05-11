@@ -1,0 +1,8 @@
+#!/bin/sh
+
+source="$1"
+
+cp "$source/jquery-ui.min.js" "sources/js/lib/jquery-ui.custom.js"
+cp "$source/jquery-ui.min.css" "sources/css/jquery-ui.css"
+rm -rf img/jquery-ui
+cp -r "$source/images" img/jquery-ui

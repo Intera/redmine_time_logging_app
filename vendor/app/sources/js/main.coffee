@@ -1,10 +1,11 @@
-# the app is started with initialise()
+# the app is started with initialize()
 
 helper = require "./helper"
 redmine = require "./redmine"
 app_config = require "./config"
 debug = false
 cache = {template: {}, timeEntries: {}}
+dom = {}
 _isLoaded = false
 sync = helper.timeLimitedFunc sync, 1250
 translate = (key) -> app_config.redmine.translations[key] or key
@@ -79,7 +80,7 @@ resetForm = ->
   # date and activity are not reset for workflow reasons
   $("#comments,#hours,#minutes,#search:not([disabled])").val("").blur()
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
-  helper.$$("button.open-in-redmine").hide()
+  dom.openInRedmineButton.hide()
   helper.$$("#activity").val("").change()
 
 resetFormButton = ->
@@ -129,14 +130,13 @@ autocompleteFocus = (event, options) ->
       helper.$$("#search").autocomplete "search", ""
 
 openInRedmineUpdateURL = (data) ->
-  if data
-    if data.issue_id
-      url = app_config.redmine.urls.issues_redmine + "/" + data.issue_id
-    else
-      url = app_config.redmine.urls.projects_redmine + "/" + data.project_id
-    helper.$$("button.open-in-redmine").data("href", url).show()
+  button = dom.openInRedmineButton.hide()
+  return unless data
+  if data.issue_id
+    url = app_config.redmine.urls.issues_redmine + "/" + data.issue_id
   else
-    helper.$$("button.open-in-redmine").hide()
+    url = app_config.redmine.urls.projects_redmine + "/" + data.project_id
+  button.data("href", url).show()
 
 hideActivityOption = (id) ->
   helper.$$("#activity").find("option[value=" + id + "]").prop("disabled", true).hide()
@@ -255,15 +255,15 @@ loading = (state) ->
   else
     _isLoaded = true
 
-initAutoDataReload = ->
-  return unless app_config.autoReloadInterval
-  intervalAutoReload = (interval) ->
-    clearInterval timer if timer
-    timer = setInterval(->
-      reloadSearchData()
-    , interval)
-  timer = undefined
-  intervalAutoReload app_config.autoReloadInterval
+dataAutoReload = {
+  interval: null,
+  init: ->
+    return unless app_config.autoReloadInterval
+    intervalSeconds = app_config.autoReloadInterval * 1000
+    clearInterval dataAutoReload.interval if dataAutoReload.interval
+    intervalF = -> reloadSearchData()
+    dataAutoReload.interval = setInterval intervalF, intervalSeconds
+}
 
 confirmDialog = null
 activeTimeEntryId = null
@@ -291,6 +291,7 @@ confirmDelete = ->
   confirmDialog.html(message).dialog("option", "title", translate("confirm_delete")).dialog "open"
 
 updateTimeEntry = ->
+  timer.stop()
   formData = getFormData()
   formData.new = false
   if validate(formData)
@@ -354,7 +355,9 @@ exitEditMode = ->
   $("#timeEntries .active").removeClass("active")
   $("#wrapper").removeClass "editMode"
   helper.$$(".resetForm").show()
-  updateActivities getSearchFormData()?.project_id
+  searchFormData = getSearchFormData()
+  updateActivities searchFormData?.project_id
+  openInRedmineUpdateURL searchFormData
   prevTimeEntry = false
 
 deleteTimeEntry = (id) ->
@@ -443,9 +446,7 @@ displayTimeEntries = (timeEntries, config) ->
     daySpentTime = _.foldl(timeEntries, ((result, a) -> result + a.hours), 0)
     helper.$$(".daySpentTime").html helper.decimalHoursToColonFormat(daySpentTime)
     insertTimeEntryRows timeEntries
-    $(".timeEntry .edit").button(icons:
-      primary: "ui-icon-pencil"
-    ).click ->
+    $(".timeEntry .edit").button({icon: "ui-icon-pencil"}).click ->
       timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"))
       startEditMode timeEntryId
     .attr("title", translate "button_edit")
@@ -456,9 +457,7 @@ displayTimeEntries = (timeEntries, config) ->
       helper.$$("#timeEntries").effect "slide",
         direction: "up"
       , 220
-    $(".timeEntry .insert").button(icons:
-      primary: "ui-icon-arrowthickstop-1-n"
-    ).click ->
+    $(".timeEntry .insert").button({icon: "ui-icon-arrowthickstop-1-n"}).click ->
       timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"))
       insertTimeEntryAsNew timeEntryId
     .attr("title", translate "button_duplicate")
@@ -519,10 +518,6 @@ timeEntryToDom = (timeEntry) ->
   helper.$$("input[type=text],textarea,select").each helper.removeErrorClass
   openInRedmineUpdateURL {issue_id: timeEntry.issue?.id, project_id: timeEntry.project?.id}
 
-cancelEdit = ->
-  resetFields()
-  stopEditMode()
-
 extendBase = ->
   baseCreateTimeEntry = createTimeEntry
   createTimeEntry = ->
@@ -562,9 +557,50 @@ onTimeEntriesReload = (event, animation) ->
     spent_on: helper.$$("#date").datepicker("getDate")
   , config
 
-initialise = ->
+initialize_dom_cache = ->
+
+timer =
+  interval: null,
+  startTime: null,
+  getElapsedSeconds: ->
+    endTime = Date.now()
+    (endTime - timer.startTime) / 1000
+  getFormTime: ->
+    hours = helper.falseIfNaN parseInt helper.$$("#hours").val()
+    minutes = helper.falseIfNaN parseInt helper.$$("#minutes").val()
+    helper.hoursAndMinutesToSeconds hours, minutes
+  setFormTime: (seconds) ->
+    [hours, minutes] = helper.secondsToHoursAndMinutes seconds
+    helper.$$("#hours").val(hours) if hours
+    helper.$$("#minutes").val(minutes) if minutes
+  start: ->
+    timer.startTime = Date.now()
+    intervalF = ->
+      [hours, minutes, seconds] = helper.secondsToHoursAndMinutesAndSeconds timer.getElapsedSeconds()
+      document.title = "⏱ " + hours + ":" + minutes + ":" + seconds
+    timer.interval = setInterval intervalF, 1000
+    timer.dom.startStopTimerButton.button "option", "icon", "ui-icon-stop"
+    intervalF()
+  stop: ->
+    return if timer.startTime is null
+    clearInterval timer.interval
+    timer.setFormTime timer.getFormTime() + timer.getElapsedSeconds()
+    timer.startTime = null
+    timer.dom.startStopTimerButton.button "option", "icon", "ui-icon-play"
+    document.title = timer.originalTitle
+  toggle: -> if timer.startTime is null then timer.start() else timer.stop()
+  init: ->
+    button = $ "button.start-stop-timer"
+    timer.originalTitle = document.title
+    timer.dom =
+      startStopTimerButton: button
+    button.button "option", "icon", "ui-icon-play"
+    button.click -> timer.toggle()
+
+initialize = ->
   helper.mobileHideAddressBar()
   loading()
+  dom.openInRedmineButton = $ "button.open-in-redmine"
   # activities
   selectEle = helper.$$("#activity")
   cache.activities = {}
@@ -590,34 +626,25 @@ initialise = ->
   helper.$$("#date").datepicker "setDate", datepicker_date
   # buttons and fields
   $("button").button()
-  $("button.next").button("option", "icons", {
-    primary: "ui-icon-circle-arrow-e"
-  })
-  $("button.prev").button("option", "icons", {
-    primary: "ui-icon-circle-arrow-w"
-  })
-  $("button.resetForm").button("option", "icons", {
-    primary: "ui-icon-cancel"
-  })
-  $("button.overview").button("option", "icons", {
-    primary: "ui-icon-note"
-  }).click ->
+  $("button.next").button("option", "icon", "ui-icon-circle-arrow-e")
+  $("button.prev").button("option", "icon", "ui-icon-circle-arrow-w")
+  $("button.resetForm").button("option", "icon", "ui-icon-cancel")
+  $("button.overview").button("option", "icon", "ui-icon-note").click ->
     window.open $(@).data("href"), "_newtab"
-  helper.$$("button.open-in-redmine").hide().button("option", "icons", {
-    primary: "ui-icon-extlink"
-  }).click ->
+  dom.openInRedmineButton.hide().button("option", "icon", "ui-icon-extlink").click ->
     url = $(@).data("href")
     if url then window.open url, "_blank"
+  timer.init()
   $("#hours,#minutes").keydown helper.onKeypressRejectNaN
   $(".submit").click -> createTimeEntry()
   $(".resetForm").click resetFormButton
   openInRedmineUpdateURL()
-  # search field
+  # search-field
   getIssuesProjectsAndSearchData(app_config.issueStatus).done ->
     helper.$$("h2:first").show()
     helper.$$("#form").show()
     loading(false)
-    initAutoDataReload()
+    dataAutoReload.init()
     helper.$$("#search").val("")
     # editing
     cache.template.timeEntry = _.template($("#timeEntryTemplate").text())
@@ -654,4 +681,4 @@ datepickerUpdate = (->
 
 module.exports =
   config: app_config
-  initialise: initialise
+  initialize: initialize

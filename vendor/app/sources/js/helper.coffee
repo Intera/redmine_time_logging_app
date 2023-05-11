@@ -235,6 +235,19 @@ escapeHtml = (string) ->
 
 roundFloat = (a) -> parseFloat(a.toPrecision(2))
 
+secondsToHoursAndMinutes = (seconds) ->
+  hours = Math.floor seconds / 3600
+  minutes = Math.floor seconds % 3600 / 60
+  [hours, minutes]
+
+secondsToHoursAndMinutesAndSeconds = (seconds) ->
+  hours = Math.floor seconds / 3600
+  minutes = Math.floor seconds % 3600 / 60
+  seconds = Math.floor seconds % 3600 % 60
+  [hours, minutes, seconds]
+
+hoursAndMinutesToSeconds = (hours, minutes) -> (hours or 0) * 3600 + (minutes or 0) * 60
+
 module.exports =
   $$: $$
   autocompleteMatchFunc: autocompleteMatchFunc
@@ -260,3 +273,6 @@ module.exports =
   setSelectionRange: setSelectionRange
   setCursorPosition: setCursorPosition
   timeLimitedFunc: timeLimitedFunc
+  hoursAndMinutesToSeconds: hoursAndMinutesToSeconds
+  secondsToHoursAndMinutes: secondsToHoursAndMinutes
+  secondsToHoursAndMinutesAndSeconds: secondsToHoursAndMinutesAndSeconds
