@@ -22,9 +22,9 @@
                 <% @data[key][:rows].each {|row| %>
                     <% tr_classes = cycle('even', 'odd')
 	            if row[:highlight_hours] then tr_classes += " highlight_hours" end
-                    spent_on_date = "data-spent-on=#{row[:spent_on_date]}"
+                    spent_on_date_attribute = "data-spent-on=#{row[:spent_on_date]}"
 	            %>
-                    <tr class="<%= tr_classes %>" <%= spent_on_date %>>
+                    <tr class="<%= tr_classes %>" <%= spent_on_date_attribute %>>
                         <% @data[key][:columns].each {|a| %><td class="<%= a %>"><%= row[a] %></td><% } %>
                     </tr>
                 <% } %>

@@ -220,7 +220,8 @@ class TimeLoggingAppController < ApplicationController
       a["project_ids"] = a["project_ids"].split(",").uniq.map{|id| id.to_i}
     }
     project_id_to_name = overview_rows_get_project_id_to_name
-    average = time_entries.pluck("hours_sum").sum / [1, time_entries.size].max
+    average_count = [1, time_entries.size].max
+    average = time_entries.pluck("hours_sum").sum / average_count
     time_entries = time_entries.map {|a|
       if "spent_on" == group_column
         timestamp = a[group_column].to_time.to_i
@@ -234,15 +235,23 @@ class TimeLoggingAppController < ApplicationController
       end
       projects = overview_rows_get_projects project_id_to_name, a["project_ids"], type, group_column, group_value_sql
       highlight_hours = 0.5 <= (average - a["hours_sum"])
+      date_format = "%Y-%m-%d"
+      formatted_group_column = a[group_column]
       if :year == type
-        spent_on_date = Date.new(a[group_column]).strftime("%Y-%m-%d")
+        spent_on_date = Date.new(a[group_column]).strftime(date_format)
       elsif :week == type
-        spent_on_date = Date.commercial(year, a[group_column], 1).strftime("%Y-%m-%d")
+        spent_on_date = Date.commercial(year, a[group_column], 1).strftime(date_format)
+      elsif :day == type
+        date = a[group_column]
+        spent_on_date = date
+        day_name = t("date.abbr_day_names")[date.wday % 7]
+        formatted_group_column = date.strftime "%Y-%m-%d, #{day_name}"
       else
         spent_on_date = a[group_column]
+        formatted_group_column = a[group_column]
       end
       {
-        group_column => a[group_column],
+        group_column => formatted_group_column,
         :hours => decimal_hours_to_hours_minutes(a["hours_sum"].round(2)),
         :spent_on_date => spent_on_date,
         :project => projects,
