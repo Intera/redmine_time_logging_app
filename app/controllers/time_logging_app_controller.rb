@@ -220,8 +220,9 @@ class TimeLoggingAppController < ApplicationController
       a["project_ids"] = a["project_ids"].split(",").uniq.map{|id| id.to_i}
     }
     project_id_to_name = overview_rows_get_project_id_to_name
+    total = time_entries.pluck("hours_sum").sum
     average_count = [1, time_entries.size].max
-    average = time_entries.pluck("hours_sum").sum / average_count
+    average = total / average_count
     time_entries = time_entries.map {|a|
       if "spent_on" == group_column
         timestamp = a[group_column].to_time.to_i
@@ -261,7 +262,12 @@ class TimeLoggingAppController < ApplicationController
     columns = [group_column, :hours, :project]
     headings = columns.map{|a| translate("field_#{a}".to_sym)}
     average_hours = decimal_hours_to_hours_minutes average.round(2)
-    headings[1] += " (⌀ #{average_hours})"
+    if :year == type
+      total_hours = decimal_hours_to_hours_minutes total.round(2)
+      headings[1] += " (⌀ #{average_hours}, ∑ #{total_hours})"
+    else
+      headings[1] += " (⌀ #{average_hours})"
+    end
     {:columns => columns, :headings => headings, :rows => time_entries}
   end
 
