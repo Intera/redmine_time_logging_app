@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed -i s#"images/#"../images/jquery-ui/#g src/css/jquery-ui.css

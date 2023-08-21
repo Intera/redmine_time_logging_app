@@ -4,4 +4,4 @@
 # when assets are symlinked the server does not have to be restarted with each change.
 
 redmine_root=$1
-cp -rsft "$redmine_root/public/plugin_assets/redmine_time_logging_app" "$PWD/../../assets"/*
+cp -rsft "$redmine_root/public/plugin_assets/redmine_time_logging_app" assets/*

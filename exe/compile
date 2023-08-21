@@ -1,6 +1,6 @@
 #!/usr/bin/coffee
 
-main_target_dir = "../../assets"
+main_target_dir = "assets"
 
 fs = require "fs-extra"  # for recursive file copying
 browserify = require "browserify"
@@ -10,7 +10,7 @@ compile_js = ->
   # non-browserify files
   target_dir = main_target_dir + "/javascripts"
   fs.ensureDirSync target_dir
-  input_dir = "sources/js"
+  input_dir = "src/js"
   input_files = [
     "lib/jquery"
     "lib/jquery-ui.custom"
@@ -28,7 +28,7 @@ compile_js = ->
   bundle_write
 
 compile_css = ->
-  input_dir = "sources/css"
+  input_dir = "src/css"
   input_files = ["reset", "jquery-ui", "jquery-ui.override", "main"]
   target_dir = main_target_dir + "/stylesheets"
   fs.ensureDirSync target_dir
@@ -37,15 +37,10 @@ compile_css = ->
   input_files.forEach (a) ->
     output_file.write fs.readFileSync("#{input_dir}/#{a}.css") + "\n"
 
-copy_static_files = ->
-  input_files = ["img"]
-  input_files.forEach (a) -> fs.copySync a, main_target_dir + "/images"
-
 compile = ->
   process.stdout.write "compile..."
   compile_css()
   compile_js().on "finish", -> console.log " finish"
 
 fs.ensureDirSync main_target_dir
-copy_static_files()
 compile()
