@@ -1,37 +1,13 @@
-.ui-button-text-only .ui-button-text {
-  padding: 0;
-}
-.ui-button-text-icon-primary .ui-button-icon-primary {
-  left: 0.9em;
-}
-button .ui-button-icon {
-  margin-left: -1px;
-}
-.ui-autocomplete {
-  max-height: 40%;
-  overflow: scroll;
-  overflow-x: hidden;
-}
-.ui-button {
-  margin-right: 0;
-}
-.ui-autocomplete .closed {
-  /* strike through text for closed issues in the autocomplete */
-  text-decoration: line-through;
-}
-.ui-dialog .ui-dialog-buttonpane button {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-.ui-menu .ui-menu-item {
-  padding: 6px 1em 6px .4em;
-}
-.ui-menu .ui-menu-item:hover,
-.ui-menu .ui-menu-item:focus,
-.ui-menu .ui-state-active
-{
-  background: #ddd;
-  color: #333;
-  border: 0;
-  text-decoration: inherit;
-}
+.ui-button-text-only .ui-button-text{padding:0}
+.ui-button-text-icon-primary .ui-button-icon-primary{left:.9em}
+button .ui-button-icon{margin-left:-1px}
+.ui-autocomplete{max-height:40%;overflow:scroll;overflow-x:hidden}
+.ui-button{margin-right:0}
+.ui-autocomplete .closed{text-decoration:line-through}
+.ui-dialog .ui-dialog-buttonpane button{padding-left:1rem;padding-right:1rem}
+.ui-menu .ui-menu-item{padding:6px 1em 6px .4em}
+.ui-menu .ui-menu-item:hover,.ui-menu .ui-menu-item:focus,.ui-menu .ui-state-active{background:#ddd;color:#333;border:0;text-decoration:inherit}
+.ui-corner-all{border-radius:3px}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus{border:0}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active{border:0}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover{border:0;background:#ddd url("../images/jquery-ui/ui-bg_highlight-soft_60_dddddd_1x100.png") 50% 50% repeat-x}

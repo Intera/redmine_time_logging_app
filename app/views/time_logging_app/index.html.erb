@@ -16,32 +16,24 @@
         <h2><%= t(:menu_entry_title) %></h2>
         <div id="form">
           <div class="topControls editMode">
-            <button class="cancel"><%= t(:button_cancel) %></button>
-            <button class="delete"><%= t(:button_delete) %></button>
+            <button class="cancel"><%= t(:button_cancel) %></button><button class="delete"><%= t(:button_delete) %></button>
           </div>
           <div class="row topControls">
             <div class="left hbox">
-              <input id="date" tabindex="1" type="text"/>
-              <div class="dateControls">
-                <button class="prev" title="<%= t(:prev_day) %>"></button>
-                <button class="next" title="<%= t(:next_day) %>"></button>
+              <input id="date" tabindex="1" type="text"/><div class="dateControls">
+                <button class="prev" title="<%= t(:prev_day) %>"></button><button class="next" title="<%= t(:next_day) %>"></button>
               </div>
             </div>
             <div class="right hbox">
-              <button class="start-stop-timer" title="<%= t(:start_stop_timer) %>"></button>
-              <button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button>
-              <button class="overview"
+              <button class="start-stop-timer" title="<%= t(:start_stop_timer) %>"></button><button class="open-in-redmine" title="<%= t(:open_in_redmine) %>"></button><button class="overview"
                       data-href="<%= url_for({controller: "time_logging_app", action: "overview", html_options: {target: "_blank", class: "overview"}}) %>"
-                      title="<%= t(:label_overview) %>">
-              </button>
-              <button class="resetForm" title="<%= t(:button_reset) %>"></button>
+                      title="<%= t(:label_overview) %>"></button><button class="resetForm" title="<%= t(:button_reset) %>"></button>
             </div>
           </div>
           <textarea accesskey="f" id="search" tabindex="2" placeholder="<%= t(:label_search)%>"></textarea>
           <div class="hbox">
             <div id="time">
-              <input id="hours" tabindex="3" type="number" placeholder="<%= t(:field_hours)%>"/>
-              <input id="minutes" tabindex="4" type="number" placeholder="<%= t(:field_minutes)%>"/>
+              <input id="hours" tabindex="3" type="number" placeholder="<%= t(:field_hours)%>"/><input id="minutes" tabindex="4" type="number" placeholder="<%= t(:field_minutes)%>"/>
             </div>
             <select id="activity" tabindex="5" placeholder="<%= t(:field_activity) %>" title="<%= t(:field_activity) %>"></select>
           </div>
@@ -71,11 +63,6 @@
           </tr>
         </thead>
         <tbody></tbody>
-        <tfoot>
-          <tr>
-            <td class="hoursTotal" colspan="4"></td>
-          </tr>
-        </tfoot>
       </table>
     </div>
     <script id="timeEntryTemplate" type="text/html">
@@ -92,8 +79,7 @@
           <a class="activity" href="{{timeEntriesUrl}}" target="_blank">{{activity}}</a>
         </td>
         <td>
-          <button class="insert"></button>
-          <button class="edit"></button>
+          <button class="insert"></button><button class="edit"></button>
         </td>
       </tr>
     </script>

@@ -1,82 +1,84 @@
 *{box-sizing:border-box}
 html{font-size:13px}
-body{background-color:#aaa;min-width:200px;font-size:13px}
-#wrapper{background-color:#222;margin:auto;max-width:810px;padding:.25rem}
-h2{color:#eaeaea;font-size:20px;text-align:center;margin-bottom:-25px}
-#timeEntries td:last-child,#timeEntries th:last-child{text-align:right;width:101px}
+body{background-color:#767676;min-width:200px;font-size:13px}
+#wrapper{margin:auto;max-width:810px}
+#form{padding:2px;background-color:#222}
+h2{color:#efefef;font-size:20px;text-align:center;margin-bottom:-24px}
+#timeEntries td:last-child,#timeEntries th:last-child{text-align:right;width:106px}
 th{text-align:left}
 button{cursor:pointer}
-#date{width:13ch;vertical-align:top}
+#date{vertical-align:top;border:0}
 #activity{float:right;width:79%}
 #entriestoday{background-color:#fff;display:none;margin-top:20px;text-align:left;width:100%}
-#hours,#minutes{width:9.99%}
+#hours,#minutes{width:80px}
 #time{display:inline}
 #loading{color:#fff;display:none;font-weight:700;text-align:center}
-#loading .icon{background-color:url(../../images/app/loading.gif);display:inline-block;height:16px;margin-bottom:-3px;width:16px}
-.dateControls > *{color:#fff;margin:0;width:45px}
-#form > :first-child ~ *{margin-top:3px}
-#wrapper > :first-child ~ *{margin-top:4px}
-.statusbar{background-color:#507AAA;border-radius:5px;bottom:0;padding:4px;position:relative;right:0}
-input,select,textarea,button{background-color:#fff;color:#232323;font-size:13px;border:1px inset #555}
-input,select,textarea{padding:5px;padding-right:0}
-body,input,textarea,select{-khtml-border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;font-family:arial,helvetica,sans-serif}
-input,button,textarea,select{height:44px}
-#comments{height:65px}
-input:focus,textarea:focus,select:focus{opacity:1;background-color:#eee}
-input:hover,textarea:hover,select:hover{opacity:.96}
-select{cursor:pointer;padding-bottom:11px;padding-top:11px}
+#loading .icon{background-color:url(../../images/app/loading.gif);display:inline-block;height:16px;margin-bottom:-4px;width:16px}
+.dateControls>*{color:#fff;width:46px}
+.dateControls{margin-left:4px}
+#form>:first-child~*{margin-top:2px}
+#wrapper>:first-child~*{margin-top:4px}
+.statusbar{background-color:#226fa1;border-radius:3px;bottom:0;padding:4px;position:relative;right:0}
+button,input,select,textarea{background-color:#fff;color:#222;font-size:13px;border:1px solid #626262}
+input,select,textarea{padding:4px}
+body,input,select,textarea{border-radius:3px;font-family:arial,helvetica,sans-serif}
+button,input,select,textarea{height:46px}
+#comments{height:66px}
+input:focus,select:focus,textarea:focus{opacity:1;background-color:#efefef}
+input:hover,select:hover,textarea:hover{opacity:.96}
+select{cursor:pointer}
 textarea{resize:none;width:100%;margin-bottom:0}
-.error,.error:focus{border:2px solid red}
+.error,.error:focus{border:2px solid #df182c}
 .editMode.topControls{width:100%}
-.editMode.topControls > *{text-align:center;width:49.7%}
-.hoursTotal{background-color:#fff}
+.editMode.topControls>*{text-align:center;width:49.7%}
 button.submit:not(.update){margin-left:0;width:100%}
 button.cancel{width:49.7%}
-.hbox > *{display:inline-block}
+.hbox>*{display:inline-block}
+.topControls > *{display:inline-block}
+.right{float:right}
 table thead{color:#222}
-table.list{background-color:#fff;border:1px solid #E4E4E4;border-collapse:collapse;margin-bottom:4px;width:100%}
-table.list th{background-color:#EEE;padding:2px;padding-top:4px;padding-bottom:4px;white-space:nowrap}
+table.list{background-color:#fff;border:1px solid #e1e1e1;border-collapse:collapse;margin-bottom:4px;width:100%}
+table.list th{background-color:#efefef;padding:4px;white-space:nowrap}
 table.list td{vertical-align:top}
-a,a:link,a:visited{color:#2A5685;text-decoration:none}
-table td{padding:2px}
-.odd{background-color:#F6F7F8}
-.even{background-color:#FFF}
-a:hover,a:active{color:#C61A1A;text-decoration:underline}
-#notification_area .notification{background-color:rgba(80,122,170,0.9);border-radius:10px;color:#fff;padding:1rem}
-.editMode.topControls > :last-child{float:right}
-#wrapper.editMode h2,button.delete,button.duplicate,button.cancel,#timeEntries,#form,.ui-datepicker-week-end{display:none}
-@media screen and (-webkit-min-device-pixel-ratio:0) {
+a,a:link,a:visited{color:#226fa1;text-decoration:none}
+table td{padding:8px 4px}
+.odd{background-color:#f5f5f5}
+.even{background-color:#fff}
+a:active,a:hover{color:#df182c;text-decoration:underline}
+#notification_area .notification{background-color:#226fa1;border-radius:3px;color:#fff;padding:4px}
+.editMode.topControls>:last-child{float:right}
+#form,#timeEntries,#wrapper.editMode h2,.ui-datepicker-week-end,button.cancel,button.delete,button.duplicate{display:none}
+@media screen and (-webkit-min-device-pixel-ratio:0){
 #activity{width:78%}
 }
-[disabled]{cursor:crosshair;opacity:.9;color:#aaa}
-#timeEntries .comments{color:#888;margin-top:2px;padding-left:4px;font-size:9pt;max-width:525px;overflow:hidden;text-overflow:ellipsis}
-button.submit{border-color:#999;font-size:110%;width:100%}
-button.submit:hover{border-color:#59b4d4}
-.dateControls + a{background-color:#fff;padding:4px;float:right;margin-top:4px}
+[disabled]{cursor:crosshair;opacity:.9;color:#9f9f9f}
+#timeEntries .comments{color:#767676;margin-top:0;padding-left:4px;font-size:9pt;max-width:525px;overflow:hidden;text-overflow:ellipsis}
+button.submit{border-color:#9f9f9f;font-size:110%;width:100%}
+button.submit:hover{border-color:#9f9f9f}
+.dateControls+a{background-color:#fff;padding:4px;float:right;margin-top:4px}
 #timeEntries .active{opacity:.5}
-#comments{padding-top:12px}
-.left{float:left}
-.right{float:right}
-a.overview{background-color:#fff;padding:2px}
-.topControls button,.timeEntry button{width:44px}
+a.overview{background-color:#fff;padding:0}
+.timeEntry button,.topControls button{width:46px}
+.topControls button + button,.timeEntry button + button{margin-left:4px}
+#time > input + input{margin-left:2px}
 #timeEntries .timeEntry.unavailable-project button{visibility:hidden}
 #timeEntries .timeEntry.unavailable-project .title{font-style:italic}
-#search:focus::placeholder,#hours:focus::placeholder,#minutes:focus::placeholder,#comments:focus::placeholder,select:focus::placeholder{color:transparent}
+#comments:focus::placeholder,#hours:focus::placeholder,#minutes:focus::placeholder,#search:focus::placeholder,select:focus::placeholder{color:#fff}
 #timeEntries .overbooked .estimates{font-weight:700}
-input[type="number"]{-moz-appearance:textfield}
+input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-@media screen and (max-width: 740px) {
-#activity{width:100%;margin-left:0;float:none;margin-top:3px}
-#hours,#minutes{text-align:center;width:48%}
+@media screen and (max-width:740px){
+#activity{width:100%;margin-left:0;float:none;margin-top:2px}
+#hours,#minutes{text-align:center;width:49%}
 #minutes{float:right}
 #time{display:block}
 }
-@media screen {
+@media screen{
 #wrapper{min-width:200px}
 }
-@media screen and (max-width: 530px) {
+@media screen and (max-width:530px){
 h2{display:none!important}
 }
-@media screen and (max-width: 342px) {
-.topControls > *{float:none;display:inline-block}
+@media screen and (max-width:342px){
+.topControls>*{float:none;display:inline-block}
 }

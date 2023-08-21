@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while true
+do
+  inotifywait --event modify --recursive --quiet src && ./exe/compile
+done
