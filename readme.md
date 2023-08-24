@@ -57,54 +57,29 @@ see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
 |disallow logging time on projects|off|redmine allows spent time on issues and projects, this setting allows time entries only on issues|
 
 # developer information
-## development dependencies
-* nodejs
-
 ## how to add a new translation language
 * copy one of the files in "config/locales/" to a new one named with the appropriate language code
-* edit the file and replace the existing translations with your translations
+* edit the file and replace the translations with your translations
 
 the plugin tries to use the language that the user has configured in redmine under "my account" and falls back to english
-## setup
-* change directory to vendor/app
+
+## code development dependencies
+* nodejs
+
+## development setup
 * execute "npm install" on the command-line to install the required nodejs modules at once (coffeescript, browserify, coffeeify and fs-extra)
 
 ## interesting files
 * "app/controllers/time_logging_app_controller.rb" is the backend interface
-* the javascript code is under "vendor/app/sources/js" and written as coffeescript
-* files under "assets/" are automatically created/updated by the build tool in "vendor/app"
-* "config/locales/*" are the translations
-* "vendor/app/js/config.coffee" is an internal configuration file and contains some additional internal settings
+* the javascript code is under "src/js" and written as coffeescript
+* the main javascript entry point is "js/main.coffee"
+* src/js/lib/* are externally maintained javascript files
+* "src/js/config.coffee" is a configuration file and contains some additional settings that can not be set via the plugin configuration page
 
 ## how to recompile the javascript application
-* in directory "vendor/app"
 * execute "./exe/compile". should that not work, try "node exe/compile"
 * changes will only become active after a redmine restart, because redmine installs new plugin assets only when it starts
-
-## other
-it is possible to replace the jquery-ui theme.
+* css and javascript files are compiled into the redmine plugin assets directory.
 
 ## possible enhancements
-* better language detection (en-gb for example seems to be incorrectly detected)
 * remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not work)
-# setup
-npm install
-
-# compilation
-css and javascript files are compiled into the redmine plugin assets directory.
-to recompile the files execute ''node exe/compile''.
-
-# html
-the html files are in "#{plugin_root}/app/views/time_logging_app".
-
-# jquery ui themes
-downloaded jquery themes require replacement of the image paths in the css. (replace "url(image/" with "url(img/").
-additionally, the directory structure has to be broken up and images need to be put into the main "img/", css into the main "css/" and js into the main "js/" directories (under vendor/app/).
-this simplifies the compile configuration
-
-# javascript file structure
-* uses browserify node modules
-* js/*.coffee are the modules of the application.
-* js/lib/* are externally maintained javascript files.
-
-the main entry point is "js/main.coffee".
