@@ -1,7 +1,7 @@
 # redmine time logging app
 this redmine plugin adds a new menu entry and separate section to log and edit ones own spent time in one place, in a quick way.
 
-![screenshot-1](other/screenshots/2023-05-11.png?raw=true)
+![screenshot-1](other/screenshots/main.png?raw=true)
 
 # features
 * a mobile-app like interface
@@ -41,7 +41,7 @@ to create a new spent time entry, use the search field to search and select the 
 to edit a time entry, click on the pencil button in the list of time entries. you can change the date freely. when you click on "update" the changes will be saved.
 
 ![screenshot-2](other/screenshots/arrows.png?raw=true)
-![screenshot-3](other/screenshots/1484135578.png?raw=true)
+![screenshot-3](other/screenshots/edit.png?raw=true)
 
 # configuration
 see "Administration" -> "Plugins" -> "redmine time logging app" -> "Configure".
