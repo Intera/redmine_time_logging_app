@@ -36,18 +36,18 @@ class TimeLoggingAppController < ApplicationController
     else
       past_date_sql = "from_unixtime(#{past_date})"
     end
-    # recent time entry issues
+    # recently logged-to issues
     t1 = "select issue_id from time_entries where issue_id is not null and user_id = #{user_id} and updated_on > #{past_date}"
-    t = "select distinct id as issue_id, project_id, updated_on from issues where id in (#{t1})"
+    t = "select distinct id issue_id, project_id, updated_on from issues where id in (#{t1}) order by updated_on desc limit 2"
     # assigned issues
-    i = "select id, project_id, updated_on from issues where assigned_to_id = #{user_id} order by updated_on desc limit 10"
-    # recently assigned issues
+    i = "select id issue_id, project_id, updated_on from issues where assigned_to_id = #{user_id} order by updated_on desc limit 6"
+    # recently assigned-away from issues
     columns = "distinct i.id issue_id, i.project_id, i.updated_on"
     tables = "issues i, journals j, journal_details jd"
     where = "i.id = j.journalized_id and jd.journal_id = j.id and prop_key='assigned_to_id' and jd.old_value = #{user_id}"
-    j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 10"
+    j = "select #{columns} from #{tables} where #{where} order by i.updated_on desc limit 2"
     # union
-    u = "select distinct issue_id, project_id, updated_on from (select * from (#{t}) t union select * from (#{i}) i union select * from (#{j}) j order by updated_on desc limit 10) a"
+    u = "select distinct issue_id, project_id, updated_on from (select * from (#{i}) i union select * from (#{t}) t union select * from (#{j}) j) a"
     # add data from related tables
     columns = "t.issue_id, t.project_id, t.updated_on, i.subject issue_subject, i.updated_on," +
       " p.name project_name, p2.id project_parent_id, p2.name project_parent_name, v.name version_name, #{issue_is_closed_sql('i')}"
