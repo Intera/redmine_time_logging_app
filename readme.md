@@ -4,19 +4,18 @@ this redmine plugin adds a new menu entry and separate section to log and edit o
 ![screenshot-1](other/screenshots/main.png?raw=true)
 
 # features
-* a mobile-app like interface
 * powerful autocomplete that searches projects, issues and versions that accepts word fragments in any order
-* lists spent time entries per day and allows to switch fast between days
-* automatically skips weekends if there is no time entry
-* time entry creation/edit/copy/delete
-* shows individual and general total spent time for issues and projects
-* open issue/project button
+* lists the spent time entries per day and allows to switch fast between days
+* time entry create/edit/move/copy/delete
+* overview page that lists the total hours per day, month, and year
+* a timer that will add elapsed time to the hours and minutes field
+* link to the selected issue or project
+* shows individual and everyone's total spent time for issues and projects
+* automatically skips weekends without time entries
+* supports project-specific activities
 * a click into an empty search field suggests issues recently changed by the user
-* a click on the logged hours or activity opens the redmine time entry view for the issue or project
-* link to an overview page that lists the total hours per day, week and year with percentages per project
-* easily translatable. currently included languages are: cn, de, en, ja
-* tested with redmine 5 and 4
-* stopwatch timer
+* a click on the logged hours or activity opens the redmine time entry list for the issue or project
+* translatableare any
 
 # installation
 ## download
@@ -73,13 +72,16 @@ the plugin tries to use the language that the user has configured in redmine und
 * "app/controllers/time_logging_app_controller.rb" is the backend interface
 * the javascript code is under "src/js" and written as coffeescript
 * the main javascript entry point is "js/main.coffee"
-* src/js/lib/* are externally maintained javascript files
+* src/js/lib/* contains any javascript files that are maintained elsewhere
 * "src/js/config.coffee" is a configuration file and contains some additional settings that can not be set via the plugin configuration page
 
 ## how to recompile the javascript application
 * execute "./exe/compile". should that not work, try "node exe/compile"
 * changes will only become active after a redmine restart, because redmine installs new plugin assets only when it starts
-* css and javascript files are compiled into the redmine plugin assets directory.
+* css and javascript files are compiled into the redmine plugin assets directory
 
 ## possible enhancements
+* timer
+  * remember elapsed seconds. currently only full minutes are logged
+  * continue logging in the background even when the app page is not open
 * remove the focus style on buttons on touch devices (trying to fix it by overwriting .ui-state-focus css did not work)
