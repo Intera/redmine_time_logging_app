@@ -7,8 +7,6 @@ class TimeLoggingAppController < ApplicationController
   #     logger.info issue.to_json
   #   database queries: http://guides.rubyonrails.org/active_record_querying.html
 
-  unloadable
-
   if Rails::VERSION::MAJOR >= 4
     before_action :check_auth
   else
