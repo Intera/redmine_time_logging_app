@@ -424,20 +424,48 @@ window.app = (function() {
   prevTimeEntry = null;
 
   initDeleteDialog = function() {
-    var config;
-    config = {
-      buttons: {},
-      modal: true
-    };
-    config.buttons[translate("general_text_no")] = function() {
-      return $(this).dialog("close");
-    };
-    config.buttons[translate("general_text_yes")] = function() {
-      $(this).dialog("close");
+    var actions, close_button, dialog_message, dialog_title, no_button, titlebar, yes_button;
+    confirmDialog = document.createElement("dialog");
+    confirmDialog.className = "confirm-dialog";
+    titlebar = document.createElement("div");
+    titlebar.className = "dialog-titlebar";
+    dialog_title = document.createElement("div");
+    dialog_title.className = "dialog-title";
+    dialog_title.id = "confirm_delete_title";
+    dialog_title.setAttribute("role", "heading");
+    dialog_title.setAttribute("aria-level", "2");
+    close_button = document.createElement("button");
+    close_button.className = "dialog-close";
+    close_button.type = "button";
+    close_button.setAttribute("aria-label", app_config.datepicker.closeText);
+    close_button.textContent = "×";
+    close_button.addEventListener("click", function() {
+      return confirmDialog.close();
+    });
+    titlebar.append(dialog_title, close_button);
+    dialog_message = document.createElement("div");
+    dialog_message.className = "dialog-message";
+    dialog_message.id = "confirm_delete_message";
+    actions = document.createElement("div");
+    actions.className = "dialog-actions";
+    no_button = document.createElement("button");
+    no_button.type = "button";
+    no_button.textContent = translate("general_text_no");
+    no_button.addEventListener("click", function() {
+      return confirmDialog.close();
+    });
+    yes_button = document.createElement("button");
+    yes_button.type = "button";
+    yes_button.textContent = translate("general_text_yes");
+    yes_button.addEventListener("click", function() {
+      confirmDialog.close();
       return deleteTimeEntry(activeTimeEntryId);
-    };
-    config = Object.assign({}, helper.defaultDialogConfig, config);
-    return confirmDialog = $("<div>").dialog(config);
+    });
+    actions.append(no_button, yes_button);
+    confirmDialog.append(titlebar, dialog_message, actions);
+    confirmDialog.setAttribute("aria-labelledby", dialog_title.id);
+    confirmDialog.setAttribute("aria-describedby", dialog_message.id);
+    return document.body.append(confirmDialog);
   };
 
   timeFormat = function(hours, minutes) {
@@ -457,7 +485,9 @@ window.app = (function() {
     hours = helper.$$("#hours").val();
     minutes = helper.$$("#minutes").val();
     message = timeFormat(hours, minutes) + "<br/><br/>" + helper.$$("#search").val();
-    return confirmDialog.html(message).dialog("option", "title", translate("confirm_delete")).dialog("open");
+    confirmDialog.querySelector(".dialog-title").textContent = translate("confirm_delete");
+    confirmDialog.querySelector(".dialog-message").innerHTML = message;
+    return confirmDialog.showModal();
   };
 
   updateTimeEntry = function() {
@@ -684,9 +714,7 @@ window.app = (function() {
       }, 0);
       helper.$$(".daySpentTime").html(helper.decimalHoursToColonFormat(daySpentTime));
       insertTimeEntryRows(timeEntries);
-      $(".timeEntry .edit").button({
-        icon: "ui-icon-pencil"
-      }).click(function() {
+      $(".timeEntry .edit").click(function() {
         var timeEntryId;
         timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"));
         return startEditMode(timeEntryId);
@@ -695,13 +723,15 @@ window.app = (function() {
         // jquery highlight effect was not working
         helper.$$("#timeEntries").show();
       } else {
-        helper.$$("#timeEntries").effect("slide", {
-          direction: "up"
-        }, 220);
+        helper.$$("#timeEntries").show()[0].animate([
+          { opacity: 0, transform: "translateY(12px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ], {
+          duration: 220,
+          easing: "ease-out"
+        });
       }
-      return $(".timeEntry .insert").button({
-        icon: "ui-icon-arrowthickstop-1-n"
-      }).click(function() {
+      return $(".timeEntry .insert").click(function() {
         var timeEntryId;
         timeEntryId = parseInt($(this).parents(".timeEntry:first").data("entry-id"));
         return insertTimeEntryAsNew(timeEntryId);
@@ -914,7 +944,7 @@ window.app = (function() {
         return document.title = "⏱ " + hours + ":" + minutes + ":" + seconds;
       };
       timer.interval = setInterval(intervalF, 1000);
-      timer.dom.startStopTimerButton.button("option", "icon", "ui-icon-stop");
+      timer.dom.startStopTimerButton.addClass("running");
       return intervalF();
     },
     stop: function() {
@@ -924,7 +954,7 @@ window.app = (function() {
       clearInterval(timer.interval);
       timer.setFormTime(timer.getFormTime() + timer.getElapsedSeconds());
       timer.startTime = null;
-      timer.dom.startStopTimerButton.button("option", "icon", "ui-icon-play");
+      timer.dom.startStopTimerButton.removeClass("running");
       return document.title = timer.originalTitle;
     },
     toggle: function() {
@@ -941,7 +971,6 @@ window.app = (function() {
       timer.dom = {
         startStopTimerButton: button
       };
-      button.button("option", "icon", "ui-icon-play");
       return button.click(function() {
         return timer.toggle();
       });
@@ -983,14 +1012,10 @@ window.app = (function() {
     }
     helper.$$("#date").datepicker("setDate", datepicker_date);
     // buttons and fields
-    $("button").button();
-    $("button.next").button("option", "icon", "ui-icon-circle-arrow-e");
-    $("button.prev").button("option", "icon", "ui-icon-circle-arrow-w");
-    $("button.resetForm").button("option", "icon", "ui-icon-cancel");
-    $("button.overview").button("option", "icon", "ui-icon-note").click(function() {
+    $("button.overview").click(function() {
       return window.open($(this).data("href"), "_newtab");
     });
-    dom.openInRedmineButton.hide().button("option", "icon", "ui-icon-extlink").click(function() {
+    dom.openInRedmineButton.hide().click(function() {
       var url;
       url = $(this).data("href");
       if (url) {

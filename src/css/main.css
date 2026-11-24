@@ -76,4 +76,26 @@ h2{display:none!important}
 @media screen and (max-width:342px){
 .topControls>*{float:none;display:inline-block}
 }
-button .ui-button-icon{margin-top:1px}
+button{padding:.4em 1em;border-color:#ccc;border-radius:3px;background:#adadad url("../images/jquery-ui/ui-bg_highlight-soft_35_adadad_1x100.png") 50% 50% repeat-x;color:#333;line-height:normal;text-align:center;vertical-align:middle}
+button:hover,button:focus-visible{background:#ddd url("../images/jquery-ui/ui-bg_highlight-soft_60_dddddd_1x100.png") 50% 50% repeat-x;color:#000}
+button:active{background:#121212 url("../images/jquery-ui/ui-bg_inset-soft_15_121212_1x100.png") 50% 50% repeat-x;color:#fff}
+button.next::before,button.prev::before,button.start-stop-timer::before,button.open-in-redmine::before,button.overview::before,button.resetForm::before,.timeEntry button.insert::before,.timeEntry button.edit::before{content:"";display:inline-block;width:16px;height:16px;background-image:url("../images/jquery-ui/ui-icons_666666_256x240.png");background-repeat:no-repeat;vertical-align:middle}
+button:hover::before,button:focus-visible::before{background-image:url("../images/jquery-ui/ui-icons_c98000_256x240.png")}
+button:active::before{background-image:url("../images/jquery-ui/ui-icons_f29a00_256x240.png")}
+button.next::before{background-position:-112px -192px}
+button.prev::before{background-position:-144px -192px}
+button.start-stop-timer::before{background-position:0 -160px}
+button.start-stop-timer.running::before{background-position:-96px -160px}
+button.open-in-redmine::before{background-position:-32px -80px}
+button.overview::before{background-position:-64px -96px}
+button.resetForm::before{background-position:0 -128px}
+.timeEntry button.insert::before{background-position:-192px -48px}
+.timeEntry button.edit::before{background-position:-64px -112px}
+.confirm-dialog{width:min(32rem,calc(100vw - 2rem));max-width:none;padding:0;border:0;border-radius:3px;background:#121212;color:#eee;box-shadow:0 0 5px #333}
+.confirm-dialog::backdrop{background:rgb(0 0 0 / 30%)}
+.confirm-dialog .dialog-titlebar{display:flex;align-items:center;justify-content:space-between;padding:.4em 1em;background:#888;color:#fff;font-weight:700}
+.confirm-dialog .dialog-title{height:auto;margin:0;color:inherit;font-size:1.1em;text-align:left}
+.confirm-dialog .dialog-close{width:auto;height:auto;padding:0 .25rem;border:0;background:transparent;color:inherit;font-size:1.4rem}
+.confirm-dialog .dialog-message{padding:.5em 1em}
+.confirm-dialog .dialog-actions{display:flex;justify-content:flex-end;gap:.5rem;padding:.3em .8em;border-top:1px solid #404040}
+.confirm-dialog .dialog-actions button{height:auto;padding:.4em 1em}

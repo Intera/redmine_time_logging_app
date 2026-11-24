@@ -1,6 +1,6 @@
 // Time Logging App - JavaScript source converted from CoffeeScript 2.7.0 output.
 const timeLoggingAppHelper = (function() {
-  var $$, autocompleteMatchFunc, config, copyDateObject, createIssueSearchDataEntry, createProjectSearchDataEntry, createProjectsIssuesAndSearchData, decimalHoursToColonFormat, decimalHoursToHoursAndMinutes, defaultDialogConfig, delim, displayDialog, entityMap, escapeHtml, falseIfNaN, getBrowserLanguage, hoursAndMinutesToSeconds, issueIdToUrl, mobileHideAddressBar, onKeypressRejectNaN, padZeros, projectNameToId, removeErrorClass, roundFloat, secondsToHoursAndMinutes, secondsToHoursAndMinutesAndSeconds, selectAll, setCursorPosition, setSelectionRange, stringContains, stringContainsEvery, timeLimitedFunc, wrapDeferred;
+  var $$, autocompleteMatchFunc, config, copyDateObject, createIssueSearchDataEntry, createProjectSearchDataEntry, createProjectsIssuesAndSearchData, decimalHoursToColonFormat, decimalHoursToHoursAndMinutes, delim, entityMap, escapeHtml, falseIfNaN, getBrowserLanguage, hoursAndMinutesToSeconds, issueIdToUrl, mobileHideAddressBar, onKeypressRejectNaN, padZeros, projectNameToId, removeErrorClass, roundFloat, secondsToHoursAndMinutes, secondsToHoursAndMinutesAndSeconds, selectAll, setCursorPosition, setSelectionRange, stringContains, stringContainsEvery, timeLimitedFunc, wrapDeferred;
 
   config = timeLoggingAppConfig;
 
@@ -293,34 +293,6 @@ const timeLoggingAppHelper = (function() {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
   };
 
-  defaultDialogConfig = {
-    buttons: {
-      "schließen": function() {
-        return $(this).dialog("close");
-      }
-    },
-    resizable: false,
-    closeOnEscape: true,
-    show: "fade",
-    autoOpen: false
-  };
-
-  displayDialog = void 0;
-
-  $(function() {
-    var dialog;
-    dialog = $("<div>").dialog(defaultDialogConfig);
-    return displayDialog = function(message, title) {
-      if (typeof message === "string") {
-        dialog.html(message);
-      } else {
-        dialog.html("");
-        dialog.append(message);
-      }
-      return dialog.dialog("option", "title", title).dialog("open");
-    };
-  });
-
   entityMap = {
     "&": "&amp;",
     "<": "&lt;",
@@ -368,7 +340,6 @@ const timeLoggingAppHelper = (function() {
     createProjectSearchDataEntry: createProjectSearchDataEntry,
     decimalHoursToHoursAndMinutes: decimalHoursToHoursAndMinutes,
     decimalHoursToColonFormat: decimalHoursToColonFormat,
-    defaultDialogConfig: defaultDialogConfig,
     escapeHtml: escapeHtml,
     falseIfNaN: falseIfNaN,
     issueIdToUrl: issueIdToUrl,
