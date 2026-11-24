@@ -6,11 +6,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Intera/redmine_time_logging_app"
-  },
-  "dependencies": {
-    "browserify": "*",
-    "coffeeify": "*",
-    "coffeescript": "*",
-    "fs-extra": "*"
   }
 }

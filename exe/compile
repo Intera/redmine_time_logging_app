@@ -1,46 +1,35 @@
-#!/usr/bin/coffee
+#!/usr/bin/env node
 
-main_target_dir = "assets"
+"use strict";
 
-fs = require "fs-extra"  # for recursive file copying
-browserify = require "browserify"
-coffeeify = require "coffeeify"
+const fs = require("fs");
+const path = require("path");
 
-compile_js = ->
-  # non-browserify files
-  target_dir = main_target_dir + "/javascripts"
-  fs.ensureDirSync target_dir
-  input_dir = "src/js"
-  input_files = [
-    "lib/jquery"
-    "lib/jquery-ui.custom"
-    "lib/underscore"]
-  output_file = fs.createWriteStream target_dir + "/main.js"
-  input_files.forEach (a) ->
-    output_file.write fs.readFileSync input_dir + "/" + a + ".js"
-    output_file.write "\n;\n"
-  # browserify
-  main_js = browserify {extensions: ['.coffee'], paths: [input_dir], standalone: "app"}
-  main_js.transform coffeeify, {bare: false, header: true}
-  main_js.add(input_dir + "/main.coffee")
-  bundle_write = main_js.bundle().pipe output_file
-  bundle_write.on "finish", -> output_file.close()
-  bundle_write
+const root_dir = path.resolve(__dirname, "..");
+const asset_dir = path.join(root_dir, "assets");
+const javascript_dir = path.join(asset_dir, "javascripts");
+const stylesheet_dir = path.join(asset_dir, "stylesheets");
+const javascript_files = [
+  "lib/jquery.js",
+  "lib/jquery-ui.custom.js",
+  "config.js",
+  "helper.js",
+  "redmine.js",
+  "main.js"
+];
+const stylesheet_files = ["reset.css", "jquery-ui.css", "jquery-ui.override.css", "main.css"];
 
-compile_css = ->
-  input_dir = "src/css"
-  input_files = ["reset", "jquery-ui", "jquery-ui.override", "main"]
-  target_dir = main_target_dir + "/stylesheets"
-  fs.ensureDirSync target_dir
-  target_file = target_dir + "/main.css"
-  output_file = fs.createWriteStream target_file
-  input_files.forEach (a) ->
-    output_file.write fs.readFileSync("#{input_dir}/#{a}.css") + "\n"
+fs.mkdirSync(javascript_dir, { recursive: true });
+fs.mkdirSync(stylesheet_dir, { recursive: true });
 
-compile = ->
-  process.stdout.write "compile..."
-  compile_css()
-  compile_js().on "finish", -> console.log " finish"
+fs.writeFileSync(
+  path.join(javascript_dir, "main.js"),
+  javascript_files.map((file) => fs.readFileSync(path.join(root_dir, "src", "js", file), "utf8")).join("\n") + "\n"
+);
 
-fs.ensureDirSync main_target_dir
-compile()
+fs.writeFileSync(
+  path.join(stylesheet_dir, "main.css"),
+  stylesheet_files.map((file) => fs.readFileSync(path.join(root_dir, "src", "css", file), "utf8")).join("\n") + "\n"
+);
+
+process.stdout.write("compile... finish\n");
